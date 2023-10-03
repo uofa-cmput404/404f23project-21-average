@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework import routers
 from rest_framework.routers import DefaultRouter
-from views import *
+from .views import *
 
 # Create a router and register our viewsets with it.
 router = routers.DefaultRouter(trailing_slash=False)
