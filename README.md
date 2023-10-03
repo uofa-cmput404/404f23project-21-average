@@ -14,4 +14,4 @@ Authors:
 - Firstname Lastname
 - Firstname Lastnmae
 
-Generally everything is LICENSE'D under the Apache license V2
+Generally everything is LICENSE'D under the Apache-2 by the 21 Average Team
