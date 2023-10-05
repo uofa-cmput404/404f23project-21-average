@@ -10,7 +10,7 @@ Authors:
 
 - Afaq Nabi
 - Ghunaym Yahya
-- Firstname Lastname
+- Shreyank Hebbar
 - Firstname Lastname
 - Firstname Lastnmae
 
