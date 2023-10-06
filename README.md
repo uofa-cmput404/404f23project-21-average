@@ -11,7 +11,7 @@ Authors:
 - Afaq Nabi
 - Ghunaym Yahya
 - Shreyank Hebbar
-- Firstname Lastname
+- Agrim Sood
 - Firstname Lastnmae
 
 Generally everything is LICENSE'D under the Apache-2 by the 21 Average Team
