@@ -15,3 +15,12 @@ Authors:
 - Agrim Sood
 
 Generally everything is LICENSE'D under the Apache-2 by the 21 Average Team
+
+# Startup
+
+`virtualenv venv`
+`pip install -r req.txt`
+`cd project`
+** start local mysql server and init a DB called "socialDB" then:
+`python3 manage.py runserver`
+`http://127.0.0.1:8000/api/` 
