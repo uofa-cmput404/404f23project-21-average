@@ -18,6 +18,8 @@ Generally everything is LICENSE'D under the Apache-2 by the 21 Average Team
 
 # Startup
 
+- `git clone https://github.com/uofa-cmput404/404f23project-21-average.git`
+- `cd 404f23project-21-average`
 - `virtualenv venv`
 - `pip install -r req.txt`
 - `cd project`
