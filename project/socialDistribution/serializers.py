@@ -5,21 +5,20 @@ from .models import *
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
-        fields = ['id', 'host', 'displayName', 'url', 'github', 'bio']
+        fields = ['id', 'host', 'displayName', 'url', 'github']
 
 
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['id', 'title', 'source', 'origin', 'description', 'contentType', 'content',
-                  'author', 'categories', 'count', 'published', 'visibility', 'visibleTo', 'unlisted']
+        fields = '__all__'
 
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ['author', 'posts', 'comment',
-                  'contentType', 'published', 'id']
+        fields = ['commenter', 'parentPost', 'type', 'comment',
+                  'contentType', 'published']
 
 
 class FollowSerializer(serializers.ModelSerializer):
