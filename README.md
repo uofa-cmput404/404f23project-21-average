@@ -10,8 +10,8 @@ Authors:
 
 - Afaq Nabi
 - Ghunaym Yahya
-- Firstname Lastname
-- Firstname Lastname
-- Firstname Lastnmae
+- Shreyank Hebbar
+- Aryaman Raina
+- Agrim Sood
 
 Generally everything is LICENSE'D under the Apache-2 by the 21 Average Team
