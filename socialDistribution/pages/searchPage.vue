@@ -1,3 +1,4 @@
+import 'bootstrap-icons/font/bootstrap-icons.css';
 <template>
     <div class="app-container">
       <aside class="sidebar">
@@ -5,14 +6,14 @@
           <div class="title-social">SOCIAL</div>
           <div class="title-distribution">DISTRIBUTION</div>
         </h1>
-        <div class="icon" id="home-icon"></div>
-        <div class="icon" id="group-icon"></div>
-        <div class="icon" id="search-icon"></div>
-        <div class="icon" id="profile-icon"></div>
+        <i class="bi bi-house" id="home-icon"></i>
+        <i class="bi bi-people" id = "friends" ></i>
+        <i class="bi bi-search" id="search-icon"></i>
+        <i class="bi bi-person" id="profile-icon"></i>
       </aside>
       <main class="main-content">
         <div class="search-bar">
-          <input type="text" placeholder="Search for a user" />
+          <input type="text" placeholder="Search for friends" />
         </div>
   
       </main>
@@ -20,6 +21,7 @@
   </template>
   
   <script>
+  import 'bootstrap-icons/font/bootstrap-icons.css';
   export default {
     name: "SocialDistributionApp"
   };
@@ -60,21 +62,23 @@
     color: white;
   }
   
-  .icon {
-    margin-left:10%;
-    height: 40px;
-    width: 40px;
-    margin-bottom: 70px;
-    background-color: #00C58E;
-    /* This is just a placeholder shape; you'll replace these with your actual icons */
-    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-  }
+  
   
   .main-content {
     width: 80%;
     background-color: #00C58E;
   }
   
+  .bi{
+    font-size: 60px;
+    margin-left:20px;
+
+  }
+
+  .sidebar i.bi {
+    display: block;
+    margin-bottom: 40px; /* Optional: Add space between the icons */
+}
   .search-bar input {
     width: 80%;
     padding: 10px;
