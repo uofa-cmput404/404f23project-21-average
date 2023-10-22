@@ -1,0 +1,20 @@
+{
+  "name": "404f23project-21-average",
+  "version": "1.0.0",
+  "description": "CMPUT 404 Project: Social Distribution",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "cd socialDistribution && npm run build",
+    "client": "cd socialDistribution && npm start --prefix client",
+    "server": "cd project && virtualenv venv && source venv/bin/activate && pip3 install -r req.txt && python3 manage.py runserver",
+    "dev": "concurrently \"npm run client\" \"npm run server\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.1"
+  }
+}
