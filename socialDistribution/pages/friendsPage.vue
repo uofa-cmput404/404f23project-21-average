@@ -1,17 +1,6 @@
 <template>
     <div class="app-container">
-      <div class="sidebar">
-        <div class="app-title">
-          <span class="title-social">SOCIAL</span>
-          <span class="title-distribution">DISTRIBUTION</span>
-        </div>
-        <div class="icons">
-        <i class="bi bi-house" id="home-icon"></i>
-        <i class="bi bi-people" id = "friends" ></i>
-        <i class="bi bi-search" id="search-icon"></i>
-        <i class="bi bi-person" id="profile-icon"></i>
-        </div>
-      </div>
+      <SidebarComponent/>
       <div class="main-content">
         <div class="header">FRIENDS</div>
         <div class="friend-list">
@@ -22,8 +11,12 @@
   </template>
   
   <script>
+  import SidebarComponent from './sidebar.vue';
   export default {
     name: "SocialDistributionApp",
+    components:{
+    SidebarComponent
+  },
     data() {
       return {
         friends: [
@@ -55,50 +48,23 @@
     right:0;
     background-color: black;
   }
-  .sidebar {
-    width: 24%;
-    height:100%;
-    padding: 20px;
-    background-color: black;
-    color: #00C58E;
-  }
-  
-  .app-title {
-    font-size: 40px;
-    margin-bottom: 70px;
-  }
-  
-  .title-social,
-  .title-distribution {
-    display: block;
-  }
-  
-  .title-social {
-    color: white;
-  }
-  
-  .bi{
-    font-size: 60px;
-    margin-left:20px;
 
-  }
-
-  .sidebar i.bi {
-    display: block;
-    margin-bottom: 40px; /* Optional: Add space between the icons */
-}
-  
-  .main-content {
-    flex: 1;
+.main-content {
+    position:fixed;
+    left:26%;
+    top:0;
+    bottom:0;
+    right:0;
     background-color: #00C58E;
-    padding: 20px;
+    overflow-y: auto;
+    overflow-x:hidden;
   }
   
   .header {
     background-color: black;
     padding:15px ;
     width: 40%;
-    margin: 0 auto;
+    margin: 20px auto;
     color: white;
     overflow-y: auto;  
     font-size: 025px;  

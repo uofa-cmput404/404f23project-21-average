@@ -1,16 +1,7 @@
 import 'bootstrap-icons/font/bootstrap-icons.css';
 <template>
     <div class="app-container">
-      <aside class="sidebar">
-        <h1 class="app-title">
-          <div class="title-social">SOCIAL</div>
-          <div class="title-distribution">DISTRIBUTION</div>
-        </h1>
-        <i class="bi bi-house" id="home-icon"></i>
-        <i class="bi bi-people" id = "friends" ></i>
-        <i class="bi bi-search" id="search-icon"></i>
-        <i class="bi bi-person" id="profile-icon"></i>
-      </aside>
+      <SidebarComponent/>
       <main class="main-content">
         <div class="search-bar">
           <input type="text" placeholder="Search for friends" />
@@ -21,10 +12,16 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
   </template>
   
   <script>
+  import SidebarComponent from './sidebar.vue';
   import 'bootstrap-icons/font/bootstrap-icons.css';
   export default {
-    name: "SocialDistributionApp"
+    name: "SocialDistributionApp",
+    components:{
+    SidebarComponent
+  }
   };
+
+
   </script>
   
   <style scoped>
@@ -40,32 +37,13 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
     color: white;
   }
   
-  .sidebar {
-    width: 24%;
-    height:100%;
-    padding: 20px;
-    background-color: black;
-    color: #00C58E;
-  }
-  
-  .app-title {
-    font-size: 40px;
-    margin-bottom: 70px;
-  }
-  
-  .title-social,
-  .title-distribution {
-    display: block;
-  }
-  
-  .title-social {
-    color: white;
-  }
-  
-  
   
   .main-content {
-    width: 80%;
+    position:fixed;
+    left:26%;
+    top:0;
+    bottom:0;
+    right:0;
     background-color: #00C58E;
   }
   
@@ -77,7 +55,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 
   .sidebar i.bi {
     display: block;
-    margin-bottom: 40px; /* Optional: Add space between the icons */
+    margin-bottom: 10px; /* Optional: Add space between the icons */
 }
   .search-bar input {
     width: 80%;

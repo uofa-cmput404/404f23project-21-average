@@ -1,15 +1,6 @@
 <template>
   <div class="app-container">
-    <aside class="sidebar">
-      <h1 class="app-title">
-        <div class="title-social">SOCIAL</div>
-        <div class="title-distribution">DISTRIBUTION</div>
-      </h1>
-      <i class="bi bi-house" id="home-icon"></i>
-        <i class="bi bi-people" id = "friends" ></i>
-        <i class="bi bi-search" id="search-icon"></i>
-        <i class="bi bi-person" id="profile-icon"></i>
-    </aside>
+    <SidebarComponent/>
     <main class="main-content">
       <div class="user-section">
         <h2>User1</h2>
@@ -22,7 +13,7 @@
         </div>
         <button class = 'edit'>Edit</button>
         <div class="posts-section">
-          <h3>Posts:</h3>
+          <h3>MY POSTS:</h3>
           <div class="post">Something written</div>
           <div class="post">Something written</div>
           <div class="post">Something written</div>
@@ -33,8 +24,12 @@
 </template>
 
 <script>
+import SidebarComponent from './sidebar.vue';
 export default {
-  name: "SocialDistributionApp"
+  name: "SocialDistributionApp",
+  components:{
+    SidebarComponent
+  }
 };
 </script>
 
@@ -75,11 +70,15 @@ export default {
     margin-bottom: 40px; /* Optional: Add space between the icons */
 }
 .main-content {
-  width: 80%;
-  background-color: #00C58E;
-  padding: 20px;
-  overflow-y: auto;
-}
+    position:fixed;
+    left:26%;
+    top:0;
+    bottom:0;
+    right:0;
+    background-color: #00C58E;
+    overflow-y: auto;
+    overflow-x:hidden;
+  }
 
 .user-section h2 {
   color: black;
@@ -94,7 +93,11 @@ export default {
 }
 
 .bio-section textarea {
-  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+  margin:auto auto;
   padding: 10px;
   border: none;
   background-color: black;
@@ -103,12 +106,15 @@ export default {
 }
 .posts-section h3 {
   color: black;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 .post {
   background-color: black;
   padding: 60px;
+  width:80%;
+  margin:auto auto;
   color: white;
   margin-bottom: 10px;
 }
@@ -123,6 +129,7 @@ button{
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.2s;
+    margin: auto auto;
 }
 
 .edit{
