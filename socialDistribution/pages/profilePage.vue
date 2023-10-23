@@ -14,9 +14,9 @@
         <button class = 'edit'>Edit</button>
         <div class="posts-section">
           <h3>MY POSTS:</h3>
-          <div class="post">Something written</div>
-          <div class="post">Something written</div>
-          <div class="post">Something written</div>
+          <PostComponent postContent="First post content here"/>
+          <PostComponent postContent="Second post content here"/>
+          <PostComponent postContent="Third post content here"/>
         </div>
       </div>
     </main>
@@ -24,10 +24,12 @@
 </template>
 
 <script>
+import PostComponent from './postComponent.vue';
 import SidebarComponent from './sidebar.vue';
 export default {
   name: "SocialDistributionApp",
   components:{
+    PostComponent,
     SidebarComponent
   }
 };
