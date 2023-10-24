@@ -3,6 +3,7 @@
     <SidebarComponent/>
     <main class="main-content">
       <div class="user-section">
+        <img src="404f23project-21-average\socialDistribution\pages\spiderman.jpeg" alt="Profile photo" class="profile-photo">
         <h2>User1</h2>
         <div class="follow-info">
           <button>Followers:  </button>
@@ -45,32 +46,7 @@ export default {
   right:0;
 }
 
-.sidebar {
-  width: 24%;
-  padding: 20px;
-  background-color: black;
-  color: #00C58E;
-}
 
-.app-title {
-  font-size: 40px;
-  margin-bottom: 50px;
-}
-
-.title-social {
-  color: white;
-}
-
-.bi{
-    font-size: 60px;
-    margin-left:20px;
-
-  }
-
-  .sidebar i.bi {
-    display: block;
-    margin-bottom: 40px; /* Optional: Add space between the icons */
-}
 .main-content {
     position:fixed;
     left:26%;
@@ -87,6 +63,14 @@ export default {
   margin-bottom: 20px;
 }
 
+.profile-photo {
+  width: 150px;  /* Adjust based on your requirement */
+  height: 150px; /* Adjust based on your requirement */
+  border-radius: 50%;  /* Makes the photo circular */
+  display: block;
+  margin: 20px auto;  /* Center the image horizontally and add some margin */
+  border: 3px solid white;  /* Optional: Add a border around the image */
+}
 .follow-info {
   display: flex;
   justify-content: space-between;
