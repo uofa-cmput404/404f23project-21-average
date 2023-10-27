@@ -70,10 +70,11 @@ export default {
   },
   async created() {
     try {
-      const response = await axios.get('http://localhost:8000/api/posts/');
+      const response = await axios.get('http://127.0.0.1:8000/posts');
       console.log(response)
       if (response.status === 200) {
         this.posts = response.data.results; // Update the posts data property with the fetched posts
+        console.log(this.posts)
       } else {
         console.error('Error fetching posts:', response);
       }
