@@ -7,7 +7,6 @@ from django.contrib.auth.models import User
 class Author(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    type = models.CharField(max_length=255)
     public = models.BooleanField()
     host = models.CharField(max_length=255)
     displayName = models.CharField(max_length=255)
@@ -29,7 +28,7 @@ class Author(models.Model):
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    type = models.CharField(max_length=255)
+
     title = models.TextField()
     source = models.CharField(max_length=255)
     origin = models.CharField(max_length=255)
@@ -46,7 +45,6 @@ class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     commenter = models.ForeignKey(Author, on_delete=models.CASCADE)
     parentPost = models.ForeignKey(Post, on_delete=models.CASCADE)
-    type = models.CharField(max_length=255)
     comment = models.TextField()
     contentType = models.CharField(max_length=255)
     published = models.DateTimeField()
@@ -74,7 +72,6 @@ class Like(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    type = models.CharField(max_length=255)
     published = models.DateTimeField()
 
 

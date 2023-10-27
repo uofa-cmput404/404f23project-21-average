@@ -154,7 +154,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         "rest_framework.authentication.BasicAuthentication",
     ],
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated", ],
+    "DEFAULT_PERMISSION_CLASSES": ['rest_framework.permissions.AllowAny'],
 }
 
 JWT_AUTH = {
@@ -171,8 +171,8 @@ CORS_ALLOW_ALL_ORIGINS: True
 CORS_ALLOWED_ORIGINS = [
     # "https://example.com",
     # "https://sub.example.com",
-    "http://localhost:8080",
-    "http://127.0.0.1:9000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
 ]
 
 SPECTACULAR_SETTINGS = {

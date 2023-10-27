@@ -6,20 +6,20 @@ class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
         fields = ['id', 'host', 'displayName', 'url', 'github', 'user',
-                  'profileImage', 'type', 'public']
+                  'profileImage',  'public']
 
 
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['id', 'type', 'title', 'source', 'origin', 'description', 'contentType',
+        fields = ['id',  'title', 'source', 'origin', 'description', 'contentType',
                   'content', 'published', 'owner', 'categories', 'count']
 
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ['id', 'commenter', 'parentPost', 'type', 'comment',
+        fields = ['id', 'commenter', 'parentPost',  'comment',
                   'contentType', 'published']
 
 
@@ -38,7 +38,7 @@ class FriendRequestSerializer(serializers.ModelSerializer):
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
-        fields = ['id', 'author', 'post', 'type', 'published']
+        fields = ['id', 'author', 'post',  'published']
 
 
 class ConnectedNodeSerializer(serializers.ModelSerializer):
