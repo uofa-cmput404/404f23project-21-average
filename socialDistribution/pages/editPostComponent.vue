@@ -23,6 +23,7 @@
   
   <script>
   export default {
+    name:EditPostComponent,
     props: ['initialPostContent', 'initialIsPublic'],
     data() {
       return {

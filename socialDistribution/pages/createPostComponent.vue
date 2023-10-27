@@ -22,6 +22,8 @@
   </template>
   
   <script>
+  import axios from 'axios';
+  
   export default {
     data() {
       return {
@@ -41,16 +43,37 @@
           };
         }
       },
-      submitPost() {
-        console.log({
-          content: this.postContent,
-          image: this.postImage,
-          privacy: this.isPublic ? 'public' : 'private'
-        });
+      async submitPost() {
+        try {
+          const payload = {
+            type: this.isPublic ? 'public' : 'private', // Adjust as per your requirement
+            title: '', // You can add a title input field in your template
+            source: '', // Adjust as per your requirement
+            origin: '', // Adjust as per your requirement
+            description: '', // You can add a description input field in your template
+            contentType: '', // Adjust based on your content type
+            content: this.postContent,
+            published: new Date().toISOString(),
+            owner: 'UserID', // Adjust with your actual owner id
+            categories: '', // Adjust as per your requirement
+            count: 0 // Adjust as per your requirement
+          };
+          const response = await axios.post('http://localhost:8000/api/posts', payload);
+          if (response.status === 200 || response.status === 201) {
+            // Handle success scenario
+            console.log('Post created successfully:', response.data);
+          } else {
+            // Handle any other response scenario
+            console.error('Error creating post:', response);
+          }
+        } catch (error) {
+          console.error('Error while creating post:', error);
+        }
       }
     }
   };
   </script>
+  
   
   <style scoped>
   .create-post {

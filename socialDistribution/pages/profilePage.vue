@@ -12,29 +12,55 @@
         <div class="bio-section">
           <textarea placeholder="Write a Bio"></textarea>
         </div>
-        <button class = 'edit'>Edit</button>
+        <button class="edit">Edit</button>
         <div class="posts-section">
           <h3>MY POSTS:</h3>
-          <PostComponent postContent="First post content here"/>
-          <PostComponent postContent="Second post content here"/>
-          <PostComponent postContent="Third post content here"/>
+          <!-- Use v-for directive to loop over each post -->
+          <PostComponent 
+            v-for="post in posts" 
+            :key="post.id" 
+            :postContent="post.content" 
+            :postID="post.id" 
+          />
         </div>
       </div>
     </main>
   </div>
 </template>
 
+
 <script>
 import PostComponent from './postComponent.vue';
 import SidebarComponent from './sidebar.vue';
+import axios from 'axios';
+
 export default {
   name: "SocialDistributionApp",
   components:{
     PostComponent,
-    SidebarComponent
-  }
+    SidebarComponent,
+  },
+  data() {
+    return {
+      posts: [] // Initialize posts as an empty array
+    };
+  },
+  async created() {
+    try {
+      const response = await axios.get('http://localhost:8000/api/posts/');
+      console.log(response)
+      if (response.status === 200) {
+        this.posts = response.data.results; // Update the posts data property with the fetched posts
+      } else {
+        console.error('Error fetching posts:', response);
+      }
+    } catch (error) {
+      console.error('Error while fetching posts:', error);
+    }
+  },
 };
 </script>
+
 
 <style scoped>
 .app-container {

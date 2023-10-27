@@ -5,7 +5,8 @@
         <div class="title-social">SOCIAL</div>
         <div class="title-distribution">DISTRIBUTION</div>
       </h1>
-      <i class="bi bi-house" id="home-icon"></i>
+      
+      <li><NuxtLink to="/homePage"><i class="bi bi-house" id="home-icon"></i></NuxtLink></li>
       <li><NuxtLink to="/friendsPage"><i class="bi bi-people" id="friends"></i></NuxtLink></li>
       <li><NuxtLink to="/searchPage"><i class="bi bi-search" id="search-icon"></i></NuxtLink></li>
       <li><NuxtLink to="/profilePage"><i class="bi bi-person" id="profile-icon"></i></NuxtLink></li>
