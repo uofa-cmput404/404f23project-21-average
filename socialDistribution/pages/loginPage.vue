@@ -40,10 +40,11 @@ export default {
           username: this.userId,
           password: this.password
         });
-        if (response.data.success) {
+        if (response.status  === 200|| response.status === 201) {
           // Handle successful login
           console.log("Login successful!");
           console.log(response)
+          window.location.href="http://localhost:3000/homePage";
           // Redirect or perform other actions
         } else {
           // Handle login failure
