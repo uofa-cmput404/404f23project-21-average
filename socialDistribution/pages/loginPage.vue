@@ -17,7 +17,7 @@
             <label for="password">Password</label>
             <input type="password" id="password" v-model="password" placeholder="Password" />
           </div>
-          <button type="submit">SUBMIT</button>
+          <button type="submit" @click= "login" >SUBMIT</button>
         </form>
       </div>
     </div>
@@ -25,12 +25,35 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
       userId: '',
       password: ''
     };
+  },
+  methods:{
+    async login() {
+      try {
+        const response = await axios.post('http://localhost:8000/api/auth/login/', {
+          username: this.userId,
+          password: this.password
+        });
+        if (response.data.success) {
+          // Handle successful login
+          console.log("Login successful!");
+          console.log(response)
+          // Redirect or perform other actions
+        } else {
+          // Handle login failure
+          console.error("Login failed:", response.data.error);
+        }
+      } catch (error) {
+        // Handle errors (e.g., network issues)
+        console.error("Error during login:", error);
+      }
+    }
   }
 };
 </script>

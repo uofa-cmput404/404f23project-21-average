@@ -21,7 +21,7 @@
               <label for="password">Password</label>
               <input type="password" id="password" v-model="password" placeholder="Password" />
             </div>
-            <button type="submit">SIGN UP</button>
+            <button type="submit" @click = "register">SIGN UP</button>
           </form>
         </div>
       </div>
@@ -36,8 +36,32 @@
         username: '',
         password: ''
       };
+    },
+    methods:{
+      async register() {
+      try {
+        const response = await axios.post('http://localhost:8000/api/register', {
+          email: this.email,
+          username: this.username,
+          password1: this.password,
+          password2: this.password
+        });
+        console.log(response.data)
+        if (response.data.success) {
+          // Handle successful registration
+          console.log("Registration successful!");
+          window.location.href("http://localhost:3000/homePage")
+        } else {
+          // Handle registration failure
+          console.error("Registration failed:", response.data.error);
+        }
+      } catch (error) {
+        // Handle errors (e.g., network issues or validation issues)
+        console.error("Error during registration:", error);
+      }
     }
-  };
+  }
+};
   </script>
   
   <style scoped>

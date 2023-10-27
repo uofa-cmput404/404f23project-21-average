@@ -2,6 +2,8 @@ from django.shortcuts import render
 from rest_framework import permissions, pagination, viewsets
 from .models import *
 from .serializers import *
+from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
 
 # Create your views here.
 
@@ -56,3 +58,5 @@ class ConnectedNodeViewSet(viewsets.ModelViewSet):
     serializer_class = ConnectedNodeSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = Pagination
+
+
