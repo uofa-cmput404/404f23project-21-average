@@ -3,7 +3,7 @@
     <SidebarComponent/>
     <main class="main-content">
       <div class="user-section">
-        <img src="404f23project-21-average\socialDistribution\pages\spiderman.jpeg" class="profile-photo">
+        <img src="@/pages/spiderman.jpeg" class="profile-photo">
         <h2>User1</h2>
         <div class="follow-info">
           <button>Followers:  </button>
