@@ -102,6 +102,7 @@ export default {
   justify-content: space-between;
   margin-bottom: 20px;
   color: black;
+  
 }
 
 .bio-section textarea {
@@ -142,10 +143,16 @@ button{
     cursor: pointer;
     transition: background-color 0.2s;
     margin: auto auto;
+    width : auto ;
 }
 
 .edit{
-    margin-left: 46%;
-    margin-right: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block; /* To enable margin auto to work for horizontal centering */
+  font-size: 10px; /* Smaller font size */
+  padding: 10px 15px;
+  width: auto;
+
 }
 </style>
