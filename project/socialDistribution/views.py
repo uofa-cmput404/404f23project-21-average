@@ -3,9 +3,8 @@ from rest_framework import permissions, pagination, viewsets
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import *
 from .serializers import *
-from rest_framework import status
-from rest_framework.response import Response
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
+
+# Create your views here.
 
 
 class Pagination(pagination.PageNumberPagination):
@@ -58,3 +57,5 @@ class ConnectedNodeViewSet(viewsets.ModelViewSet):
     serializer_class = ConnectedNodeSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = Pagination
+
+
