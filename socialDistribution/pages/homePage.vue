@@ -65,29 +65,14 @@ export default {
       postContent: '',
       postImage: null,
       isPublic: true,
-      showPostPopup: false // Variable to control the visibility of the create post popup
-    };
-  },
-  async created() {
-    try {
-      const response = await axios.get('http://127.0.0.1:8000/posts');
-      console.log(response)
-      if (response.status === 200) {
-        this.posts = response.data.results; // Update the posts data property with the fetched posts
-        console.log(this.posts)
-      } else {
-        console.error('Error fetching posts:', response);
-      }
-    } catch (error) {
-      console.error('Error while fetching posts:', error);
-    }
-  },
-  methods: {
+      showPostPopup: false, // Variable to control the visibility of the create post popup
+      methods: {
     // Methods for CreatePostComponent
     onImageSelected(event) {
       // Image selection logic
     },
     async submitPost() {
+      console.log("hey")
       // Post submission logic
       try {
           const payload = {
@@ -103,12 +88,13 @@ export default {
             categories: '', // Adjust as per your requirement
             count: 0 // Adjust as per your requirement
           };
-          const response = await axios.post('http://localhost:8000/api/posts', payload);
+          const response = await axios.post('http://127.0.0.1:8000/posts', payload);
           if (response.status === 200 || response.status === 201) {
             // Handle success scenario
             console.log('Post created successfully:', response.data);
           } else {
             // Handle any other response scenario
+            console.log(console.error)
             console.error('Error creating post:', response);
           }
         } catch (error) {
@@ -116,7 +102,62 @@ export default {
         }
       this.showPostPopup = false; // Close the popup after submitting the post
     }
-  }
+  },
+    };
+    
+  },
+  methods: {
+    // Methods for CreatePostComponent
+    onImageSelected(event) {
+      // Image selection logic
+    },
+    async submitPost() {
+      console.log("hey")
+      // Post submission logic
+      try {
+          const payload = {
+            type: this.isPublic ? 'public' : 'private', // Adjust as per your requirement
+            title: '', // You can add a title input field in your template
+            source: '', // Adjust as per your requirement
+            origin: '', // Adjust as per your requirement
+            description: '', // You can add a description input field in your template
+            contentType: '', // Adjust based on your content type
+            content: this.postContent,
+            published: new Date().toISOString(),
+            owner: 'UserID', // Adjust with your actual owner id
+            categories: '', // Adjust as per your requirement
+            count: 0 // Adjust as per your requirement
+          };
+          const response = await axios.post('http://127.0.0.1:8000/posts', payload);
+          if (response.status === 200 || response.status === 201) {
+            // Handle success scenario
+            console.log('Post created successfully:', response.data);
+          } else {
+            // Handle any other response scenario
+            console.log(console.error)
+            console.error('Error creating post:', response);
+          }
+        } catch (error) {
+          console.error('Error while creating post:', error);
+        }
+      this.showPostPopup = false; // Close the popup after submitting the post
+    }
+  },
+  async created() {
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/posts');
+      console.log(response.data)
+      if (response.status === 200) {
+        this.posts = response.data.results; // Update the posts data property with the fetched posts
+        console.log(this.posts)
+      } else {
+        console.error('Error fetching posts:', response);
+      }
+    } catch (error) {
+      console.error('Error while fetching posts:', error);
+    }
+  },
+
 };
 </script>
 

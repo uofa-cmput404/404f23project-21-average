@@ -167,13 +167,13 @@ JWT_AUTH = {
 }
 
 SITE_ID = 1  # make sure SITE_ID is set
-CORS_ALLOW_ALL_ORIGINS: True
-CORS_ALLOWED_ORIGINS = [
+CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOWED_ORIGINS = [
     # "https://example.com",
     # "https://sub.example.com",
-    "http://localhost:8080",
-    "http://127.0.0.1:9000",
-]
+#     "http://localhost:8080",
+#     "http://127.0.0.1:9000",
+# ]
 
 SPECTACULAR_SETTINGS = {
     'TITLE': '21 Average Social Distribution API',

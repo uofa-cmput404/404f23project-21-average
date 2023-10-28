@@ -17,7 +17,7 @@
             <label for="password">Password</label>
             <input type="password" id="password" v-model="password" placeholder="Password" />
           </div>
-          <button type="submit" @click= "login" >SUBMIT</button>
+          <button type="submit" v-on:click= "login();" >SUBMIT</button>
         </form>
       </div>
     </div>
@@ -26,6 +26,8 @@
 
 <script>
 import axios from "axios";
+const csrfToken = 'your-csrf-token-here';
+
 export default {
   data() {
     return {
@@ -34,12 +36,21 @@ export default {
     };
   },
   methods:{
-    async login() {
+    async login(event) {
+      console.log("hey")
       try {
-        const response = await axios.post('http://localhost:8000/api/auth/login/', {
-          username: this.userId,
+        const data = {
+          username: this.username,
           password: this.password
-        });
+        };
+        const config = {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        };
+
+        const response = await axios.post('http://127.0.0.1:8000/api/auth/login/',data,config)
         if (response.status  === 200|| response.status === 201) {
           // Handle successful login
           console.log("Login successful!");
