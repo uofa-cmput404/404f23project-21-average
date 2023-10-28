@@ -1,9 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from rest_framework import permissions, pagination, viewsets
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import *
 from .serializers import *
-
-# Create your views here.
+from rest_framework import status
+from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
 
 
 class Pagination(pagination.PageNumberPagination):
@@ -20,7 +22,6 @@ class AuthorViewSet(viewsets.ModelViewSet):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    # permission_classes = []
     # permission_classes = [permissions.IsAuthenticated]
     pagination_class = Pagination
 

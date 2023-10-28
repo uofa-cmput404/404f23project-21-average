@@ -10,17 +10,17 @@ class Author(models.Model):
     public = models.BooleanField()
     host = models.CharField(max_length=255)
     displayName = models.CharField(max_length=255)
-    url = models.TextField()
+    # url = models.TextField()
     github = models.TextField()
     profileImage = models.TextField()
     # One to Many relationship
-    posts = models.ForeignKey('Post', blank=True,
-                              null=True, on_delete=models.CASCADE)
-    # One to Many relationship
-    comments = models.ForeignKey(
-        'Comment', on_delete=models.CASCADE, blank=True, null=True)
-    followers = models.ManyToManyField(
-        'self', through="Follow", symmetrical=False, blank=True, null=True)
+    # posts = models.ForeignKey('Post', blank=True,
+    #                           null=True, on_delete=models.CASCADE)
+    # # One to Many relationship
+    # comments = models.ForeignKey(
+    #     'Comment', on_delete=models.CASCADE, blank=True, null=True)
+    # followers = models.ManyToManyField(
+    #     'self', through="Follow", symmetrical=False, blank=True, null=True)
 
     def __str__(self):
         return self.displayName
@@ -37,6 +37,8 @@ class Post(models.Model):
     content = models.TextField()
     published = models.DateTimeField()
     owner = models.ForeignKey(Author, on_delete=models.CASCADE)
+    # comments = models.ForeignKey('Comment', on_delete=models.CASCADE)
+    # likes = models.ForeignKey('Like', on_delete=models.CASCADE)
     categories = models.TextField()
     count = models.IntegerField()
 

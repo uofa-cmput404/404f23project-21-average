@@ -13,18 +13,19 @@ router.register(r'comment',
                 CommentViewSet, basename='comment')
 router.register(r'like',
                 LikeViewSet, basename='like')
-router.register(r'followers', FollowViewSet, basename='followers')
-router.register(r'friend-request', FriendRequestViewSet,
-                basename='friend-request')
-router.register(r'connected-node', ConnectedNodeViewSet,
-                basename='connected-node')
+# router.register(r'followers', FollowViewSet, basename='followers')
+# router.register(r'friend-request', FriendRequestViewSet,
+#                 basename='friend-request')
+# router.register(r'connected-node', ConnectedNodeViewSet,
+#                 basename='connected-node')
 
+# nested routes
 posts_router = routers.NestedSimpleRouter(
-    router, r'authors', lookup='post')
-posts_router.register(r'posts', PostViewSet, basename='post-comments')
+    router, r'authors', lookup='author')
+posts_router.register(r'posts', PostViewSet, basename='author-posts')
 
 comments_router = routers.NestedSimpleRouter(
-    posts_router, r'posts', lookup='comment')
+    posts_router, r'posts', lookup='post')
 comments_router.register(r'comments', CommentViewSet, basename='comments')
 
 likes_router = routers.NestedSimpleRouter(
