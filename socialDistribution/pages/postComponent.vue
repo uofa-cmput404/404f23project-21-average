@@ -79,6 +79,8 @@ export default {
     } catch (error) {
       console.error('Error while fetching post:', error);
     }
+
+  // get likes
   },
   
 

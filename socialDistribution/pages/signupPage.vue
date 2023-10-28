@@ -21,7 +21,7 @@
               <label for="password">Password</label>
               <input type="password" id="password" v-model="password" placeholder="Password" />
             </div>
-            <button type="submit" @click = "register();">SIGN UP</button>
+            <button type="button" @click = "register();">SIGN UP</button>
           </form>
         </div>
       </div>
@@ -29,6 +29,7 @@
   </template>
   
   <script>
+  import axios from 'axios'
   export default {
     data() {
       return {
