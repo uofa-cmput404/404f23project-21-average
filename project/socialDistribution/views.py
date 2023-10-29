@@ -15,7 +15,7 @@ from rest_framework import generics
 
 
 class Pagination(pagination.PageNumberPagination):
-    page_size = 10
+    page_size = 5
 
 
 class AuthorViewSet(viewsets.ModelViewSet):
@@ -33,15 +33,21 @@ class PostList(generics.ListCreateAPIView):
 
     def get(self, request, author_pk, format=None):
         posts = Post.objects.filter(owner=author_pk)
-        serializer = PostSerializer(posts, many=True)
-        return Response(serializer.data)
+        page = self.paginate_queryset(posts)
+        return self.get_paginated_response(PostSerializer(page, many=True).data)    
+        # serializer = PostSerializer(posts, many=True)
+        # print('sfsndfjsdfnljsdf')
+        # response = super(PostList, self).get(request)
+        # return response
+
 
     def post(self, request, author_pk, format=None):
         author = Author.objects.get(pk=author_pk)
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
             post = serializer.save(owner=author)
-            return Response(PostSerializer(post).data, status=status.HTTP_201_CREATED)
+            print(PostSerializer(post))
+            return Response(PostSerializer(post), status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -79,7 +85,7 @@ class PostDetail(APIView):
         post = self.get_object(post_pk)
         serializer = PostSerializer(post)
         return Response(serializer.data)
-    
+
     def delete(self, request, author_pk, post_pk, format=None):
         post = self.get_object(post_pk)
         post.delete()
@@ -91,12 +97,12 @@ class CommentViewSet(generics.ListCreateAPIView):
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     pagination_class = Pagination
-    
+
     def get(self, request, author_pk, post_pk, format=None):
         comments = Comment.objects.filter(parentPost=post_pk)
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
-    
+
     def post(self, request, author_pk, post_pk, format=None):
         author = Author.objects.get(pk=author_pk)
         post = Post.objects.get(pk=post_pk)

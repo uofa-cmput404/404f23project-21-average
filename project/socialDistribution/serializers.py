@@ -40,13 +40,6 @@ class CommentSerializer(ModelSerializer):
         read_only_fields = ['commenter', 'parentPost']
         ordering = ['-id']
 
-    # def create(self, validated_data):
-    #     author = self.context['request'].user.author
-    #     post = Post.objects.get(pk=self.context['view'].kwargs['post_pk'])
-    #     comment = Comment.objects.create(
-    #         commenter=author, parentPost=post, **validated_data)
-    #     return comment
-
 
 class FollowSerializer(ModelSerializer):
     class Meta:
