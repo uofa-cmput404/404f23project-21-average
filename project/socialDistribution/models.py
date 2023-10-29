@@ -40,6 +40,9 @@ class Post(models.Model):
     owner = models.ForeignKey(Author, on_delete=models.CASCADE)
     categories = models.TextField()
     count = models.IntegerField()
+    image_link = models.URLField(blank=True, null=True) #Posts can be links to images.
+    image = models.ImageField(upload_to='post_images/', blank=True, null=True) #Posts can be images
+    shared_with_friends = models.BooleanField(default=False) #Is the image shared with friends or not. 
 
 
 class Comment(models.Model):
