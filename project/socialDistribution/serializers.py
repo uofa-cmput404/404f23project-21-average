@@ -28,7 +28,7 @@ class PostSerializer(ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'title', 'source', 'origin', 'description', 'contentType',
+        fields = ['id', 'title', 'source', 'origin', 'description', 'contentType', 'visibility', 'unlisted',
                   'content', 'published', 'owner', 'categories', 'image_link', 'image']
         read_only_fields = ['owner', 'count', ]
         ordering = ['-id']
