@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import datetime
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -184,3 +185,6 @@ SPECTACULAR_SETTINGS = {
     'SCHEMA_COERCE_PATH_PK_SUFFIX': True,
     # OTHER SETTINGS
 }
+
+MEDIA_URL = '/media/' #Base URL for serving media files. 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') #Leads to the media directory in the root of our project.

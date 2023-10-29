@@ -42,6 +42,9 @@ class Post(models.Model):
     count = models.IntegerField(default=0)
     visibility = models.CharField(max_length=255, default="PUBLIC")
     unlisted = models.BooleanField(default=False)
+    image_link = models.URLField(blank=True, null=True) #Posts can be links to images.
+    image = models.ImageField(upload_to='post_images/', blank=True, null=True) #Posts can be images
+    shared_with_friends = models.BooleanField(default=False) #Is the image shared with friends or not. 
 
 
 class Comment(models.Model):
