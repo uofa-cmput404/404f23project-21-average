@@ -14,6 +14,8 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import (
@@ -38,5 +40,8 @@ urlpatterns = [
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
-    path('socialDistribution/', include('socialDistribution.urls')),
 ]
+
+#For Media:
+if settings.DEBUG: #If true means Django is in development mode.
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) #Extend Url patterns to handle media files directly from django server. 

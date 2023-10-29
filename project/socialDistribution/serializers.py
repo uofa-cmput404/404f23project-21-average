@@ -1,47 +1,78 @@
-from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer
 from .models import *
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Author, Post
+from drf_spectacular.utils import extend_schema_field
 
 
-class AuthorSerializer(serializers.ModelSerializer):
+class AuthorSerializer(ModelSerializer):
+
     class Meta:
         model = Author
-        fields = ['id', 'host', 'displayName', 'url', 'github', 'user',
-                  'profileImage', 'type', 'public']
+        fields = ['id', 'host', 'displayName', 'github', 'user',
+                  'profileImage']
 
 
-class PostSerializer(serializers.ModelSerializer):
+# @extend_schema_field({'type': "string", 'format': 'binary',
+#                       'example': {
+#                           "image": {"url": "string", "name": "string"},
+#                           "thumbnail": {"url": "string", "name": "string"}
+#                       }
+#                       })
+class PostSerializer(ModelSerializer):
+    parent_lookup_kwargs = {
+        'author_pk': 'author___pk',
+    }
+
     class Meta:
         model = Post
-        fields = ['id', 'type', 'title', 'source', 'origin', 'description', 'contentType',
-                  'content', 'published', 'owner', 'categories', 'count']
+        fields = ['id', 'title', 'source', 'origin', 'description', 'contentType', 'visibility', 'unlisted',
+                  'content', 'published', 'owner', 'categories', 'image_link', 'image']
+        read_only_fields = ['owner', 'count', ]
+        ordering = ['-id']
 
 
-class CommentSerializer(serializers.ModelSerializer):
+class CommentSerializer(ModelSerializer):
+    parent_lookup_kwargs = {
+        'post_pk': 'post__pk',
+        'author_pk': 'author___pk',
+    }
+
     class Meta:
         model = Comment
-        fields = ['id', 'commenter', 'parentPost', 'type', 'comment',
+        fields = ['id', 'commenter', 'parentPost',  'comment',
                   'contentType', 'published']
+        read_only_fields = ['commenter', 'parentPost']
+        ordering = ['-id']
 
 
-class FollowSerializer(serializers.ModelSerializer):
+class FollowSerializer(ModelSerializer):
     class Meta:
         model = Follow
         fields = ['from_author', 'to_author', 'status']
 
 
-class FriendRequestSerializer(serializers.ModelSerializer):
+class FriendRequestSerializer(ModelSerializer):
     class Meta:
         model = FriendRequest
         fields = ['id', 'from_author', 'to_author', 'status']
 
 
-class LikeSerializer(serializers.ModelSerializer):
+class LikeSerializer(ModelSerializer):
+    parent_lookup_kwargs = {
+        'post_pk': 'post__pk',
+        'author_pk': 'author___pk',
+    }
+
     class Meta:
         model = Like
-        fields = ['id', 'author', 'post', 'type', 'published']
+        fields = ['id', 'author', 'post',  'published']
+        ordering = ['-id']
 
 
-class ConnectedNodeSerializer(serializers.ModelSerializer):
+class ConnectedNodeSerializer(ModelSerializer):
     class Meta:
         model = ConnectedNode
         fields = ['id', 'url', 'host', 'teamName']

@@ -4,1093 +4,1504 @@ info:
   version: 1.0.0
   description: Social Distribution API for 21 Average
 paths:
-  /author:
-    get:
-      operationId: author_list
-      parameters:
-      - name: page
-        required: false
-        in: query
-        description: A page number within the paginated result set.
-        schema:
-          type: integer
-      tags:
-      - author
-      security:
-      - jwtAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedAuthorList'
-          description: ''
+  /api/auth/login/:
     post:
-      operationId: author_create
+      operationId: api_auth_login_create
+      description: |-
+        Check the credentials and return the REST Token
+        if the credentials are valid and authenticated.
+        Calls Django Auth login method to register User ID
+        in Django session framework
+
+        Accept the following POST parameters: username, password
+        Return the REST Framework Token Object's key.
       tags:
-      - author
+        - api
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Author'
+              $ref: "#/components/schemas/Login"
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/Author'
+              $ref: "#/components/schemas/Login"
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Author'
+              $ref: "#/components/schemas/Login"
         required: true
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
       responses:
-        '201':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Author'
-          description: ''
-  /author/{id}:
+                $ref: "#/components/schemas/Token"
+          description: ""
+  /api/auth/logout/:
+    post:
+      operationId: api_auth_logout_create
+      description: |-
+        Calls Django logout method and delete the Token object
+        assigned to the current User object.
+
+        Accepts/Returns nothing.
+      tags:
+        - api
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestAuthDetail"
+          description: ""
+  /api/auth/register/:
+    post:
+      operationId: api_auth_register_create
+      tags:
+        - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Register"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Register"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Register"
+        required: true
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
+          description: ""
+  /api/auth/user/:
     get:
-      operationId: author_retrieve
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this author.
-        required: true
+      operationId: api_auth_user_retrieve
+      description: |-
+        Reads and updates UserModel fields
+        Accepts GET, PUT, PATCH methods.
+
+        Default accepted fields: username, first_name, last_name
+        Default display fields: pk, username, email, first_name, last_name
+        Read-only fields: pk, email
+
+        Returns UserModel fields.
       tags:
-      - author
+        - api
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Author'
-          description: ''
+                $ref: "#/components/schemas/UserDetails"
+          description: ""
     put:
-      operationId: author_update
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this author.
-        required: true
+      operationId: api_auth_user_update
+      description: |-
+        Reads and updates UserModel fields
+        Accepts GET, PUT, PATCH methods.
+
+        Default accepted fields: username, first_name, last_name
+        Default display fields: pk, username, email, first_name, last_name
+        Read-only fields: pk, email
+
+        Returns UserModel fields.
       tags:
-      - author
+        - api
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Author'
+              $ref: "#/components/schemas/UserDetails"
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/Author'
+              $ref: "#/components/schemas/UserDetails"
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Author'
+              $ref: "#/components/schemas/UserDetails"
         required: true
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Author'
-          description: ''
+                $ref: "#/components/schemas/UserDetails"
+          description: ""
     patch:
-      operationId: author_partial_update
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this author.
-        required: true
+      operationId: api_auth_user_partial_update
+      description: |-
+        Reads and updates UserModel fields
+        Accepts GET, PUT, PATCH methods.
+
+        Default accepted fields: username, first_name, last_name
+        Default display fields: pk, username, email, first_name, last_name
+        Read-only fields: pk, email
+
+        Returns UserModel fields.
       tags:
-      - author
+        - api
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedAuthor'
+              $ref: "#/components/schemas/PatchedUserDetails"
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedAuthor'
+              $ref: "#/components/schemas/PatchedUserDetails"
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedAuthor'
+              $ref: "#/components/schemas/PatchedUserDetails"
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Author'
-          description: ''
-    delete:
-      operationId: author_destroy
+                $ref: "#/components/schemas/UserDetails"
+          description: ""
+  /authors:
+    get:
+      operationId: authors_list
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this author.
-        required: true
+        - name: page
+          required: false
+          in: query
+          description: A page number within the paginated result set.
+          schema:
+            type: integer
       tags:
-      - author
+        - authors
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
       responses:
-        '204':
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedAuthorList"
+          description: ""
+    post:
+      operationId: authors_create
+      tags:
+        - authors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Author"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Author"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Author"
+        required: true
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Author"
+          description: ""
+  /authors/{author_id}/posts:
+    get:
+      operationId: authors_posts_list
+      parameters:
+        - in: path
+          name: author_id
+          schema:
+            type: string
+          required: true
+        - name: page
+          required: false
+          in: query
+          description: A page number within the paginated result set.
+          schema:
+            type: integer
+      tags:
+        - authors
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedPostList"
+          description: ""
+    post:
+      operationId: authors_posts_create
+      parameters:
+        - in: path
+          name: author_id
+          schema:
+            type: string
+          required: true
+      tags:
+        - authors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Post"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Post"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Post"
+        required: true
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+          description: ""
+  /authors/{author_id}/posts/{like_id}/likes:
+    get:
+      operationId: authors_posts_likes_list
+      parameters:
+        - in: path
+          name: author_id
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: like_id
+          schema:
+            type: string
+          required: true
+        - name: page
+          required: false
+          in: query
+          description: A page number within the paginated result set.
+          schema:
+            type: integer
+      tags:
+        - authors
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedLikeList"
+          description: ""
+    post:
+      operationId: authors_posts_likes_create
+      parameters:
+        - in: path
+          name: author_id
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: like_id
+          schema:
+            type: string
+          required: true
+      tags:
+        - authors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Like"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Like"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Like"
+        required: true
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Like"
+          description: ""
+  /authors/{author_id}/posts/{like_id}/likes/{id}:
+    get:
+      operationId: authors_posts_likes_retrieve
+      parameters:
+        - in: path
+          name: author_id
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this like.
+          required: true
+        - in: path
+          name: like_id
+          schema:
+            type: string
+          required: true
+      tags:
+        - authors
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Like"
+          description: ""
+    put:
+      operationId: authors_posts_likes_update
+      parameters:
+        - in: path
+          name: author_id
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this like.
+          required: true
+        - in: path
+          name: like_id
+          schema:
+            type: string
+          required: true
+      tags:
+        - authors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Like"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Like"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Like"
+        required: true
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Like"
+          description: ""
+    patch:
+      operationId: authors_posts_likes_partial_update
+      parameters:
+        - in: path
+          name: author_id
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this like.
+          required: true
+        - in: path
+          name: like_id
+          schema:
+            type: string
+          required: true
+      tags:
+        - authors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedLike"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedLike"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedLike"
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Like"
+          description: ""
+    delete:
+      operationId: authors_posts_likes_destroy
+      parameters:
+        - in: path
+          name: author_id
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this like.
+          required: true
+        - in: path
+          name: like_id
+          schema:
+            type: string
+          required: true
+      tags:
+        - authors
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+      responses:
+        "204":
+          description: No response body
+  /authors/{author_id}/posts/{id}:
+    get:
+      operationId: authors_posts_retrieve
+      parameters:
+        - in: path
+          name: author_id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this post.
+          required: true
+      tags:
+        - authors
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+          description: ""
+    put:
+      operationId: authors_posts_update
+      parameters:
+        - in: path
+          name: author_id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this post.
+          required: true
+      tags:
+        - authors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Post"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Post"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Post"
+        required: true
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+          description: ""
+    patch:
+      operationId: authors_posts_partial_update
+      parameters:
+        - in: path
+          name: author_id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this post.
+          required: true
+      tags:
+        - authors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedPost"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedPost"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedPost"
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+          description: ""
+    delete:
+      operationId: authors_posts_destroy
+      parameters:
+        - in: path
+          name: author_id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this post.
+          required: true
+      tags:
+        - authors
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
+      responses:
+        "204":
+          description: No response body
+  /authors/{author_id}/posts/{post_id}/comments:
+    get:
+      operationId: authors_posts_comments_list
+      parameters:
+        - in: path
+          name: author_id
+          schema:
+            type: string
+          required: true
+        - name: page
+          required: false
+          in: query
+          description: A page number within the paginated result set.
+          schema:
+            type: integer
+        - in: path
+          name: post_id
+          schema:
+            type: string
+          required: true
+      tags:
+        - authors
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedCommentList"
+          description: ""
+    post:
+      operationId: authors_posts_comments_create
+      parameters:
+        - in: path
+          name: author_id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: post_id
+          schema:
+            type: string
+          required: true
+      tags:
+        - authors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Comment"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Comment"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Comment"
+        required: true
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+          description: ""
+  /authors/{author_id}/posts/{post_id}/comments/{id}:
+    get:
+      operationId: authors_posts_comments_retrieve
+      parameters:
+        - in: path
+          name: author_id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this comment.
+          required: true
+        - in: path
+          name: post_id
+          schema:
+            type: string
+          required: true
+      tags:
+        - authors
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+          description: ""
+    put:
+      operationId: authors_posts_comments_update
+      parameters:
+        - in: path
+          name: author_id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this comment.
+          required: true
+        - in: path
+          name: post_id
+          schema:
+            type: string
+          required: true
+      tags:
+        - authors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Comment"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Comment"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Comment"
+        required: true
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+          description: ""
+    patch:
+      operationId: authors_posts_comments_partial_update
+      parameters:
+        - in: path
+          name: author_id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this comment.
+          required: true
+        - in: path
+          name: post_id
+          schema:
+            type: string
+          required: true
+      tags:
+        - authors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedComment"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedComment"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedComment"
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+          description: ""
+    delete:
+      operationId: authors_posts_comments_destroy
+      parameters:
+        - in: path
+          name: author_id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this comment.
+          required: true
+        - in: path
+          name: post_id
+          schema:
+            type: string
+          required: true
+      tags:
+        - authors
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+      responses:
+        "204":
+          description: No response body
+  /authors/{id}:
+    get:
+      operationId: authors_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this author.
+          required: true
+      tags:
+        - authors
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Author"
+          description: ""
+    put:
+      operationId: authors_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this author.
+          required: true
+      tags:
+        - authors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Author"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Author"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Author"
+        required: true
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Author"
+          description: ""
+    patch:
+      operationId: authors_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this author.
+          required: true
+      tags:
+        - authors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedAuthor"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedAuthor"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedAuthor"
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Author"
+          description: ""
+    delete:
+      operationId: authors_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this author.
+          required: true
+      tags:
+        - authors
+      security:
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+      responses:
+        "204":
           description: No response body
   /comment:
     get:
       operationId: comment_list
       parameters:
-      - name: page
-        required: false
-        in: query
-        description: A page number within the paginated result set.
-        schema:
-          type: integer
+        - name: page
+          required: false
+          in: query
+          description: A page number within the paginated result set.
+          schema:
+            type: integer
       tags:
-      - comment
+        - comment
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedCommentList'
-          description: ''
+                $ref: "#/components/schemas/PaginatedCommentList"
+          description: ""
     post:
       operationId: comment_create
       tags:
-      - comment
+        - comment
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Comment'
+              $ref: "#/components/schemas/Comment"
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/Comment'
+              $ref: "#/components/schemas/Comment"
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Comment'
+              $ref: "#/components/schemas/Comment"
         required: true
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
       responses:
-        '201':
+        "201":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Comment'
-          description: ''
+                $ref: "#/components/schemas/Comment"
+          description: ""
   /comment/{id}:
     get:
       operationId: comment_retrieve
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this comment.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this comment.
+          required: true
       tags:
-      - comment
+        - comment
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Comment'
-          description: ''
+                $ref: "#/components/schemas/Comment"
+          description: ""
     put:
       operationId: comment_update
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this comment.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this comment.
+          required: true
       tags:
-      - comment
+        - comment
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Comment'
+              $ref: "#/components/schemas/Comment"
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/Comment'
+              $ref: "#/components/schemas/Comment"
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Comment'
+              $ref: "#/components/schemas/Comment"
         required: true
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Comment'
-          description: ''
+                $ref: "#/components/schemas/Comment"
+          description: ""
     patch:
       operationId: comment_partial_update
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this comment.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this comment.
+          required: true
       tags:
-      - comment
+        - comment
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedComment'
+              $ref: "#/components/schemas/PatchedComment"
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedComment'
+              $ref: "#/components/schemas/PatchedComment"
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedComment'
+              $ref: "#/components/schemas/PatchedComment"
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Comment'
-          description: ''
+                $ref: "#/components/schemas/Comment"
+          description: ""
     delete:
       operationId: comment_destroy
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this comment.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this comment.
+          required: true
       tags:
-      - comment
+        - comment
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
       responses:
-        '204':
-          description: No response body
-  /connectednode:
-    get:
-      operationId: connectednode_list
-      parameters:
-      - name: page
-        required: false
-        in: query
-        description: A page number within the paginated result set.
-        schema:
-          type: integer
-      tags:
-      - connectednode
-      security:
-      - jwtAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedConnectedNodeList'
-          description: ''
-    post:
-      operationId: connectednode_create
-      tags:
-      - connectednode
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ConnectedNode'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/ConnectedNode'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/ConnectedNode'
-        required: true
-      security:
-      - jwtAuth: []
-      - {}
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ConnectedNode'
-          description: ''
-  /connectednode/{id}:
-    get:
-      operationId: connectednode_retrieve
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this connected node.
-        required: true
-      tags:
-      - connectednode
-      security:
-      - jwtAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ConnectedNode'
-          description: ''
-    put:
-      operationId: connectednode_update
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this connected node.
-        required: true
-      tags:
-      - connectednode
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ConnectedNode'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/ConnectedNode'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/ConnectedNode'
-        required: true
-      security:
-      - jwtAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ConnectedNode'
-          description: ''
-    patch:
-      operationId: connectednode_partial_update
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this connected node.
-        required: true
-      tags:
-      - connectednode
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedConnectedNode'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedConnectedNode'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PatchedConnectedNode'
-      security:
-      - jwtAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ConnectedNode'
-          description: ''
-    delete:
-      operationId: connectednode_destroy
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this connected node.
-        required: true
-      tags:
-      - connectednode
-      security:
-      - jwtAuth: []
-      - {}
-      responses:
-        '204':
-          description: No response body
-  /follow:
-    get:
-      operationId: follow_list
-      parameters:
-      - name: page
-        required: false
-        in: query
-        description: A page number within the paginated result set.
-        schema:
-          type: integer
-      tags:
-      - follow
-      security:
-      - jwtAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedFollowList'
-          description: ''
-    post:
-      operationId: follow_create
-      tags:
-      - follow
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Follow'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Follow'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Follow'
-        required: true
-      security:
-      - jwtAuth: []
-      - {}
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Follow'
-          description: ''
-  /follow/{id}:
-    get:
-      operationId: follow_retrieve
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this follow.
-        required: true
-      tags:
-      - follow
-      security:
-      - jwtAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Follow'
-          description: ''
-    put:
-      operationId: follow_update
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this follow.
-        required: true
-      tags:
-      - follow
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Follow'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Follow'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Follow'
-        required: true
-      security:
-      - jwtAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Follow'
-          description: ''
-    patch:
-      operationId: follow_partial_update
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this follow.
-        required: true
-      tags:
-      - follow
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedFollow'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedFollow'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PatchedFollow'
-      security:
-      - jwtAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Follow'
-          description: ''
-    delete:
-      operationId: follow_destroy
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this follow.
-        required: true
-      tags:
-      - follow
-      security:
-      - jwtAuth: []
-      - {}
-      responses:
-        '204':
-          description: No response body
-  /friendrequest:
-    get:
-      operationId: friendrequest_list
-      parameters:
-      - name: page
-        required: false
-        in: query
-        description: A page number within the paginated result set.
-        schema:
-          type: integer
-      tags:
-      - friendrequest
-      security:
-      - jwtAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedFriendRequestList'
-          description: ''
-    post:
-      operationId: friendrequest_create
-      tags:
-      - friendrequest
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FriendRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/FriendRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/FriendRequest'
-        required: true
-      security:
-      - jwtAuth: []
-      - {}
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FriendRequest'
-          description: ''
-  /friendrequest/{id}:
-    get:
-      operationId: friendrequest_retrieve
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this friend request.
-        required: true
-      tags:
-      - friendrequest
-      security:
-      - jwtAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FriendRequest'
-          description: ''
-    put:
-      operationId: friendrequest_update
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this friend request.
-        required: true
-      tags:
-      - friendrequest
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FriendRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/FriendRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/FriendRequest'
-        required: true
-      security:
-      - jwtAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FriendRequest'
-          description: ''
-    patch:
-      operationId: friendrequest_partial_update
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this friend request.
-        required: true
-      tags:
-      - friendrequest
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedFriendRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedFriendRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PatchedFriendRequest'
-      security:
-      - jwtAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FriendRequest'
-          description: ''
-    delete:
-      operationId: friendrequest_destroy
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this friend request.
-        required: true
-      tags:
-      - friendrequest
-      security:
-      - jwtAuth: []
-      - {}
-      responses:
-        '204':
+        "204":
           description: No response body
   /like:
     get:
       operationId: like_list
       parameters:
-      - name: page
-        required: false
-        in: query
-        description: A page number within the paginated result set.
-        schema:
-          type: integer
+        - name: page
+          required: false
+          in: query
+          description: A page number within the paginated result set.
+          schema:
+            type: integer
       tags:
-      - like
+        - like
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedLikeList'
-          description: ''
+                $ref: "#/components/schemas/PaginatedLikeList"
+          description: ""
     post:
       operationId: like_create
       tags:
-      - like
+        - like
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Like'
+              $ref: "#/components/schemas/Like"
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/Like'
+              $ref: "#/components/schemas/Like"
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Like'
+              $ref: "#/components/schemas/Like"
         required: true
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
       responses:
-        '201':
+        "201":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Like'
-          description: ''
+                $ref: "#/components/schemas/Like"
+          description: ""
   /like/{id}:
     get:
       operationId: like_retrieve
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this like.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this like.
+          required: true
       tags:
-      - like
+        - like
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Like'
-          description: ''
+                $ref: "#/components/schemas/Like"
+          description: ""
     put:
       operationId: like_update
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this like.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this like.
+          required: true
       tags:
-      - like
+        - like
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Like'
+              $ref: "#/components/schemas/Like"
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/Like'
+              $ref: "#/components/schemas/Like"
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Like'
+              $ref: "#/components/schemas/Like"
         required: true
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Like'
-          description: ''
+                $ref: "#/components/schemas/Like"
+          description: ""
     patch:
       operationId: like_partial_update
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this like.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this like.
+          required: true
       tags:
-      - like
+        - like
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedLike'
+              $ref: "#/components/schemas/PatchedLike"
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedLike'
+              $ref: "#/components/schemas/PatchedLike"
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedLike'
+              $ref: "#/components/schemas/PatchedLike"
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Like'
-          description: ''
+                $ref: "#/components/schemas/Like"
+          description: ""
     delete:
       operationId: like_destroy
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this like.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this like.
+          required: true
       tags:
-      - like
+        - like
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
       responses:
-        '204':
+        "204":
           description: No response body
-  /post:
+  /posts:
     get:
-      operationId: post_list
+      operationId: posts_list
       parameters:
-      - name: page
-        required: false
-        in: query
-        description: A page number within the paginated result set.
-        schema:
-          type: integer
+        - name: page
+          required: false
+          in: query
+          description: A page number within the paginated result set.
+          schema:
+            type: integer
       tags:
-      - post
+        - posts
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedPostList'
-          description: ''
+                $ref: "#/components/schemas/PaginatedPostList"
+          description: ""
     post:
-      operationId: post_create
+      operationId: posts_create
       tags:
-      - post
+        - posts
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Post'
+              $ref: "#/components/schemas/Post"
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/Post'
+              $ref: "#/components/schemas/Post"
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Post'
+              $ref: "#/components/schemas/Post"
         required: true
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
       responses:
-        '201':
+        "201":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Post'
-          description: ''
-  /post/{id}:
+                $ref: "#/components/schemas/Post"
+          description: ""
+  /posts/{id}:
     get:
-      operationId: post_retrieve
+      operationId: posts_retrieve
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this post.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this post.
+          required: true
       tags:
-      - post
+        - posts
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Post'
-          description: ''
+                $ref: "#/components/schemas/Post"
+          description: ""
     put:
-      operationId: post_update
+      operationId: posts_update
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this post.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this post.
+          required: true
       tags:
-      - post
+        - posts
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Post'
+              $ref: "#/components/schemas/Post"
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/Post'
+              $ref: "#/components/schemas/Post"
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Post'
+              $ref: "#/components/schemas/Post"
         required: true
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Post'
-          description: ''
+                $ref: "#/components/schemas/Post"
+          description: ""
     patch:
-      operationId: post_partial_update
+      operationId: posts_partial_update
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this post.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this post.
+          required: true
       tags:
-      - post
+        - posts
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedPost'
+              $ref: "#/components/schemas/PatchedPost"
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedPost'
+              $ref: "#/components/schemas/PatchedPost"
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedPost'
+              $ref: "#/components/schemas/PatchedPost"
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Post'
-          description: ''
+                $ref: "#/components/schemas/Post"
+          description: ""
     delete:
-      operationId: post_destroy
+      operationId: posts_destroy
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this post.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: A UUID string identifying this post.
+          required: true
       tags:
-      - post
+        - posts
       security:
-      - jwtAuth: []
-      - {}
+        - tokenAuth: []
+        - jwtAuth: []
+        - basicAuth: []
+        - {}
       responses:
-        '204':
+        "204":
           description: No response body
 components:
   schemas:
@@ -1098,7 +1509,8 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
           readOnly: true
         host:
           type: string
@@ -1106,25 +1518,35 @@ components:
         displayName:
           type: string
           maxLength: 255
-        url:
-          type: string
         github:
           type: string
+        user:
+          type: integer
+          readOnly: true
+        profileImage:
+          type: string
       required:
-      - displayName
-      - github
-      - host
-      - id
-      - url
+        - displayName
+        - github
+        - host
+        - id
+        - profileImage
+        - user
     Comment:
       type: object
       properties:
         id:
           type: string
           format: uuid
-        type:
+          readOnly: true
+        commenter:
           type: string
-          maxLength: 255
+          format: uuid
+          readOnly: true
+        parentPost:
+          type: string
+          format: uuid
+          readOnly: true
         comment:
           type: string
         contentType:
@@ -1133,98 +1555,46 @@ components:
         published:
           type: string
           format: date-time
-        commenter:
-          type: integer
-        parentPost:
-          type: string
-          format: uuid
       required:
-      - comment
-      - commenter
-      - contentType
-      - id
-      - parentPost
-      - published
-      - type
-    ConnectedNode:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        url:
-          type: string
-          maxLength: 255
-        host:
-          type: string
-          maxLength: 255
-        teamName:
-          type: string
-          maxLength: 255
-      required:
-      - host
-      - id
-      - teamName
-      - url
-    Follow:
-      type: object
-      properties:
-        from_author:
-          type: integer
-        to_author:
-          type: integer
-        status:
-          type: string
-          maxLength: 255
-        id:
-          type: string
-          format: uuid
-      required:
-      - from_author
-      - id
-      - status
-      - to_author
-    FriendRequest:
-      type: object
-      properties:
-        from_author:
-          type: integer
-        to_author:
-          type: integer
-        status:
-          type: string
-          maxLength: 255
-        id:
-          type: string
-          format: uuid
-      required:
-      - from_author
-      - id
-      - status
-      - to_author
+        - comment
+        - commenter
+        - contentType
+        - id
+        - parentPost
+        - published
     Like:
       type: object
       properties:
-        author:
-          type: integer
-        posts:
-          type: string
-          format: uuid
-        type:
-          type: string
-          maxLength: 255
-        published:
-          type: string
-          format: date-time
         id:
           type: string
           format: uuid
+          readOnly: true
+        author:
+          type: string
+          format: uuid
+        post:
+          type: string
+          format: uuid
+        published:
+          type: string
+          format: date-time
       required:
-      - author
-      - id
-      - posts
-      - published
-      - type
+        - author
+        - id
+        - post
+        - published
+    Login:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - password
     PaginatedAuthorList:
       type: object
       properties:
@@ -1244,7 +1614,7 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/Author'
+            $ref: "#/components/schemas/Author"
     PaginatedCommentList:
       type: object
       properties:
@@ -1264,67 +1634,7 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/Comment'
-    PaginatedConnectedNodeList:
-      type: object
-      properties:
-        count:
-          type: integer
-          example: 123
-        next:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=4
-        previous:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=2
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/ConnectedNode'
-    PaginatedFollowList:
-      type: object
-      properties:
-        count:
-          type: integer
-          example: 123
-        next:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=4
-        previous:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=2
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/Follow'
-    PaginatedFriendRequestList:
-      type: object
-      properties:
-        count:
-          type: integer
-          example: 123
-        next:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=4
-        previous:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=2
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/FriendRequest'
+            $ref: "#/components/schemas/Comment"
     PaginatedLikeList:
       type: object
       properties:
@@ -1344,7 +1654,7 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/Like'
+            $ref: "#/components/schemas/Like"
     PaginatedPostList:
       type: object
       properties:
@@ -1364,12 +1674,13 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/Post'
+            $ref: "#/components/schemas/Post"
     PatchedAuthor:
       type: object
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
           readOnly: true
         host:
           type: string
@@ -1377,9 +1688,12 @@ components:
         displayName:
           type: string
           maxLength: 255
-        url:
-          type: string
         github:
+          type: string
+        user:
+          type: integer
+          readOnly: true
+        profileImage:
           type: string
     PatchedComment:
       type: object
@@ -1387,9 +1701,15 @@ components:
         id:
           type: string
           format: uuid
-        type:
+          readOnly: true
+        commenter:
           type: string
-          maxLength: 255
+          format: uuid
+          readOnly: true
+        parentPost:
+          type: string
+          format: uuid
+          readOnly: true
         comment:
           type: string
         contentType:
@@ -1398,78 +1718,29 @@ components:
         published:
           type: string
           format: date-time
-        commenter:
-          type: integer
-        parentPost:
-          type: string
-          format: uuid
-    PatchedConnectedNode:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        url:
-          type: string
-          maxLength: 255
-        host:
-          type: string
-          maxLength: 255
-        teamName:
-          type: string
-          maxLength: 255
-    PatchedFollow:
-      type: object
-      properties:
-        from_author:
-          type: integer
-        to_author:
-          type: integer
-        status:
-          type: string
-          maxLength: 255
-        id:
-          type: string
-          format: uuid
-    PatchedFriendRequest:
-      type: object
-      properties:
-        from_author:
-          type: integer
-        to_author:
-          type: integer
-        status:
-          type: string
-          maxLength: 255
-        id:
-          type: string
-          format: uuid
     PatchedLike:
       type: object
       properties:
-        author:
-          type: integer
-        posts:
-          type: string
-          format: uuid
-        type:
-          type: string
-          maxLength: 255
-        published:
-          type: string
-          format: date-time
         id:
           type: string
           format: uuid
+          readOnly: true
+        author:
+          type: string
+          format: uuid
+        post:
+          type: string
+          format: uuid
+        published:
+          type: string
+          format: date-time
     PatchedPost:
       type: object
       properties:
         id:
           type: string
           format: uuid
-        type:
-          type: string
-          maxLength: 255
+          readOnly: true
         title:
           type: string
         source:
@@ -1492,19 +1763,44 @@ components:
           type: string
         count:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          readOnly: true
         owner:
+          type: string
+          format: uuid
+          readOnly: true
+    PatchedUserDetails:
+      type: object
+      description: User model w/o password
+      properties:
+        pk:
           type: integer
+          readOnly: true
+          title: ID
+        username:
+          type: string
+          description:
+            Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          readOnly: true
+          title: Email address
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
     Post:
       type: object
       properties:
         id:
           type: string
           format: uuid
-        type:
-          type: string
-          maxLength: 255
+          readOnly: true
         title:
           type: string
         source:
@@ -1527,25 +1823,100 @@ components:
           type: string
         count:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          readOnly: true
         owner:
-          type: integer
+          type: string
+          format: uuid
+          readOnly: true
       required:
-      - categories
-      - content
-      - contentType
-      - count
-      - description
-      - id
-      - origin
-      - owner
-      - published
-      - source
-      - title
-      - type
+        - categories
+        - content
+        - contentType
+        - count
+        - description
+        - id
+        - origin
+        - owner
+        - published
+        - source
+        - title
+    Register:
+      type: object
+      properties:
+        username:
+          type: string
+          maxLength: 150
+          minLength: 1
+        email:
+          type: string
+          format: email
+        password1:
+          type: string
+          writeOnly: true
+        password2:
+          type: string
+          writeOnly: true
+      required:
+        - password1
+        - password2
+        - username
+    RestAuthDetail:
+      type: object
+      properties:
+        detail:
+          type: string
+          readOnly: true
+      required:
+        - detail
+    Token:
+      type: object
+      description: Serializer for Token model.
+      properties:
+        key:
+          type: string
+          maxLength: 40
+      required:
+        - key
+    UserDetails:
+      type: object
+      description: User model w/o password
+      properties:
+        pk:
+          type: integer
+          readOnly: true
+          title: ID
+        username:
+          type: string
+          description:
+            Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          readOnly: true
+          title: Email address
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+      required:
+        - email
+        - pk
+        - username
   securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
     jwtAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "Token"

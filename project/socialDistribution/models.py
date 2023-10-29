@@ -1,27 +1,27 @@
 import uuid
 from django.db import models
 from django.contrib.auth.models import User
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 # Create your models here.
 
 
 class Author(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    type = models.CharField(max_length=255)
-    public = models.BooleanField()
     host = models.CharField(max_length=255)
     displayName = models.CharField(max_length=255)
-    url = models.TextField()
+    # url = models.TextField()
     github = models.TextField()
     profileImage = models.TextField()
     # One to Many relationship
-    posts = models.ForeignKey('Post', blank=True,
-                              null=True, on_delete=models.CASCADE)
-    # One to Many relationship
-    comments = models.ForeignKey(
-        'Comment', on_delete=models.CASCADE, blank=True, null=True)
-    followers = models.ManyToManyField(
-        'self', through="Follow", symmetrical=False, blank=True, null=True)
+    # posts = models.ForeignKey('Post', blank=True,
+    #                           null=True, on_delete=models.CASCADE)
+    # # One to Many relationship
+    # comments = models.ForeignKey(
+    #     'Comment', on_delete=models.CASCADE, blank=True, null=True)
+    # followers = models.ManyToManyField(
+    #     'self', through="Follow", symmetrical=False, blank=True, null=True)
 
     def __str__(self):
         return self.displayName
@@ -29,7 +29,7 @@ class Author(models.Model):
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    type = models.CharField(max_length=255)
+
     title = models.TextField()
     source = models.CharField(max_length=255)
     origin = models.CharField(max_length=255)
@@ -39,17 +39,28 @@ class Post(models.Model):
     published = models.DateTimeField()
     owner = models.ForeignKey(Author, on_delete=models.CASCADE)
     categories = models.TextField()
-    count = models.IntegerField()
+    count = models.IntegerField(default=0)
+    visibility = models.CharField(max_length=255, default="PUBLIC")
+    unlisted = models.BooleanField(default=False)
+    image_link = models.URLField(blank=True, null=True) #Posts can be links to images.
+    image = models.ImageField(upload_to='post_images/', blank=True, null=True) #Posts can be images
+    shared_with_friends = models.BooleanField(default=False) #Is the image shared with friends or not. 
 
 
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     commenter = models.ForeignKey(Author, on_delete=models.CASCADE)
     parentPost = models.ForeignKey(Post, on_delete=models.CASCADE)
-    type = models.CharField(max_length=255)
     comment = models.TextField()
     contentType = models.CharField(max_length=255)
     published = models.DateTimeField()
+
+
+@receiver(post_save, sender=Comment)
+def updateCommentCount(sender, instance, **kwargs):
+    post = instance.parentPost
+    post.count = post.count + 1
+    post.save()
 
 
 class Follow(models.Model):
@@ -74,7 +85,6 @@ class Like(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    type = models.CharField(max_length=255)
     published = models.DateTimeField()
 
 
