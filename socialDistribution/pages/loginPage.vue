@@ -35,8 +35,8 @@ const password = ref('');
 const login = async () => {
   try {
     const data = {
-      username: 'afaq123',
-      password: '123456a'
+      username: userId.value,
+      password: password.value
     };
 
     const response = await axios.post('http://127.0.0.1:8000/api/auth/login/', data)

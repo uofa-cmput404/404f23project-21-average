@@ -39,3 +39,4 @@ djangorestframework-simplejwt
 django-allauth
 dj-rest-auth
 mysqlclient==2.2.0
+drf-nested-routers

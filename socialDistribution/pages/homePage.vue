@@ -128,6 +128,7 @@ export default {
             categories: '', // Adjust as per your requirement
             count: 0 // Adjust as per your requirement
           };
+          // Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b
           const response = await axios.post('http://127.0.0.1:8000/posts', payload);
           if (response.status === 200 || response.status === 201) {
             // Handle success scenario
