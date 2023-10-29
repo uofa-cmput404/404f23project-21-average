@@ -154,6 +154,12 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         "rest_framework.authentication.BasicAuthentication",
     ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser',
+        'rest_framework.parsers.FileUploadParser',
+    ],
     "DEFAULT_PERMISSION_CLASSES": ['rest_framework.permissions.AllowAny'],
 }
 
@@ -183,8 +189,10 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'SCHEMA_COERCE_PATH_PK_SUFFIX': True,
+    'COMPONENT_SPLIT_REQUEST': True
     # OTHER SETTINGS
 }
 
-MEDIA_URL = '/media/' #Base URL for serving media files. 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media') #Leads to the media directory in the root of our project.
+MEDIA_URL = '/media/'  # Base URL for serving media files.
+# Leads to the media directory in the root of our project.
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

@@ -19,22 +19,7 @@ class Pagination(pagination.PageNumberPagination):
     page_size = 5
 
 
-class AuthorViewSet(viewsets.ModelViewSet):
-    queryset = Author.objects.all()
-    serializer_class = AuthorSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    pagination_class = Pagination
-
-    def get_queryset(self):
-        user = self.request.user
-        if user.is_authenticated:
-            # Filter posts based on shared_with_friends and user relationship
-            return Post.objects.filter(
-                Q(shared_with_friends=False) | Q(owner__followers=user.author)
-            )
-        return Post.objects.filter(shared_with_friends=False)
-
-#Checks whether a user has permission to access a post based on the shared_with_friends attribute and the user's relationship with the author.
+# Checks whether a user has permission to access a post based on the shared_with_friends attribute and the user's relationship with the author.
 class IsSharedWithFriends(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         user = request.user
@@ -43,29 +28,41 @@ class IsSharedWithFriends(permissions.BasePermission):
             return user.author.followers.filter(id=obj.owner.id).exists()
         return not obj.shared_with_friends
 
+
+class AuthorViewSet(viewsets.ModelViewSet):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    pagination_class = Pagination
+
+    # def get_queryset(self):
+    #     user = self.request.user
+    #     if user.is_authenticated:
+    #         # Filter posts based on shared_with_friends and user relationship
+    #         return Post.objects.filter(
+    #             Q(shared_with_friends=False) | Q(owner__followers=user.author)
+    #         )
+    #     return Post.objects.filter(shared_with_friends=False)
+
+
 class PostList(generics.ListCreateAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsSharedWithFriends]
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly, IsSharedWithFriends]
     pagination_class = Pagination
 
     def get(self, request, author_pk, format=None):
         posts = Post.objects.filter(owner=author_pk)
         page = self.paginate_queryset(posts)
-        return self.get_paginated_response(PostSerializer(page, many=True).data)    
-        # serializer = PostSerializer(posts, many=True)
-        # print('sfsndfjsdfnljsdf')
-        # response = super(PostList, self).get(request)
-        # return response
-
+        return self.get_paginated_response(PostSerializer(page, many=True).data)
 
     def post(self, request, author_pk, format=None):
         author = Author.objects.get(pk=author_pk)
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
             post = serializer.save(owner=author)
-            print(PostSerializer(post))
-            return Response(PostSerializer(post), status=status.HTTP_201_CREATED)
+            return Response(PostSerializer(post).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

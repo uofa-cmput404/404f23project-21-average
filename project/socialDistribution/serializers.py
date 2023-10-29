@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Author, Post
+from drf_spectacular.utils import extend_schema_field
 
 
 class AuthorSerializer(ModelSerializer):
@@ -14,6 +15,12 @@ class AuthorSerializer(ModelSerializer):
                   'profileImage']
 
 
+# @extend_schema_field({'type': "string", 'format': 'binary',
+#                       'example': {
+#                           "image": {"url": "string", "name": "string"},
+#                           "thumbnail": {"url": "string", "name": "string"}
+#                       }
+#                       })
 class PostSerializer(ModelSerializer):
     parent_lookup_kwargs = {
         'author_pk': 'author___pk',
@@ -21,9 +28,9 @@ class PostSerializer(ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'type', 'title', 'source', 'origin', 'description', 'contentType',
-                  'content', 'published', 'owner', 'categories', 'count', 'image_link', 'image']
-        read_only_fields = ['owner']
+        fields = ['id', 'title', 'source', 'origin', 'description', 'contentType',
+                  'content', 'published', 'owner', 'categories', 'image_link', 'image']
+        read_only_fields = ['owner', 'count', ]
         ordering = ['-id']
 
 
