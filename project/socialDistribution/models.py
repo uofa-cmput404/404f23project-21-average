@@ -1,13 +1,14 @@
 import uuid
 from django.db import models
 from django.contrib.auth.models import User
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 # Create your models here.
 
 
 class Author(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    public = models.BooleanField()
     host = models.CharField(max_length=255)
     displayName = models.CharField(max_length=255)
     # url = models.TextField()
@@ -37,10 +38,10 @@ class Post(models.Model):
     content = models.TextField()
     published = models.DateTimeField()
     owner = models.ForeignKey(Author, on_delete=models.CASCADE)
-    # comments = models.ForeignKey('Comment', on_delete=models.CASCADE)
-    # likes = models.ForeignKey('Like', on_delete=models.CASCADE)
     categories = models.TextField()
-    count = models.IntegerField()
+    count = models.IntegerField(default=0)
+    visibility = models.CharField(max_length=255, default="PUBLIC")
+    unlisted = models.BooleanField(default=False)
 
 
 class Comment(models.Model):
@@ -50,6 +51,13 @@ class Comment(models.Model):
     comment = models.TextField()
     contentType = models.CharField(max_length=255)
     published = models.DateTimeField()
+
+
+@receiver(post_save, sender=Comment)
+def updateCommentCount(sender, instance, **kwargs):
+    post = instance.parentPost
+    post.count = post.count + 1
+    post.save()
 
 
 class Follow(models.Model):

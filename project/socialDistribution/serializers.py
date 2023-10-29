@@ -1,5 +1,9 @@
 from rest_framework.serializers import ModelSerializer
 from .models import *
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Author, Post
 
 
 class AuthorSerializer(ModelSerializer):
@@ -7,8 +11,7 @@ class AuthorSerializer(ModelSerializer):
     class Meta:
         model = Author
         fields = ['id', 'host', 'displayName', 'github', 'user',
-                  'profileImage',  'public', ]
-        read_only_fields = ['user']
+                  'profileImage']
 
 
 class PostSerializer(ModelSerializer):
@@ -20,13 +23,8 @@ class PostSerializer(ModelSerializer):
         model = Post
         fields = ['id',  'title', 'source', 'origin', 'description', 'contentType',
                   'content', 'published', 'categories', 'count', 'owner', ]
-        read_only_fields = ['owner', 'count', ]
+        read_only_fields = ['owner']
         ordering = ['-id']
-
-    def create(self, validated_data):
-        author = self.context['request'].user.author
-        post = Post.objects.create(owner=author, **validated_data)
-        return post
 
 
 class CommentSerializer(ModelSerializer):
@@ -42,12 +40,12 @@ class CommentSerializer(ModelSerializer):
         read_only_fields = ['commenter', 'parentPost']
         ordering = ['-id']
 
-    def create(self, validated_data):
-        author = self.context['request'].user.author
-        post = Post.objects.get(pk=self.context['view'].kwargs['post_pk'])
-        comment = Comment.objects.create(
-            commenter=author, parentPost=post, **validated_data)
-        return comment
+    # def create(self, validated_data):
+    #     author = self.context['request'].user.author
+    #     post = Post.objects.get(pk=self.context['view'].kwargs['post_pk'])
+    #     comment = Comment.objects.create(
+    #         commenter=author, parentPost=post, **validated_data)
+    #     return comment
 
 
 class FollowSerializer(ModelSerializer):

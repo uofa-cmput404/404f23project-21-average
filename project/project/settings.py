@@ -181,5 +181,6 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Social Distribution API for 21 Average',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    'SCHEMA_COERCE_PATH_PK_SUFFIX': True,
     # OTHER SETTINGS
 }
