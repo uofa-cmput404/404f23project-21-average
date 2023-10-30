@@ -7,6 +7,19 @@ from .models import Author, Post
 from drf_spectacular.utils import extend_schema_field
 
 
+# class RegistrationSerializer(RegisterSerializer):
+#     class Meta:
+#         model: User
+#         fields = ['id', 'username', 'email',
+#                   'password', 'first_name', 'last_name']
+
+#     def save(self, request):
+#         user = super().save(request)
+#         user.is_active = False
+#         user.save()
+#         return user
+
+
 class AuthorSerializer(ModelSerializer):
 
     class Meta:
