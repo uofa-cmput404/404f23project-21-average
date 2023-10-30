@@ -13,15 +13,7 @@ class Author(models.Model):
     displayName = models.CharField(max_length=255)
     # url = models.TextField()
     github = models.TextField()
-    profileImage = models.TextField()
-    # One to Many relationship
-    # posts = models.ForeignKey('Post', blank=True,
-    #                           null=True, on_delete=models.CASCADE)
-    # # One to Many relationship
-    # comments = models.ForeignKey(
-    #     'Comment', on_delete=models.CASCADE, blank=True, null=True)
-    # followers = models.ManyToManyField(
-    #     'self', through="Follow", symmetrical=False, blank=True, null=True)
+    image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
 
     def __str__(self):
         return self.displayName
@@ -44,7 +36,6 @@ class Post(models.Model):
     unlisted = models.BooleanField(default=False)
     image_link = models.URLField(blank=True, null=True) #Posts can be links to images.
     image = models.ImageField(upload_to='post_images/', blank=True, null=True) #Posts can be images
-    shared_with_friends = models.BooleanField(default=False) #Is the image shared with friends or not. 
 
 
 class Comment(models.Model):
