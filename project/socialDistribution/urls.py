@@ -12,9 +12,9 @@ urlpatterns = [
     path('authors/<slug:author_pk>/',
          AuthorDetailView.as_view(), name='authors'),
 
-    path('authors/<slug:author_pk>/posts/', PostList.as_view(), name='posts'),
+    path('authors/<slug:author_pk>/posts/', PostList.as_view(), name='posts-list'),
     path('authors/<slug:author_pk>/posts/<slug:post_pk>',
-         PostDetail.as_view(), name='posts'),
+         PostDetail.as_view(), name='posts-detail'),
     path('authors/<slug:author_pk>/posts/<slug:post_pk>/image',
          ImageViewSet.as_view(), name='image'),
 
