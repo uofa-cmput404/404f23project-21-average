@@ -39,11 +39,21 @@ const login = async () => {
       password: password.value
     };
 
+    
+    const auth ={
+    host: "string",
+    displayName: userId,
+    github: "string",
+    user: 0,
+    profileImage: "string"
+    }
+
     const response = await axios.post('http://127.0.0.1:8000/api/auth/login/', data)
     if (response.status === 200 || response.status === 201) {
       // Handle successful login
       console.log("Login successful!");
-      console.log(response)
+      console.log(response.data)
+      const responseAuth = await axios.post('http://127.0.0.1:8000/authors', auth, response.data.value)
       window.location.href = "http://localhost:3000/homePage";
       // Redirect or perform other actions
     } else {
