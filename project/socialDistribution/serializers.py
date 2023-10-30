@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField
 from .models import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -21,17 +21,16 @@ from drf_spectacular.utils import extend_schema_field
 
 
 class AuthorSerializer(ModelSerializer):
+    # url = HyperlinkedIdentityField(
+    #     view_name='authors-list', lookup_field='id')
 
     class Meta:
         model = Author
-        fields = ['id', 'host', 'displayName', 'github', 'user',
-                  'image']
+        fields = ['id', 'host', 'displayName', 'github', 'image', 'first_name',
+                  'last_name', 'email', 'username', 'password', 'groups']
 
 
 class PostSerializer(ModelSerializer):
-    # parent_lookup_kwargs = {
-    #     'author_pk': 'author___pk',
-    # }
 
     class Meta:
         model = Post
@@ -42,10 +41,6 @@ class PostSerializer(ModelSerializer):
 
 
 class CommentSerializer(ModelSerializer):
-    # parent_lookup_kwargs = {
-    #     'post_pk': 'post__pk',
-    #     'author_pk': 'author___pk',
-    # }
 
     class Meta:
         model = Comment
@@ -68,10 +63,6 @@ class FriendRequestSerializer(ModelSerializer):
 
 
 class LikeSerializer(ModelSerializer):
-    # parent_lookup_kwargs = {
-    #     'post_pk': 'post__pk',
-    #     'author_pk': 'author___pk',
-    # }
 
     class Meta:
         model = Like

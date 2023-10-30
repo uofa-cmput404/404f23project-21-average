@@ -102,10 +102,6 @@ DATABASES = {
     }
 }
 
-REST_AUTH = {
-    'SESSION_LOGIN': False
-}
-
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -151,6 +147,7 @@ REST_FRAMEWORK = {
     # YOUR SETTINGS
     "DEFAULT_PAGINATION_CLASS": 'rest_framework.pagination.PageNumberPagination',
     "PAGE_SIZE": 5,
+    'PAGINATE_BY_PARAM': 'size',
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
@@ -179,6 +176,9 @@ JWT_AUTH = {
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "none"
+# REST_AUTH = {
+#     'USE_JWT': True,
+# }
 
 SITE_ID = 1  # make sure SITE_ID is set
 
@@ -200,6 +200,9 @@ SPECTACULAR_SETTINGS = {
     'COMPONENT_SPLIT_REQUEST': True
     # OTHER SETTINGS
 }
+
+AUTH_USER_MODEL = 'socialDistribution.Author'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 MEDIA_URL = '/media/'  # Base URL for serving media files.
 # Leads to the media directory in the root of our project.

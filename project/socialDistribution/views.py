@@ -18,6 +18,7 @@ from drf_spectacular.utils import extend_schema
 
 class Pagination(pagination.PageNumberPagination):
     page_size = 5
+    page_size_query_param = 'size'
 
 
 # Checks whether a user has permission to access a post based on the shared_with_friends attribute and the user's relationship with the author.
@@ -30,11 +31,15 @@ class IsSharedWithFriends(permissions.BasePermission):
         return not obj.shared_with_friends
 
 
-class AuthorViewSet(viewsets.ModelViewSet):
+class AuthorListViewSet(generics.ListAPIView):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     pagination_class = Pagination
+    paginate_by_param = 'page_size'
+
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
     # def get_queryset(self):
     #     user = self.request.user
@@ -44,6 +49,35 @@ class AuthorViewSet(viewsets.ModelViewSet):
     #             Q(shared_with_friends=False) | Q(owner__followers=user.author)
     #         )
     #     return Post.objects.filter(shared_with_friends=False)
+
+
+class AuthorDetailView(APIView):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    pagination_class = Pagination
+
+    @extend_schema(
+        tags=['authors'],
+    )
+    def get(self, request, author_pk, format=None):
+        author = get_object_or_404(Author, pk=author_pk)
+        serializer_context = {
+            'request': request,
+        }
+        serializer = AuthorSerializer(author, context=serializer_context)
+        return Response(serializer.data)
+
+    @extend_schema(
+        tags=['authors'],
+    )
+    def post(self, request, author_pk, format=None):
+        author = get_object_or_404(Author, pk=author_pk)
+        serializer = AuthorSerializer(author, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
 
 
 class PostList(generics.ListCreateAPIView):
@@ -161,8 +195,9 @@ class ImageViewSet(APIView):
 
     def get(self, request, author_pk, post_pk, format=None):
         post = Post.objects.get(pk=post_pk)
-        serializer = PostSerializer(post)
-        return Response(serializer.data.get('image_link'))
+        if post.imageOnlyPost:
+            serializer = PostSerializer(post)
+            return Response(serializer.data.get('image_link'))
 
 
 class FollowViewSet(viewsets.ModelViewSet):

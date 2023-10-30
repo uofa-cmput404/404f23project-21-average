@@ -1,41 +1,58 @@
+from datetime import datetime
 import uuid
 from django.db import models
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.contrib.auth.models import AbstractUser
 # Create your models here.
 
 
-class Author(models.Model):
+class Author(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
     host = models.CharField(max_length=255)
     displayName = models.CharField(max_length=255)
-    # url = models.TextField()
     github = models.TextField()
-    image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
+    image = models.ImageField(
+        upload_to='profile_images/', blank=True, null=True)
 
     def __str__(self):
         return self.displayName
 
 
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    print('25:', instance, end="\n\n")
+    if created:
+        Author.objects.create(displayName=instance, user=instance)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    print('32:', sender, instance, kwargs, end="\n\n")
+    instance.User.save()
+
+
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    title = models.TextField()
-    source = models.CharField(max_length=255)
-    origin = models.CharField(max_length=255)
-    description = models.TextField()
-    contentType = models.CharField(max_length=255)
-    content = models.TextField()
-    published = models.DateTimeField()
+    title = models.TextField(blank=True, null=True)
+    source = models.CharField(max_length=255, blank=True, null=True)
+    origin = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    contentType = models.CharField(max_length=255, blank=True, null=True)
+    content = models.TextField(blank=True, null=True)
+    published = models.DateTimeField(default=datetime.now)
     owner = models.ForeignKey(Author, on_delete=models.CASCADE)
-    categories = models.TextField()
+    categories = models.TextField(blank=True, null=True)
     count = models.IntegerField(default=0)
     visibility = models.CharField(max_length=255, default="PUBLIC")
     unlisted = models.BooleanField(default=False)
-    image_link = models.URLField(blank=True, null=True) #Posts can be links to images.
-    image = models.ImageField(upload_to='post_images/', blank=True, null=True) #Posts can be images
+    # Posts can be links to images.
+    imageOnlyPost = models.BooleanField(default=False)
+    image_link = models.URLField(blank=True, null=True)
+    image = models.ImageField(upload_to='post_images/',
+                              blank=True, null=True)  # Posts can be images
 
 
 class Comment(models.Model):
