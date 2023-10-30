@@ -3,11 +3,11 @@
     <!-- Post Component -->
     <div class="post">
       <div class="post-status-icon">
-      <i v-if="isPublic" class="bi bi-globe"></i>  <!-- Public Icon -->
-      <i v-else class="bi bi-lock-fill"></i>  <!-- Private Icon -->
-    </div>
+        <i v-if="isPublic" class="bi bi-globe"></i> <!-- Public Icon -->
+        <i v-else class="bi bi-lock-fill"></i> <!-- Private Icon -->
+      </div>
       <div class="user-info">
-        <img :src="profilePicture" alt="User Profile Picture" class="profile-pic"/>
+        <img :src="profilePicture" alt="User Profile Picture" class="profile-pic" />
         <span class="user-id">{{ userId }}</span>
       </div>
       <p>{{ postMainContent }}</p>
@@ -50,7 +50,7 @@ export default {
   props: {
     profilePicture: {
       type: String,
-      default: '' 
+      default: ''
     },
     userId: String,
     postID: String,
@@ -62,7 +62,7 @@ export default {
       showCommentBox: false,
       showEditPost: false,
       postMainContent: this.postContent,
-      editedPostContent:'',  // initialized from the prop
+      editedPostContent: '',  // initialized from the prop
       postImage: null,
       isPublic: false  // You can set the initial value as needed
     };
@@ -82,9 +82,9 @@ export default {
       console.error('Error while fetching post:', error);
     }
 
-  // get likes
+    // get likes
   },
-  
+
 
   methods: {
     toggleLike() {
@@ -103,10 +103,24 @@ export default {
         };
       }
     },
-    updatePost() {
+    async updatePost() {
+      const authorStore = useAuthorStore();
       this.postMainContent = this.editedPostContent;  // Update the main content
       this.showEditPost = false;
-}
+      const payload = {
+        type: this.isPublic ? 'PUBLIC' : 'FRIENDS', // Adjust as per your requirement
+        title: 'string', // You can add a title input field in your template
+        source: 'string', // Adjust as per your requirement
+        origin: 'string', // Adjust as per your requirement
+        description: 'string', // You can add a description input field in your template
+        contentType: 'string', // Adjust based on your content type
+        content: this.postContent,
+        published: new Date().toISOString(),
+        categories: 'string', // Adjust as per your requirement
+      };
+      const response = await axios.get('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/' + this.postID, payload);
+      console.log(response)
+    }
 
   }
 };
@@ -131,7 +145,8 @@ export default {
   position: absolute;
   top: 17px;
   right: 17px;
-  font-size: 1.5em; /* adjust as needed */
+  font-size: 1.5em;
+  /* adjust as needed */
 }
 
 .bi {
@@ -158,7 +173,7 @@ button:hover {
   background-color: #007744;
 }
 
-textarea{
+textarea {
   background-color: grey;
   color: white;
 }
@@ -180,124 +195,130 @@ textarea{
 }
 
 .user-id {
-  color: #00C58E;}
+  color: #00C58E;
+}
+
 .edit-post {
-    display: flex;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 17px;
-    flex-direction: column;
-    align-items: center;
-    padding: 25px;
-    width: 400px;
-    height: 400px;
-    background-color:rgb(31, 32, 31);
-    border-radius: 15px;
-  }
-  
-  textarea {
-    width: 95%;
-    height: 200px;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid black;
-    background-color: black;
-    color: white;
-    margin-bottom: 15px;
-  }
-  
-  .post-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 95%;
-    margin-bottom: 15px;
-  }
-  
-  .upload-image input[type="file"] {
-    display: none;
-  }
-  
-  .upload-image {
-    cursor: pointer;
-    background-color: black;
-    color: white;
-    padding: 6px 12px;
-    border-radius: 5px;
-  }
-  
-  button {
-    width: 95%;
-    padding: 12px;
-    background-color: black;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-  
-  button:hover {
-    background-color: #333;
-  }
-  
-  .switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 20px; /* Adjusted to make it rectangular */
-  }
-  
-  .switch input { 
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-  
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: black;
-    transition: 0.4s;
-    border-radius: 10px;  /* Rounded edges for the slider */
-  }
-  
-  .slider:before {
-    position: absolute;
-    content: "";
-    height: 15px;
-    width: 15px;
-    left: 3px;
-    bottom: 3px;
-    background-color:  #00C58E;
-    transition: 0.4s;
-    margin-bottom: -1px;
-    border-radius: 7px;  /* Rounded edges for the handle */
-  }
-  
-  input:checked + .slider {
-    background-color:black ;
-  }
-  
-  input:checked + .slider:before {
-    transform: translateX(29px);
-    display: flex;
-    align-items: center;
-  }
-  
-  .toggle-container {
-    display: flex;
-    align-items: center;
-  }
-  
-  .toggle-container span {
-    margin-left: 10px;
-    color: black;
-  }
+  display: flex;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 17px;
+  flex-direction: column;
+  align-items: center;
+  padding: 25px;
+  width: 400px;
+  height: 400px;
+  background-color: rgb(31, 32, 31);
+  border-radius: 15px;
+}
+
+textarea {
+  width: 95%;
+  height: 200px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid black;
+  background-color: black;
+  color: white;
+  margin-bottom: 15px;
+}
+
+.post-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 95%;
+  margin-bottom: 15px;
+}
+
+.upload-image input[type="file"] {
+  display: none;
+}
+
+.upload-image {
+  cursor: pointer;
+  background-color: black;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 5px;
+}
+
+button {
+  width: 95%;
+  padding: 12px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #333;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 20px;
+  /* Adjusted to make it rectangular */
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: black;
+  transition: 0.4s;
+  border-radius: 10px;
+  /* Rounded edges for the slider */
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 15px;
+  width: 15px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #00C58E;
+  transition: 0.4s;
+  margin-bottom: -1px;
+  border-radius: 7px;
+  /* Rounded edges for the handle */
+}
+
+input:checked+.slider {
+  background-color: black;
+}
+
+input:checked+.slider:before {
+  transform: translateX(29px);
+  display: flex;
+  align-items: center;
+}
+
+.toggle-container {
+  display: flex;
+  align-items: center;
+}
+
+.toggle-container span {
+  margin-left: 10px;
+  color: black;
+}
+
 /* Styles from EditPostComponent.vue */
 /* ... */
 </style>

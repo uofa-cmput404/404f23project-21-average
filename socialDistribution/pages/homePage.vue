@@ -79,6 +79,14 @@ export default {
   methods: {
     // Methods for CreatePostComponent
     onImageSelected(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+          this.postImage = e.target.result;
+        };
+      }
       // Image selection logic
     },
     async submitPost() {
@@ -96,6 +104,7 @@ export default {
           content: this.postContent,
           published: new Date().toISOString(),
           categories: 'string', // Adjust as per your requirement
+          image: this.postImage,
         };
         axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
         const response = await axios.post('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/', payload);

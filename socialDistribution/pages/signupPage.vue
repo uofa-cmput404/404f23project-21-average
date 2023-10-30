@@ -49,22 +49,25 @@ const register = async () => {
     try {
       console.log(data)
       const response = await axios.post('http://127.0.0.1:8000/api/auth/register/', data)
-      axios.defaults.headers.common['Authorization'] = 'Token ' + response.data.key;
+      // axios.defaults.headers.common['Authorization'] = 'Token ' + response.data.key;
+      await authorStore.setAuthToken(response.data.access)
+      await authorStore.setAuthorId(response.data.user.pk)
+      window.location.href = "http://localhost:3000/homePage";
     } catch (error) {
       console.log(error)
     }
 
-    const userIDResponse = await axios.get('http://127.0.0.1:8000/api/auth/user/')
-    const auth = {
-      host: "string",
-      displayName: username.value,
-      github: "string",
-      user: userIDResponse.data.pk,
-    }
-    const responseAuth = await axios.post('http://127.0.0.1:8000/authors', auth)
-    console.log(responseAuth)
-    authorStore.authorId = responseAuth.data.id;
-    console.log(responseAuth)
+    // const userIDResponse = await axios.get('http://127.0.0.1:8000/api/auth/user/')
+    // const auth = {
+    //   host: "string",
+    //   displayName: username.value,
+    //   github: "string",
+    //   user: userIDResponse.data.pk,
+    // }
+    // const responseAuth = await axios.post('http://127.0.0.1:8000/authors', auth)
+    // console.log(responseAuth)
+    // authorStore.authorId = responseAuth.data.id;
+    // console.log(responseAuth)
   } catch (error) {
     // Handle errors (e.g., network issues or validation issues)
     console.error("Error during registration:", error);
