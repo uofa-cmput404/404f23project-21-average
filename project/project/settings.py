@@ -176,9 +176,9 @@ JWT_AUTH = {
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "none"
-# REST_AUTH = {
-#     'USE_JWT': True,
-# }
+REST_AUTH = {
+    'USE_JWT': True,
+}
 
 SITE_ID = 1  # make sure SITE_ID is set
 

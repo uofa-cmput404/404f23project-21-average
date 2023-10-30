@@ -95,6 +95,7 @@ export default {
         };
 
         const response = await axios.post('http://127.0.0.1:8000/authors/' + authorStore.authorId + '/posts/', payload);
+        console.log(response.data)
       } catch (error) {
         console.error('Error while creating post:', error);
       }

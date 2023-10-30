@@ -34,7 +34,6 @@ import { storeToRefs } from 'pinia'
 const userId = ref('');
 const password = ref('');
 const authorStore = useAuthorStore()
-const { fetchAuthor } = storeToRefs(authorStore)
 const login = async () => {
   try {
     const data = {
@@ -43,13 +42,8 @@ const login = async () => {
     };
 
     const response = await axios.post('http://127.0.0.1:8000/api/auth/login/', data)
-    axios.defaults.headers.common['Authorization'] = 'Token ' + response.data.key;
-    await authorStore.setAuthToken(response.data.key)
-    console.log('response', response.data.key)
-    const responseAuth = await axios.get(`http://127.0.0.1:8000/authors`);
-    console.log(responseAuth.data)
-    await authorStore.setAuthorId(responseAuth.data.results[0].id)
-    console.log(authorStore.authorId)
+    await authorStore.setAuthToken(response.data.access)
+    await authorStore.setAuthorId(response.data.user.pk)
     window.location.href = "http://localhost:3000/homePage";
   } catch (error) {
     // Handle errors (e.g., network issues)

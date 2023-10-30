@@ -11,6 +11,9 @@ export const useAuthorStore = defineStore({
     getAuthorId() {
       return this.authorId;
     },
+    getAuthToken() {
+      return localStorage.getItem("token");
+    },
   },
   actions: {
     async setAuthorId(id: string) {
@@ -18,15 +21,14 @@ export const useAuthorStore = defineStore({
       localStorage.setItem("authorId", id);
     },
     async setAuthToken(token: string) {
-      axios.defaults.headers.common["Authorization"] = `Token ${token}`;
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       localStorage.setItem("token", token);
     },
     async fetchAuthor() {
       this.authorId = localStorage.getItem("authorId");
-      localStorage.getItem("token");
       axios.defaults.headers.common[
         "Authorization"
-      ] = `Token ${localStorage.getItem("token")}`;
+      ] = `Bearer ${localStorage.getItem("token")}`;
       try {
         const response = await axios.get(`http://127.0.0.1:8000/authors`);
         console.log(response.data);
