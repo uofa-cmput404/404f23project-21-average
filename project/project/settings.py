@@ -91,14 +91,14 @@ WSGI_APPLICATION = 'project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'socialDB',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': BASE_DIR / 'db.sqlite3',
+        # 'ENGINE': 'django.db.backends.mysql',
+        # 'NAME': 'socialDB',
+        # 'USER': 'root',
+        # 'PASSWORD': 'root',
+        # 'HOST': 'localhost',
+        # 'PORT': '3306',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -148,6 +148,7 @@ REST_FRAMEWORK = {
     # YOUR SETTINGS
     "DEFAULT_PAGINATION_CLASS": 'rest_framework.pagination.PageNumberPagination',
     "PAGE_SIZE": 5,
+    'PAGINATE_BY_PARAM': 'size',
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
@@ -172,6 +173,10 @@ JWT_AUTH = {
     "JWT_REFRESH_EXPIRATION_DELTA": datetime.timedelta(days=7),
 }
 
+REST_AUTH = {
+    'USE_JWT': True,
+}
+
 SITE_ID = 1  # make sure SITE_ID is set
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -192,6 +197,9 @@ SPECTACULAR_SETTINGS = {
     'COMPONENT_SPLIT_REQUEST': True
     # OTHER SETTINGS
 }
+
+AUTH_USER_MODEL = 'socialDistribution.Author'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 MEDIA_URL = '/media/'  # Base URL for serving media files.
 # Leads to the media directory in the root of our project.
