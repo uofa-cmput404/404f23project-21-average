@@ -11,6 +11,7 @@ from rest_framework.decorators import action
 from rest_framework import status
 from rest_framework import generics
 from django.db.models import Q
+from drf_spectacular.utils import extend_schema
 
 # Create your views here.
 
@@ -52,11 +53,17 @@ class PostList(generics.ListCreateAPIView):
         permissions.IsAuthenticatedOrReadOnly, IsSharedWithFriends]
     pagination_class = Pagination
 
+    @extend_schema(
+        tags=['Posts'],
+    )
     def get(self, request, author_pk, format=None):
         posts = Post.objects.filter(owner=author_pk)
         page = self.paginate_queryset(posts)
         return self.get_paginated_response(PostSerializer(page, many=True).data)
 
+    @extend_schema(
+        tags=['Posts'],
+    )
     def post(self, request, author_pk, format=None):
         author = Author.objects.get(pk=author_pk)
         serializer = PostSerializer(data=request.data)
@@ -78,6 +85,9 @@ class PostDetail(APIView):
         except Post.DoesNotExist:
             raise Http404
 
+    @extend_schema(
+        tags=['Posts'],
+    )
     def post(self, request, author_pk, post_pk, format=None):
         print(request.data, author_pk, post_pk,  'afaq')
         author = Author.objects.get(pk=author_pk)
@@ -88,6 +98,9 @@ class PostDetail(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(
+        tags=['Posts'],
+    )
     def put(self, request, author_pk, post_pk, format=None):
         author = Author.objects.get(pk=author_pk)
         serializer = PostSerializer(data=request.data)
@@ -96,11 +109,17 @@ class PostDetail(APIView):
             return Response(PostSerializer(post).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(
+        tags=['Posts'],
+    )
     def get(self, request, author_pk, post_pk, format=None):
         post = self.get_object(post_pk)
         serializer = PostSerializer(post)
         return Response(serializer.data)
 
+    @extend_schema(
+        tags=['Posts'],
+    )
     def delete(self, request, author_pk, post_pk, format=None):
         post = self.get_object(post_pk)
         post.delete()
@@ -113,11 +132,17 @@ class CommentViewSet(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     pagination_class = Pagination
 
+    @extend_schema(
+        tags=['Comments'],
+    )
     def get(self, request, author_pk, post_pk, format=None):
         comments = Comment.objects.filter(parentPost=post_pk)
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
 
+    @extend_schema(
+        tags=['Comments'],
+    )
     def post(self, request, author_pk, post_pk, format=None):
         author = Author.objects.get(pk=author_pk)
         post = Post.objects.get(pk=post_pk)
@@ -126,6 +151,18 @@ class CommentViewSet(generics.ListCreateAPIView):
             comment = serializer.save(commenter=author, parentPost=post)
             return Response(CommentSerializer(comment).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ImageViewSet(APIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    pagination_class = Pagination
+
+    def get(self, request, author_pk, post_pk, format=None):
+        post = Post.objects.get(pk=post_pk)
+        serializer = PostSerializer(post)
+        return Response(serializer.data.get('image_link'))
 
 
 class FollowViewSet(viewsets.ModelViewSet):

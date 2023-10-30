@@ -12,19 +12,13 @@ class AuthorSerializer(ModelSerializer):
     class Meta:
         model = Author
         fields = ['id', 'host', 'displayName', 'github', 'user',
-                  'profileImage']
+                  'image']
 
 
-# @extend_schema_field({'type': "string", 'format': 'binary',
-#                       'example': {
-#                           "image": {"url": "string", "name": "string"},
-#                           "thumbnail": {"url": "string", "name": "string"}
-#                       }
-#                       })
 class PostSerializer(ModelSerializer):
-    parent_lookup_kwargs = {
-        'author_pk': 'author___pk',
-    }
+    # parent_lookup_kwargs = {
+    #     'author_pk': 'author___pk',
+    # }
 
     class Meta:
         model = Post
@@ -35,10 +29,10 @@ class PostSerializer(ModelSerializer):
 
 
 class CommentSerializer(ModelSerializer):
-    parent_lookup_kwargs = {
-        'post_pk': 'post__pk',
-        'author_pk': 'author___pk',
-    }
+    # parent_lookup_kwargs = {
+    #     'post_pk': 'post__pk',
+    #     'author_pk': 'author___pk',
+    # }
 
     class Meta:
         model = Comment
@@ -61,10 +55,10 @@ class FriendRequestSerializer(ModelSerializer):
 
 
 class LikeSerializer(ModelSerializer):
-    parent_lookup_kwargs = {
-        'post_pk': 'post__pk',
-        'author_pk': 'author___pk',
-    }
+    # parent_lookup_kwargs = {
+    #     'post_pk': 'post__pk',
+    #     'author_pk': 'author___pk',
+    # }
 
     class Meta:
         model = Like
