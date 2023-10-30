@@ -70,6 +70,12 @@ export default {
       showPostPopup: false, // Variable to control the visibility of the create post popup
     };
   },
+  async mounted() {
+    // this.fetchPosts();
+    const authorStore = useAuthorStore();
+    const response = await axios.get('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/');
+    this.posts = response.data.results;
+  },
   methods: {
     // Methods for CreatePostComponent
     onImageSelected(event) {
@@ -77,9 +83,7 @@ export default {
     },
     async submitPost() {
       const authorStore = useAuthorStore();
-      await authorStore.fetchAuthor()
-      const { getAuthorId } = storeToRefs(authorStore)
-      console.log("hey")
+      // authorStore.fetchAuthor()
       // Post submission logic
       try {
         const payload = {
@@ -93,8 +97,8 @@ export default {
           published: new Date().toISOString(),
           categories: 'string', // Adjust as per your requirement
         };
-
-        const response = await axios.post('http://127.0.0.1:8000/authors/' + authorStore.authorId + '/posts/', payload);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+        const response = await axios.post('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/', payload);
         console.log(response.data)
       } catch (error) {
         console.error('Error while creating post:', error);
@@ -104,16 +108,9 @@ export default {
   },
   async created() {
     const authorStore = useAuthorStore();
-    authorStore.fetchAuthor()
     try {
-      const response = await axios.get('http://127.0.0.1:8000/authors/' + authorStore.authorId + '/posts/');
-      console.log(response.data)
-      if (response.status === 200) {
-        this.posts = response.data.results; // Update the posts data property with the fetched posts
-        console.log(this.posts)
-      } else {
-        console.error('Error fetching posts:', response);
-      }
+      console.log(authorStore.authorId, authorStore.authToken)
+      const response = await axios.get('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/');
     } catch (error) {
       console.error('Error while fetching posts:', error);
     }

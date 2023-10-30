@@ -1,13 +1,13 @@
 <template>
   <div class="app-container">
-    <SidebarComponent/>
+    <SidebarComponent />
     <main class="main-content">
       <div class="user-section">
         <img src="@/pages/spiderman.jpeg" class="profile-photo">
         <h2>User1</h2>
         <div class="follow-info">
-          <button>Followers:  </button>
-          <button>Following:  </button>
+          <button>Followers: </button>
+          <button>Following: </button>
         </div>
         <div class="bio-section">
           <textarea placeholder="Write a Bio"></textarea>
@@ -16,12 +16,7 @@
         <div class="posts-section">
           <h3>MY POSTS:</h3>
           <!-- Use v-for directive to loop over each post -->
-          <PostComponent 
-            v-for="post in posts" 
-            :key="post.id" 
-            :postContent="post.content" 
-            :postID="post.id" 
-          />
+          <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :postID="post.id" />
         </div>
       </div>
     </main>
@@ -33,10 +28,11 @@
 import PostComponent from './postComponent.vue';
 import SidebarComponent from './sidebar.vue';
 import axios from 'axios';
+import { useAuthorStore } from '../stores/authorStore';
 
 export default {
   name: "SocialDistributionApp",
-  components:{
+  components: {
     PostComponent,
     SidebarComponent,
   },
@@ -46,8 +42,13 @@ export default {
     };
   },
   async created() {
+    const authorStore = useAuthorStore();
+    // authorStore.fetchAuthor()
+    console.log(authorStore.authorId, authorStore.authToken)
+    console.log(authorStore.getAuthToken)
     try {
-      const response = await axios.get('http://localhost:8000/api/posts/');
+      const response = await axios.get('http://127.0.0.1:8000/authors/' + authorStore.authorId + '/posts/');
+      // await axios.get('http://localhost:8000/api/posts/');
       console.log(response)
       if (response.status === 200) {
         this.posts = response.data.results; // Update the posts data property with the fetched posts
@@ -65,24 +66,24 @@ export default {
 <style scoped>
 .app-container {
   display: flex;
-  width:100%;
-  height:100%;
-  position:fixed;
-  top:0;
-  right:0;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  right: 0;
 }
 
 
 .main-content {
-    position:fixed;
-    left:26%;
-    top:0;
-    bottom:0;
-    right:0;
-    background-color: #00C58E;
-    overflow-y: auto;
-    overflow-x:hidden;
-  }
+  position: fixed;
+  left: 26%;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background-color: #00C58E;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
 
 .user-section h2 {
   color: black;
@@ -90,19 +91,25 @@ export default {
 }
 
 .profile-photo {
-  width: 150px;  /* Adjust based on your requirement */
-  height: 150px; /* Adjust based on your requirement */
-  border-radius: 50%;  /* Makes the photo circular */
+  width: 150px;
+  /* Adjust based on your requirement */
+  height: 150px;
+  /* Adjust based on your requirement */
+  border-radius: 50%;
+  /* Makes the photo circular */
   display: block;
-  margin: 20px auto;  /* Center the image horizontally and add some margin */
-  border: 3px solid white;  /* Optional: Add a border around the image */
+  margin: 20px auto;
+  /* Center the image horizontally and add some margin */
+  border: 3px solid white;
+  /* Optional: Add a border around the image */
 }
+
 .follow-info {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
   color: black;
-  
+
 }
 
 .bio-section textarea {
@@ -110,13 +117,14 @@ export default {
   justify-content: center;
   align-items: center;
   width: 80%;
-  margin:auto auto;
+  margin: auto auto;
   padding: 10px;
   border: none;
   background-color: black;
   color: white;
   margin-bottom: 20px;
 }
+
 .posts-section h3 {
   color: black;
   margin-bottom: 20px;
@@ -126,31 +134,35 @@ export default {
 .post {
   background-color: black;
   padding: 60px;
-  width:80%;
-  margin:auto auto;
+  width: 80%;
+  margin: auto auto;
   color: white;
   margin-bottom: 10px;
 }
-h2{
-    text-align: center;
-    font-size: 40px;
-}
-button{
-    background-color: black;
-    color:white;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    margin: auto auto;
-    width : auto ;
+
+h2 {
+  text-align: center;
+  font-size: 40px;
 }
 
-.edit{
+button {
+  background-color: black;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin: auto auto;
+  width: auto;
+}
+
+.edit {
   margin-left: auto;
   margin-right: auto;
-  display: block; /* To enable margin auto to work for horizontal centering */
-  font-size: 10px; /* Smaller font size */
+  display: block;
+  /* To enable margin auto to work for horizontal centering */
+  font-size: 10px;
+  /* Smaller font size */
   padding: 10px 15px;
   width: auto;
 

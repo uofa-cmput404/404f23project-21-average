@@ -152,7 +152,9 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
         "rest_framework.authentication.BasicAuthentication",
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     ],
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
@@ -178,6 +180,8 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "none"
 REST_AUTH = {
     'USE_JWT': True,
+    'JWT_AUTH_COOKIE': 'social-auth-token',
+    'JWT_AUTH_REFRESH_COOKIE': 'social-auth-refresh-token',
 }
 
 SITE_ID = 1  # make sure SITE_ID is set

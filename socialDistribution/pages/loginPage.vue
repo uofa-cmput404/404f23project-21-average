@@ -44,6 +44,7 @@ const login = async () => {
     const response = await axios.post('http://127.0.0.1:8000/api/auth/login/', data)
     await authorStore.setAuthToken(response.data.access)
     await authorStore.setAuthorId(response.data.user.pk)
+    console.log('set')
     window.location.href = "http://localhost:3000/homePage";
   } catch (error) {
     // Handle errors (e.g., network issues)

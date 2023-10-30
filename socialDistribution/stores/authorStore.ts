@@ -6,10 +6,11 @@ export const useAuthorStore = defineStore({
   state: () => ({
     authorId: "",
     author: null,
+    authToken: "",
   }),
   getters: {
     getAuthorId() {
-      return this.authorId;
+      return localStorage.getItem("authorId");
     },
     getAuthToken() {
       return localStorage.getItem("token");
@@ -22,13 +23,12 @@ export const useAuthorStore = defineStore({
     },
     async setAuthToken(token: string) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      this.authToken = token;
       localStorage.setItem("token", token);
     },
     async fetchAuthor() {
-      this.authorId = localStorage.getItem("authorId");
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${localStorage.getItem("token")}`;
+      // this.authorId = localStorage.getItem("authorId");
+      axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem("token")}`;
       try {
         const response = await axios.get(`http://127.0.0.1:8000/authors`);
         console.log(response.data);

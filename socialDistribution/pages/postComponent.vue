@@ -71,7 +71,7 @@ export default {
     const authorStore = useAuthorStore();
     try {
       console.log('http://localhost:8000/api/post/' + this.postID)
-      const response = await axios.get('http://127.0.0.1:8000/authors/' + authorStore.authorId + '/posts/');
+      const response = await axios.get('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/');
       console.log(response)
       if (response.status === 200) {
         this.post = response.data;
