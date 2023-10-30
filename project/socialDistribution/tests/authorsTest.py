@@ -74,9 +74,3 @@ class AuthorTestCase(TestCase):
         self.author.refresh_from_db()
         self.assertEqual(self.author.username, 'JohnSmith')
         self.assertEqual(self.author.email, 'johnsmith@example.com')
-
-# def test_author_delete(self):
-#     response = self.client.post(
-#         reverse('author_delete', args=[self.author.pk]))
-#     self.assertEqual(response.status_code, 302)
-#     self.assertFalse(Author.objects.filter(pk=self.author.pk).exists())

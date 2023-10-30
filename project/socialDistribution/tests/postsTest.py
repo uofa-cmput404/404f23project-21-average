@@ -43,13 +43,6 @@ class GetAllPostsTest(TestCase):
             'content': 'This is the first post',
             'published': datetime.now(),
         }
-        # client.credentials(
-        #     HTTP_AUTHORIZATION='Bearer ' + response.data['access'])
-        # Post.objects.create(
-        #     title='First Post', content='This is the first post')
-        # Post.objects.create(
-        #     title='Second Post', content='This is the second post')
-
     def test_get_all_posts(self):
         # get API response
 
@@ -143,45 +136,3 @@ class GetAllPostsTest(TestCase):
             reverse('posts-detail', kwargs={'author_pk': self.authorId,
                                             'post_pk': myuuid}), **self.header)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-
-# class UpdateSinglePostTest(TestCase):
-#     """ Test module for updating an existing post record """
-
-#     def setUp(self):
-#         self.first_post = Post.objects.create(
-#             title='First Post', content='This is the first post')
-#         self.second_post = Post.objects.create(
-#             title='Second Post', content='This is the second post')
-#         self.valid_payload = {
-#             'title': 'Updated Post',
-#             'content': 'This is the updated post'
-#         }
-#         self.invalid_payload = {
-#             'title': '',
-#             'content': 'This is the updated post'
-#         }
-
-#     def test_valid_update_post(self):
-#         response = client.put(
-#             reverse('posts-detail', kwargs={'pk': self.first_post.pk}),
-#             data=self.valid_payload,
-#             format='json')
-#         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-#     def test_invalid_update_post(self):
-#         response = client.put(
-#             reverse('posts-detail', kwargs={'pk': self.first_post.pk}),
-#             data=self.invalid_payload,
-#             format='json')
-#         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-
-# class DeleteSinglePostTest(TestCase):
-#     """ Test module for deleting an existing post record """
-
-#     def setUp(self):
-#         self.first_post = Post.objects.create(
-#             title='First Post', content='This is the first post')
-#         self.second_post = Post.objects.create(
-#             title='Second Post', content='This is the second post')
