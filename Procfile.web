@@ -1,0 +1,2 @@
+django: gunicorn project.wsgi:application 
+node: yarn start
