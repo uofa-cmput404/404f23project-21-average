@@ -189,7 +189,8 @@ CORS_ORIGIN_ALLOW_ALL = False
 
 DEBUG = False
 SECRET_KEY = os.environ['SECRET_KEY']
-ALLOWED_HOSTS = ['avergae-21-b951939c31ad.herokuapp.com/', 'localhost']
+ALLOWED_HOSTS = ['avergae-21-b951939c31ad.herokuapp.com/',
+                 'localhost', '127.0.0.1']
 # SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 # CORS_ALLOWED_ORIGINS = [
 #     # "https://example.com",
