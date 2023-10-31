@@ -78,9 +78,7 @@ TEMPLATES = [
     },
 ]
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, '.output/server'),
-]
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, '.output/server'), os.path.join(BASE_DIR, '.nuxt/dist')]
 
 
 WSGI_APPLICATION = 'project.wsgi.application'
@@ -218,7 +216,7 @@ MEDIA_URL = '/media/'  # Base URL for serving media files.
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.django.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.django.CompressedStaticFilesStorage'
 
 try:
     from local_settings import *
