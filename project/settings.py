@@ -216,7 +216,13 @@ MEDIA_URL = '/media/'  # Base URL for serving media files.
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.django.CompressedStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.django.CompressedStaticFilesStorage'
+STORAGES = {
+    # ...
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 try:
     from local_settings import *
