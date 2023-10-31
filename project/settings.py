@@ -79,7 +79,7 @@ TEMPLATES = [
 ]
 
 STATICFILES_DIRS = [
-    os.path.join(Path(__file__).resolve().parent.parent, '.output/server'),
+    os.path.join(BASE_DIR, '.output/server'),
 ]
 
 
