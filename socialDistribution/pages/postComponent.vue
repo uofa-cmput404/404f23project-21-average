@@ -17,8 +17,7 @@
         <button class='edit' @click="showEditPost = !showEditPost">Edit</button>
       </div>
       <div v-if="showCommentBox">
-        <textarea placeholder="Write a comment"></textarea>
-        <button @click="toggleCommentBox">Post Comment</button>
+        <comment-component v-if="showCommentBox" :postId="postID"></comment-component>
       </div>
     </div>
 
@@ -44,9 +43,13 @@
 </template>
 
 <script>
+import commentComponent from './commentComponent.vue';
 import axios from 'axios'
 import { useAuthorStore } from '../stores/authorStore';
 export default {
+  components: {
+    commentComponent,
+  },
   props: {
     profilePicture: {
       type: String,
@@ -54,6 +57,7 @@ export default {
     },
     userId: String,
     postID: String,
+    postContent: String,
   },
 
   data() {
