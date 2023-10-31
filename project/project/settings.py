@@ -22,12 +22,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-7r=x&jfdtv*(hou@1p3$k07glf=zyc*$je0$t_6rwy34g74ift'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -70,7 +64,7 @@ ROOT_URLCONF = 'project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(Path(__file__).resolve().parent.parent.parent, 'socialDistribution/.nuxt/dist')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -82,6 +76,12 @@ TEMPLATES = [
         },
     },
 ]
+
+STATICFILES_DIRS = [
+    os.path.join(Path(__file__).resolve().parent.parent.parent,
+                 'socialDistribution/.output/server'),
+]
+
 
 WSGI_APPLICATION = 'project.wsgi.application'
 
@@ -186,7 +186,12 @@ REST_AUTH = {
 
 SITE_ID = 1  # make sure SITE_ID is set
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ORIGIN_ALLOW_ALL = False
+
+DEBUG = False
+SECRET_KEY = os.environ['SECRET_KEY']
+ALLOWED_HOSTS = ['avergae-21-b951939c31ad.herokuapp.com/', 'localhost']
 # SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 # CORS_ALLOWED_ORIGINS = [
 #     # "https://example.com",
@@ -211,3 +216,11 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 MEDIA_URL = '/media/'  # Base URL for serving media files.
 # Leads to the media directory in the root of our project.
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
+try:
+    from local_settings import *
+except ImportError:
+    pass

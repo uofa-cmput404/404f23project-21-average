@@ -48,11 +48,11 @@ const register = async () => {
     }
     try {
       console.log(data)
-      const response = await axios.post('http://127.0.0.1:8000/api/auth/register/', data)
+      const response = await axios.post(process.env.API_URL + '/api/auth/register/', data)
       // axios.defaults.headers.common['Authorization'] = 'Token ' + response.data.key;
       await authorStore.setAuthToken(response.data.access)
       await authorStore.setAuthorId(response.data.user.pk)
-      window.location.href = "http://localhost:3000/homePage";
+      window.location.href = "/homePage";
     } catch (error) {
       console.log(error)
     }

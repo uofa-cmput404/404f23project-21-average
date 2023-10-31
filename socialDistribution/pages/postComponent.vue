@@ -10,7 +10,7 @@
         <img :src="profilePicture" alt="User Profile Picture" class="profile-pic" />
         <span class="user-id">{{ userId }}</span>
       </div>
-      <p>{{ postMainContent }}</p>
+      <p>{{ postContent }}</p>
       <div class="post-actions">
         <button @click="toggleLike">{{ liked ? 'Unlike' : 'Like' }}</button>
         <button @click="toggleCommentBox">Comment</button>
@@ -54,6 +54,7 @@ export default {
     },
     userId: String,
     postID: String,
+    postContent: String,
   },
 
   data() {
@@ -73,6 +74,7 @@ export default {
       console.log('http://localhost:8000/api/post/' + this.postID)
       const response = await axios.get('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/');
       console.log(response)
+      this.postMainContent = response.data.results['content'] // Updat
       if (response.status === 200) {
         this.post = response.data;
       } else {
@@ -105,7 +107,7 @@ export default {
     },
     async updatePost() {
       const authorStore = useAuthorStore();
-      this.postMainContent = this.editedPostContent;  // Update the main content
+      this.postContent = this.editedPostContent;  // Update the main content
       this.showEditPost = false;
       const payload = {
         type: this.isPublic ? 'PUBLIC' : 'FRIENDS', // Adjust as per your requirement

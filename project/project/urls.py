@@ -17,14 +17,17 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
+from django.views.generic import TemplateView
+
 
 urlpatterns = [
+    re_path(r'^$', TemplateView.as_view(template_name='index.html')),
     path('admin/', admin.site.urls),
     path('api/auth/', include('authentication.urls')),
     path('', include('socialDistribution.urls')),
@@ -42,6 +45,8 @@ urlpatterns = [
     ),
 ]
 
-#For Media:
-if settings.DEBUG: #If true means Django is in development mode.
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) #Extend Url patterns to handle media files directly from django server. 
+# For Media:
+if settings.DEBUG:  # If true means Django is in development mode.
+    # Extend Url patterns to handle media files directly from django server.
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)
