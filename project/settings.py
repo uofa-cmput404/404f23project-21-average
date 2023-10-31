@@ -65,7 +65,7 @@ ROOT_URLCONF = 'project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(Path(__file__).resolve().parent.parent.parent, 'socialDistribution/.nuxt/dist')],
+        'DIRS': [os.path.join(Path(__file__).resolve().parent.parent.parent, '.nuxt/dist')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -79,8 +79,7 @@ TEMPLATES = [
 ]
 
 STATICFILES_DIRS = [
-    os.path.join(Path(__file__).resolve().parent.parent.parent,
-                 'socialDistribution/.output/server'),
+    os.path.join(Path(__file__).resolve().parent.parent, '.output/server'),
 ]
 
 
@@ -219,7 +218,7 @@ MEDIA_URL = '/media/'  # Base URL for serving media files.
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.django.CompressedManifestStaticFilesStorage'
 
 try:
     from local_settings import *
