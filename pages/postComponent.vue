@@ -104,7 +104,7 @@ export default {
       // Implement the logic to get likes
       // Example:
       try {
-        const response = await axios.get(authorStore.BASE_URL + '/authors/'+authorStore.getAuthorId+ '/posts/' + this.postID + '/likes');
+        const response = await axios.get(authorStore.BASE_URL + '/authors/'+authorStore.getAuthorId+ '/posts/' + this.postID + '/likes/');
         if (response.status === 200) {
           this.likeCount = response.data.likeCount;
           this.liked = response.data.userLiked; // Assuming the API returns if the current user liked the post
@@ -118,11 +118,11 @@ export default {
       try {
         if (this.liked) {
           // Logic to unlike the post
-          await axios.post(authorStore.BASE_URL + '/authors/'+authorStore.getAuthorId+ '/posts/' + this.postID + '/likes');
+          await axios.post(authorStore.BASE_URL + '/authors/'+authorStore.getAuthorId+ '/posts/' + this.postID + '/likes/');
           this.likeCount -= 1;
         } else {
           // Logic to like the post
-          await axios.post(authorStore.BASE_URL + '/authors/'+authorStore.getAuthorId+ '/posts/' + this.postID + '/likes');
+          await axios.post(authorStore.BASE_URL + '/authors/'+authorStore.getAuthorId+ '/posts/' + this.postID + '/likes/');
           this.likeCount += 1;
         }
         this.liked = !this.liked;
