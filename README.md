@@ -1,29 +1,75 @@
-# CMPUT404-project-socialdistribution
+# Nuxt 3 Minimal Starter
 
-CMPUT 404 Project: Social Distribution
+Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
-[Project requirements](https://github.com/uofa-cmput404/project-socialdistribution/blob/master/project.org)
+## Setup
 
-# Contributors / Licensing
+Make sure to install the dependencies:
 
-Authors:
+```bash
+# npm
+npm install
 
-- Afaq Nabi
-- Ghunaym Yahya
-- Shreyank Hebbar
-- Aryaman Raina
-- Agrim Sood
+# pnpm
+pnpm install
 
-Generally everything is LICENSE'D under the Apache-2 by the 21 Average Team
+# yarn
+yarn install
 
-# Startup
+# bun
+bun install
+```
 
-- `git clone https://github.com/uofa-cmput404/404f23project-21-average.git`
-- `cd 404f23project-21-average`
-- `virtualenv venv`
-- `pip install -r req.txt`
-- `cd project`
-- ** start local mysql server and init a DB called `socialDB` then:
-- `python3 manage.py migrate`
-- `python3 manage.py runserver`
-- `http://127.0.0.1:8000/api/` 
+## Development Server
+
+Start the development server on `http://localhost:3000`:
+
+```bash
+# npm
+npm run dev
+
+# pnpm
+pnpm run dev
+
+# yarn
+yarn dev
+
+# bun
+bun run dev
+```
+
+## Production
+
+Build the application for production:
+
+```bash
+# npm
+npm run build
+
+# pnpm
+pnpm run build
+
+# yarn
+yarn build
+
+# bun
+bun run build
+```
+
+Locally preview production build:
+
+```bash
+# npm
+npm run preview
+
+# pnpm
+pnpm run preview
+
+# yarn
+yarn preview
+
+# bun
+bun run preview
+```
+
+Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
