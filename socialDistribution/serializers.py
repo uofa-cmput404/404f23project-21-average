@@ -33,7 +33,7 @@ class AuthorSerializer(ModelSerializer):
     class Meta:
         model = Author
         fields = ['id', 'host', 'displayName', 'github', 'image', 'first_name',
-                  'last_name', 'email', 'username', 'password', 'groups']
+                  'last_name', 'email', 'username', 'groups']
 
 
 class PostSerializer(ModelSerializer):
@@ -47,6 +47,7 @@ class PostSerializer(ModelSerializer):
 
 
 class CommentSerializer(ModelSerializer):
+    commenter = AuthorSerializer(read_only=True)
 
     class Meta:
         model = Comment
