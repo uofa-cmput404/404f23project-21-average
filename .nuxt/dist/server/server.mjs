@@ -1,1 +1,1 @@
-export { default } from "file:///Users/afaqnabi/Desktop/CMPUT404/project/404f23project-21-average/node_modules/@nuxt/vite-builder/dist/runtime/vite-node.mjs"
+export { default } from "file:///C:/Desktop/CMPUT%20404%20project/404f23project-21-average/node_modules/@nuxt/vite-builder/dist/runtime/vite-node.mjs"

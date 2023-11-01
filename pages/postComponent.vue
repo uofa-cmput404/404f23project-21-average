@@ -13,6 +13,7 @@
       <p>{{ postContent }}</p>
       <div class="post-actions">
         <button @click="toggleLike">{{ liked ? 'Unlike' : 'Like' }}</button>
+        <span class="like-count">{{ likeCount }}</span>
         <button @click="toggleCommentBox">Comment</button>
         <button class='edit' @click="showEditPost = !showEditPost">Edit</button>
       </div>
@@ -99,10 +100,11 @@ export default {
 
   methods: {
     async getLikes() {
+      const authorStore = useAuthorStore();
       // Implement the logic to get likes
       // Example:
       try {
-        const response = await axios.get(authorStore.BASE_URL + '/api/post/' + this.postID + '/likes');
+        const response = await axios.get(authorStore.BASE_URL + '/author/'+authorStore.getAuthorId+ '/posts/' + this.postID + '/likes');
         if (response.status === 200) {
           this.likeCount = response.data.likeCount;
           this.liked = response.data.userLiked; // Assuming the API returns if the current user liked the post
@@ -112,14 +114,15 @@ export default {
       }
     },
     async toggleLike() {
+      const authorStore = useAuthorStore();
       try {
         if (this.liked) {
           // Logic to unlike the post
-          await axios.post(authorStore.BASE_URL + '/api/post/' + this.postID + '/unlike');
+          await axios.post(authorStore.BASE_URL + '/author/'+authorStore.getAuthorId+ '/posts/' + this.postID + '/likes');
           this.likeCount -= 1;
         } else {
           // Logic to like the post
-          await axios.post(authorStore.BASE_URL + '/api/post/' + this.postID + '/like');
+          await axios.post(authorStore.BASE_URL + '/author/'+authorStore.getAuthorId+ '/posts/' + this.postID + '/likes');
           this.likeCount += 1;
         }
         this.liked = !this.liked;
@@ -357,6 +360,12 @@ input:checked+.slider:before {
 .toggle-container span {
   margin-left: 10px;
   color: black;
+}
+
+.like-count {
+  margin-left: 10px;
+  color: white;
+  font-size: 0.9em;
 }
 
 /* Styles from EditPostComponent.vue */
