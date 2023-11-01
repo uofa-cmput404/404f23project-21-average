@@ -10,7 +10,7 @@
         <img :src="profilePicture" alt="User Profile Picture" class="profile-pic" />
         <span class="user-id">{{ userId }}</span>
       </div>
-      <p>{{ postContent }}</p>
+      <p style = "margin-top: 25px;">{{ postContent }}</p>
       <div class="post-actions">
         <button @click="toggleLike">{{ liked ? 'Unlike' : 'Like' }}</button>
         <span class="like-count">{{ likeCount }} like(s)</span>
@@ -228,7 +228,7 @@ textarea {
 
 .user-info {
   position: absolute;
-  top: 10px;
+  top: 5px;
   left: 10px;
   display: flex;
   align-items: center;

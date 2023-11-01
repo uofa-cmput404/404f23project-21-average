@@ -1,7 +1,7 @@
 <template>
   <div class="comment-section">
     <div v-for="comment in comments" :key="comment.id" class="comment">
-      <div class="comment-author">{{ comment.commenter }}</div>
+      <div class="comment-author">{{ comment.commenter.username }}</div>
       <div class="comment-content">{{ comment.comment }}</div>
     </div>
 
@@ -38,6 +38,7 @@ export default {
       try {
         const response = await axios.get(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postId}/comments/`);
         this.comments = response.data;
+        console.log(this.comments)
       } catch (error) {
         console.error('Error while fetching comments:', error);
       }
