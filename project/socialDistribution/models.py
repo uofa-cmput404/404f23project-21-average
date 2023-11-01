@@ -49,7 +49,6 @@ class Post(models.Model):
     visibility = models.CharField(max_length=255, default="PUBLIC")
     unlisted = models.BooleanField(default=False)
     # Posts can be links to images.
-    imageOnlyPost = models.BooleanField(default=False)
     image_link = models.URLField(blank=True, null=True)
     image = models.ImageField(upload_to='post_images/',
                               blank=True, null=True)  # Posts can be images
@@ -89,10 +88,18 @@ class FriendRequest(models.Model):
     status = models.CharField(max_length=255)
 
 
-class Like(models.Model):
+class PostLike(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    published = models.DateTimeField()
+
+
+class CommentLike(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    # post = models.ForeignKey(Post, on_delete=models.CASCADE) # maybe dont need it??
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
     published = models.DateTimeField()
 
 

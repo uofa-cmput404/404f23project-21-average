@@ -19,6 +19,11 @@ from drf_spectacular.utils import extend_schema_field
 #         user.save()
 #         return user
 
+class CurrentUserSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'password']
+
 
 class AuthorSerializer(ModelSerializer):
     # url = HyperlinkedIdentityField(
@@ -26,8 +31,9 @@ class AuthorSerializer(ModelSerializer):
 
     class Meta:
         model = Author
-        fields = ['id', 'host', 'displayName', 'github', 'image', 'first_name',
-                  'last_name', 'email', 'username', 'password', 'groups']
+        fields = '__all__'
+        # fields = ['id', 'host', 'displayName', 'github', 'user',
+        #           'image']
 
 
 class PostSerializer(ModelSerializer):
@@ -62,12 +68,35 @@ class FriendRequestSerializer(ModelSerializer):
         fields = ['id', 'from_author', 'to_author', 'status']
 
 
+<<<<<<< HEAD
 class LikeSerializer(ModelSerializer):
+=======
+# class LikeSerializer(ModelSerializer):
+#     # parent_lookup_kwargs = {
+#     #     'post_pk': 'post__pk',
+#     #     'author_pk': 'author___pk',
+#     # }
+>>>>>>> agrimBranch
 
+#     class Meta:
+#         model = Like
+#         fields = ['id', 'author', 'post',  'published']
+#         ordering = ['-id']
+
+class PostLikeSerializer(ModelSerializer):
     class Meta:
-        model = Like
-        fields = ['id', 'author', 'post',  'published']
+        model = PostLike
+        fields = ['published']
+        read_only_fields = ['author', 'post', 'id']
         ordering = ['-id']
+
+
+class CommentLikeSerializer(ModelSerializer):
+    class Meta:
+        model = CommentLike
+        fields = ['published']
+        ordering = ['-id']
+        read_only_fields = ['author', 'comment', 'id']
 
 
 class ConnectedNodeSerializer(ModelSerializer):
