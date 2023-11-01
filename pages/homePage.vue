@@ -108,8 +108,7 @@ export default {
           image: this.postImage,
         };
         axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
-        const response = await axios.post(process.env.API_URL +  authorStore.getAuthorId + '/posts/', payload);
-        console.log(response.data)
+        const response = await axios.post('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/', payload);
       } catch (error) {
         console.error('Error while creating post:', error);
       }

@@ -82,22 +82,50 @@ export default {
       const response = await axios.get('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/');
       console.log(response)
       this.postMainContent = response.data.results['content'] // Updat
+      // Fetch post details
+      const response1 = await axios.get('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/' + this.postID);
       if (response.status === 200) {
         this.post = response.data;
+        // Fetch likes
+        this.getLikes();
       } else {
         console.error('Error fetching post:', response);
       }
     } catch (error) {
       console.error('Error while fetching post:', error);
     }
-
-    // get likes
   },
 
 
   methods: {
-    toggleLike() {
-      this.liked = !this.liked;
+    async getLikes() {
+      // Implement the logic to get likes
+      // Example:
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/post/' + this.postID + '/likes');
+        if (response.status === 200) {
+          this.likeCount = response.data.likeCount;
+          this.liked = response.data.userLiked; // Assuming the API returns if the current user liked the post
+        }
+      } catch (error) {
+        console.error('Error while fetching likes:', error);
+      }
+    },
+    async toggleLike() {
+      try {
+        if (this.liked) {
+          // Logic to unlike the post
+          await axios.post('http://127.0.0.1:8000/api/post/' + this.postID + '/unlike');
+          this.likeCount -= 1;
+        } else {
+          // Logic to like the post
+          await axios.post('http://127.0.0.1:8000/api/post/' + this.postID + '/like');
+          this.likeCount += 1;
+        }
+        this.liked = !this.liked;
+      } catch (error) {
+        console.error('Error while toggling like:', error);
+      }
     },
     toggleCommentBox() {
       this.showCommentBox = !this.showCommentBox;

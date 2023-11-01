@@ -1,8 +1,8 @@
 <template>
     <div class="comment-section">
       <div v-for="comment in comments" :key="comment.id" class="comment">
-        <div class="comment-author">{{ comment.author }}</div>
-        <div class="comment-content">{{ comment.content }}</div>
+        <div class="comment-author">{{ comment.commenter }}</div>
+        <div class="comment-content">{{ comment.comment }}</div>
       </div>
   
       <div class="add-comment">
@@ -24,10 +24,16 @@
     },
     data() {
       return {
-        comments: [{author: 'User1', content: 'This is a comment'}, {author: 'User2', content: 'This is also a comment'}],
+        comments: [],
         newComment: '',
       };
     },
+    async mounted() {
+    // this.fetchPosts();
+    const authorStore = useAuthorStore();
+    const response = await axios.get('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/' + this.postId + '/comments/');
+    this.comments = response.data.results;
+  },
     methods: {
       async submitComment() {
         if (this.newComment.trim() !== '') {
@@ -41,7 +47,6 @@
         axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
         const response = await axios.post('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/' + this.postId + '/comments/', payload);
           this.newComment = '';
-          console.log(response)
         }
          catch (error) {
         console.error('Error while creating post:', error);
@@ -53,11 +58,11 @@
     try {
       console.log(authorStore.authorId, authorStore.authToken)
       const response = await axios.get('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/' + this.postId + '/comments/');
-      console.log(response)
-      this.comments.push({
-          author: response.getAuthorId, 
-          content: this.newComment,
-        });
+      console.log('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/' + this.postId + '/comments/')
+      // this.comments.push({
+      //     author: response.data.commenter, 
+      //     content: response.comment,
+      //   });
     } catch (error) {
       console.error('Error while fetching posts:', error);
     }
