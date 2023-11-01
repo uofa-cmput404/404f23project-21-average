@@ -108,7 +108,6 @@ export default {
         };
         axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
         const response = await axios.post('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/', payload);
-        console.log(response.data)
       } catch (error) {
         console.error('Error while creating post:', error);
       }
