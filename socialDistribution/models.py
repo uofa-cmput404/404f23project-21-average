@@ -22,14 +22,12 @@ class Author(AbstractUser):
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
-    print('25:', instance, end="\n\n")
     if created:
         Author.objects.create(displayName=instance, user=instance)
 
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
-    print('32:', sender, instance, kwargs, end="\n\n")
     instance.User.save()
 
 

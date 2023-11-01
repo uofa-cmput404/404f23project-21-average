@@ -17,8 +17,7 @@
         <button class='edit' @click="showEditPost = !showEditPost">Edit</button>
       </div>
       <div v-if="showCommentBox">
-        <textarea placeholder="Write a comment"></textarea>
-        <button @click="toggleCommentBox">Post Comment</button>
+        <comment-component v-if="showCommentBox" :postId="postID"></comment-component>
       </div>
     </div>
 
@@ -44,10 +43,18 @@
 </template>
 
 <script>
+import commentComponent from './commentComponent.vue';
 import axios from 'axios'
 import { useAuthorStore } from '../stores/authorStore';
 export default {
+  components: {
+    commentComponent,
+  },
   props: {
+    postContent: {
+      type: String,
+      default: ''
+    },
     profilePicture: {
       type: String,
       default: ''
@@ -72,25 +79,53 @@ export default {
     const authorStore = useAuthorStore();
     try {
       console.log('http://localhost:8000/api/post/' + this.postID)
-      const response = await axios.get('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/');
+      const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
       console.log(response)
       this.postMainContent = response.data.results['content'] // Updat
+      // Fetch post details
+      const response1 = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID);
       if (response.status === 200) {
         this.post = response.data;
+        // Fetch likes
+        this.getLikes();
       } else {
         console.error('Error fetching post:', response);
       }
     } catch (error) {
       console.error('Error while fetching post:', error);
     }
-
-    // get likes
   },
 
 
   methods: {
-    toggleLike() {
-      this.liked = !this.liked;
+    async getLikes() {
+      // Implement the logic to get likes
+      // Example:
+      try {
+        const response = await axios.get(authorStore.BASE_URL + '/api/post/' + this.postID + '/likes');
+        if (response.status === 200) {
+          this.likeCount = response.data.likeCount;
+          this.liked = response.data.userLiked; // Assuming the API returns if the current user liked the post
+        }
+      } catch (error) {
+        console.error('Error while fetching likes:', error);
+      }
+    },
+    async toggleLike() {
+      try {
+        if (this.liked) {
+          // Logic to unlike the post
+          await axios.post(authorStore.BASE_URL + '/api/post/' + this.postID + '/unlike');
+          this.likeCount -= 1;
+        } else {
+          // Logic to like the post
+          await axios.post(authorStore.BASE_URL + '/api/post/' + this.postID + '/like');
+          this.likeCount += 1;
+        }
+        this.liked = !this.liked;
+      } catch (error) {
+        console.error('Error while toggling like:', error);
+      }
     },
     toggleCommentBox() {
       this.showCommentBox = !this.showCommentBox;
@@ -107,20 +142,23 @@ export default {
     },
     async updatePost() {
       const authorStore = useAuthorStore();
-      this.postContent = this.editedPostContent;  // Update the main content
+      // this.postContent = this.editedPostContent;  // Update the main content
       this.showEditPost = false;
+      this.postMainContent = this.editedPostContent;
       const payload = {
-        type: this.isPublic ? 'PUBLIC' : 'FRIENDS', // Adjust as per your requirement
+        visibility: this.isPublic ? 'PUBLIC' : 'FRIENDS', // Adjust as per your requirement
+        unlisted: false,
         title: 'string', // You can add a title input field in your template
         source: 'string', // Adjust as per your requirement
         origin: 'string', // Adjust as per your requirement
         description: 'string', // You can add a description input field in your template
         contentType: 'string', // Adjust based on your content type
-        content: this.postContent,
+        content: this.editedPostContent,
         published: new Date().toISOString(),
         categories: 'string', // Adjust as per your requirement
       };
-      const response = await axios.get('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/' + this.postID, payload);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+      const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID, payload);
       console.log(response)
     }
 

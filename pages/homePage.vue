@@ -73,7 +73,7 @@ export default {
   async mounted() {
     // this.fetchPosts();
     const authorStore = useAuthorStore();
-    const response = await axios.get(process.env.API_URL +  authorStore.getAuthorId + '/posts/');
+    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
     this.posts = response.data.results;
   },
   methods: {
@@ -95,7 +95,8 @@ export default {
       // Post submission logic
       try {
         const payload = {
-          type: this.isPublic ? 'PUBLIC' : 'FRIENDS', // Adjust as per your requirement
+          visibility: this.isPublic ? 'PUBLIC' : 'FRIENDS', // Adjust as per your requirement
+          unlisted: false, // Adjust as per your requirement
           title: 'string', // You can add a title input field in your template
           source: 'string', // Adjust as per your requirement
           origin: 'string', // Adjust as per your requirement
@@ -107,8 +108,7 @@ export default {
           image: this.postImage,
         };
         axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
-        const response = await axios.post(process.env.API_URL +  authorStore.getAuthorId + '/posts/', payload);
-        console.log(response.data)
+        const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/', payload);
       } catch (error) {
         console.error('Error while creating post:', error);
       }
@@ -118,8 +118,7 @@ export default {
   async created() {
     const authorStore = useAuthorStore();
     try {
-      console.log(authorStore.authorId, authorStore.authToken)
-      const response = await axios.get(process.env.API_URL +  authorStore.getAuthorId + '/posts/');
+      const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
     } catch (error) {
       console.error('Error while fetching posts:', error);
     }

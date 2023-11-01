@@ -22,7 +22,8 @@ from drf_spectacular.utils import extend_schema_field
 class CurrentUserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'password']
+        fields = ['id', 'username', 'email',
+                  'first_name', 'last_name', 'password']
 
 
 class AuthorSerializer(ModelSerializer):
@@ -66,17 +67,6 @@ class FriendRequestSerializer(ModelSerializer):
         model = FriendRequest
         fields = ['id', 'from_author', 'to_author', 'status']
 
-
-# class LikeSerializer(ModelSerializer):
-#     # parent_lookup_kwargs = {
-#     #     'post_pk': 'post__pk',
-#     #     'author_pk': 'author___pk',
-#     # }
-
-#     class Meta:
-#         model = Like
-#         fields = ['id', 'author', 'post',  'published']
-#         ordering = ['-id']
 
 class PostLikeSerializer(ModelSerializer):
     class Meta:
