@@ -12,6 +12,7 @@ from rest_framework import status
 from rest_framework import generics
 from django.db.models import Q
 from drf_spectacular.utils import extend_schema
+from django.contrib.auth import get_user_model
 
 # Create your views here.
 
@@ -30,22 +31,6 @@ class IsSharedWithFriends(permissions.BasePermission):
         return not obj.shared_with_friends
 
 
-class AuthorViewSet(viewsets.ModelViewSet):
-    queryset = Author.objects.all()
-    serializer_class = AuthorSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    pagination_class = Pagination
-
-    # def get_queryset(self):
-    #     user = self.request.user
-    #     if user.is_authenticated:
-    #         # Filter posts based on shared_with_friends and user relationship
-    #         return Post.objects.filter(
-    #             Q(shared_with_friends=False) | Q(owner__followers=user.author)
-    #         )
-    #     return Post.objects.filter(shared_with_friends=False)
-
-
 class AuthorListViewSet(generics.ListAPIView):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
@@ -55,6 +40,13 @@ class AuthorListViewSet(generics.ListAPIView):
 
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
+
+    # def list(self, request, *args, **kwargs):
+    #     user = get_user_model()
+    #     all_users = user.objects.all()
+    #     # query = Author.objects.all()
+    #     serializer = CurrentUserSerializer(all_users, many=True)
+    #     return Response(serializer.data)
 
     # def get_queryset(self):
     #     user = self.request.user
@@ -202,6 +194,93 @@ class CommentViewSet(generics.ListCreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class AddLikeToPostView(APIView):
+    queryset = PostLike.objects.all()
+    serializer_class = PostLikeSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    pagination_class = Pagination
+
+    @extend_schema(
+        tags=['Likes'],
+    )
+    def get(self, request, author_pk, post_pk, format=None):
+        post = Post.objects.get(pk=post_pk)
+        likes = PostLike.objects.filter(post=post)
+        serializer = PostLikeSerializer(likes, many=True)
+        return Response(serializer.data)
+
+    @extend_schema(
+        tags=['Likes'],
+    )
+    def post(self, request, author_pk, post_pk, format=None):
+        author = Author.objects.get(pk=author_pk)
+        post = Post.objects.get(pk=post_pk)
+
+        # check if author already liked the post
+        if PostLike.objects.filter(author=author, post=post).exists():
+            return Response({"message": "cannot like post again"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = PostLikeSerializer(data=request.data)
+        if serializer.is_valid():
+            like = serializer.save(author=author, post=post)
+            return Response(PostLikeSerializer(like).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AddLikeToCommentView(APIView):
+    queryset = CommentLike.objects.all()
+    serializer_class = CommentLikeSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    pagination_class = Pagination
+
+    @extend_schema(
+        tags=['Likes'],
+    )
+    def post(self, request, author_pk, post_pk, comment_pk, format=None):
+        author = Author.objects.get(pk=author_pk)
+        comment = Comment.objects.get(pk=comment_pk)
+
+        # check if author already liked the post
+        if CommentLike.objects.filter(author=author, comment=comment).exists():
+            return Response({"message": "cannot like comment again"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = CommentLikeSerializer(data=request.data)
+        if serializer.is_valid():
+            like = serializer.save(author=author, comment=comment)
+            return Response(CommentLikeSerializer(like).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @extend_schema(
+        tags=['Likes'],
+    )
+    def get(self, request, author_pk, post_pk, comment_pk, format=None):
+        comment = Comment.objects.get(pk=comment_pk)
+        likes = CommentLike.objects.filter(comment=comment)
+        serializer = CommentLikeSerializer(likes, many=True)
+        return Response(serializer.data)
+
+
+class GetAllAuthorLikes(generics.ListAPIView):
+    queryset1 = PostLike.objects.all()
+    queryset2 = CommentLike.objects.all()
+    serializer_class1 = PostLikeSerializer
+    serializer_class2 = CommentLikeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = Pagination
+
+    @extend_schema(
+        tags=['Likes'],
+    )
+    def get(self, request, author_pk, format=None):
+        author = Author.objects.get(pk=author_pk)
+        posts = Post.objects.filter(owner=author)
+        likes = PostLike.objects.filter(author=author)
+        likes2 = CommentLike.objects.filter(author=author)
+        serializer = PostLikeSerializer(likes, many=True)
+        serializer2 = CommentLikeSerializer(likes2, many=True)
+        return Response(serializer.data+serializer2.data)
+
+
 class ImageViewSet(APIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
@@ -225,13 +304,6 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
     queryset = FriendRequest.objects.all()
     serializer_class = FriendRequestSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-
-class LikeViewSet(viewsets.ModelViewSet):
-    queryset = Like.objects.all()
-    serializer_class = LikeSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    pagination_class = Pagination
 
 
 class ConnectedNodeViewSet(viewsets.ModelViewSet):
