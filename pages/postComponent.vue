@@ -13,7 +13,7 @@
       <p>{{ postContent }}</p>
       <div class="post-actions">
         <button @click="toggleLike">{{ liked ? 'Unlike' : 'Like' }}</button>
-        <span class="like-count">{{ likeCount }}</span>
+        <span class="like-count">{{ likeCount }} like(s)</span>
         <button @click="toggleCommentBox">Comment</button>
         <button class='edit' @click="showEditPost = !showEditPost">Edit</button>
       </div>
@@ -104,9 +104,11 @@ export default {
       // Implement the logic to get likes
       // Example:
       try {
-        const response = await axios.get(authorStore.BASE_URL + '/authors/'+authorStore.getAuthorId+ '/posts/' + this.postID + '/likes/');
+        const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/likes/');
         if (response.status === 200) {
-          this.likeCount = response.data.likeCount;
+          console.log('109', response.data)
+          const arrayOfLikes = response.data
+          this.likeCount = arrayOfLikes.length;
           this.liked = response.data.userLiked; // Assuming the API returns if the current user liked the post
         }
       } catch (error) {
@@ -116,13 +118,16 @@ export default {
     async toggleLike() {
       const authorStore = useAuthorStore();
       try {
+        axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
         if (this.liked) {
           // Logic to unlike the post
-          await axios.post(authorStore.BASE_URL + '/authors/'+authorStore.getAuthorId+ '/posts/' + this.postID + '/likes/');
+          await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/likes/',
+            { published: new Date().toISOString() });
           this.likeCount -= 1;
         } else {
           // Logic to like the post
-          await axios.post(authorStore.BASE_URL + '/authors/'+authorStore.getAuthorId+ '/posts/' + this.postID + '/likes/');
+          await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/likes/',
+            { published: new Date().toISOString() });
           this.likeCount += 1;
         }
         this.liked = !this.liked;
