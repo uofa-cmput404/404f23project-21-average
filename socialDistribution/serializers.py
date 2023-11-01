@@ -72,7 +72,7 @@ class FriendRequestSerializer(ModelSerializer):
 class PostLikeSerializer(ModelSerializer):
     class Meta:
         model = PostLike
-        fields = ['published']
+        fields = ['published', 'author', 'post', 'id']
         read_only_fields = ['author', 'post', 'id']
         ordering = ['-id']
 
@@ -80,7 +80,7 @@ class PostLikeSerializer(ModelSerializer):
 class CommentLikeSerializer(ModelSerializer):
     class Meta:
         model = CommentLike
-        fields = ['published']
+        fields = ['published', 'author', 'comment', 'id']
         ordering = ['-id']
         read_only_fields = ['author', 'comment', 'id']
 
