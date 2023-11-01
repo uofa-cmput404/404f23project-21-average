@@ -31,8 +31,9 @@
 <script lang="ts" setup>
 import axios from "axios";
 import { ref } from "vue";
+import { useAuthorStore } from "../stores/authorStore";
 
-
+const authorStore = useAuthorStore();
 const email = ref('')
 const username = ref('')
 const password = ref('')
@@ -40,13 +41,30 @@ const register = async () => {
 
   try {
     const data = {
-      // email: email,
+      email: email.value,
       username: username.value,
       password1: password.value,
       password2: password.value
     }
-    const response = await axios.post('http://127.0.0.1:8000/api/auth/register/', data)
-    console.log(response)
+    try {
+      console.log(data)
+      const response = await axios.post('http://127.0.0.1:8000/api/auth/register/', data)
+      axios.defaults.headers.common['Authorization'] = 'Token ' + response.data.key;
+    } catch (error) {
+      console.log(error)
+    }
+
+    const userIDResponse = await axios.get('http://127.0.0.1:8000/api/auth/user/')
+    const auth = {
+      host: "string",
+      displayName: username.value,
+      github: "string",
+      user: userIDResponse.data.pk,
+    }
+    const responseAuth = await axios.post('http://127.0.0.1:8000/authors', auth)
+    console.log(responseAuth)
+    authorStore.authorId = responseAuth.data.id;
+    console.log(responseAuth)
   } catch (error) {
     // Handle errors (e.g., network issues or validation issues)
     console.error("Error during registration:", error);

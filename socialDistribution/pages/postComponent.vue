@@ -45,6 +45,7 @@
 
 <script>
 import axios from 'axios'
+import { useAuthorStore } from '../stores/authorStore';
 export default {
   props: {
     profilePicture: {
@@ -67,9 +68,10 @@ export default {
     };
   },
   async created() {
+    const authorStore = useAuthorStore();
     try {
       console.log('http://localhost:8000/api/post/' + this.postID)
-      const response = await axios.get('http://localhost:8000/api/post/' + this.postID);
+      const response = await axios.get('http://127.0.0.1:8000/authors/' + authorStore.authorId + '/posts/');
       console.log(response)
       if (response.status === 200) {
         this.post = response.data;

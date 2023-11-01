@@ -102,6 +102,9 @@ DATABASES = {
     }
 }
 
+REST_AUTH = {
+    'SESSION_LOGIN': False
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -163,14 +166,19 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ['rest_framework.permissions.AllowAny'],
 }
 
+
 JWT_AUTH = {
     "JWT_VERIFY": True,
     "JWT_VERIFY_EXPIRATION": True,
     "JWT_LEEWAY": 0,
     "JWT_EXPIRATION_DELTA": datetime.timedelta(seconds=86400),
     "JWT_ALLOW_REFRESH": True,
-    "JWT_REFRESH_EXPIRATION_DELTA": datetime.timedelta(days=7),
+    "JWT_REFRESH_EXPIRATION_DELTA": datetime.timedelta(days=7)
 }
+
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "none"
 
 SITE_ID = 1  # make sure SITE_ID is set
 
