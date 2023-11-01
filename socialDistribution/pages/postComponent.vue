@@ -51,6 +51,10 @@ export default {
     commentComponent,
   },
   props: {
+    postContent: {
+      type: String,
+      default: ''
+    },
     profilePicture: {
       type: String,
       default: ''
@@ -109,20 +113,22 @@ export default {
     },
     async updatePost() {
       const authorStore = useAuthorStore();
-      this.postMainContent = this.editedPostContent;  // Update the main content
       this.showEditPost = false;
+      this.postMainContent = this.editedPostContent;
       const payload = {
-        type: this.isPublic ? 'PUBLIC' : 'FRIENDS', // Adjust as per your requirement
+        visibility: this.isPublic ? 'PUBLIC' : 'FRIENDS', // Adjust as per your requirement
+        unlisted: false,
         title: 'string', // You can add a title input field in your template
         source: 'string', // Adjust as per your requirement
         origin: 'string', // Adjust as per your requirement
         description: 'string', // You can add a description input field in your template
         contentType: 'string', // Adjust based on your content type
-        content: this.postContent,
+        content: this.editedPostContent,
         published: new Date().toISOString(),
         categories: 'string', // Adjust as per your requirement
       };
-      const response = await axios.get('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/' + this.postID, payload);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+      const response = await axios.post('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/' + this.postID, payload);
       console.log(response)
     }
 

@@ -95,7 +95,8 @@ export default {
       // Post submission logic
       try {
         const payload = {
-          type: this.isPublic ? 'PUBLIC' : 'FRIENDS', // Adjust as per your requirement
+          visibility: this.isPublic ? 'PUBLIC' : 'FRIENDS', // Adjust as per your requirement
+          unlisted: false, // Adjust as per your requirement
           title: 'string', // You can add a title input field in your template
           source: 'string', // Adjust as per your requirement
           origin: 'string', // Adjust as per your requirement
