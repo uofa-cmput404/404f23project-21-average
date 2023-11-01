@@ -89,10 +89,18 @@ class FriendRequest(models.Model):
     status = models.CharField(max_length=255)
 
 
-class Like(models.Model):
+class PostLike(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    published = models.DateTimeField()
+
+
+class CommentLike(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    # post = models.ForeignKey(Post, on_delete=models.CASCADE) # maybe dont need it??
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
     published = models.DateTimeField()
 
 
