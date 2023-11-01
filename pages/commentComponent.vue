@@ -15,6 +15,7 @@
 <script>
 import { useAuthorStore } from '../stores/authorStore';
 import axios from 'axios'
+
 export default {
   props: {
     postId: {
@@ -28,13 +29,19 @@ export default {
       newComment: '',
     };
   },
-  async mounted() {
-    // this.fetchPosts();
-    const authorStore = useAuthorStore();
-    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postId + '/comments/');
-    this.comments = response.data.results;
+  async created() {
+    await this.fetchComments();
   },
   methods: {
+    async fetchComments() {
+      const authorStore = useAuthorStore();
+      try {
+        const response = await axios.get(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postId}/comments/`);
+        this.comments = response.data;
+      } catch (error) {
+        console.error('Error while fetching comments:', error);
+      }
+    },
     async submitComment() {
       if (this.newComment.trim() !== '') {
         const authorStore = useAuthorStore();
@@ -45,31 +52,19 @@ export default {
             published: new Date().toISOString(),
           };
           axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
-          const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postId + '/comments/', payload);
+          await axios.post(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postId}/comments/`, payload);
           this.newComment = '';
+          await this.fetchComments(); // Fetch comments again to update the list
         }
         catch (error) {
-          console.error('Error while creating post:', error);
+          console.error('Error while creating comment:', error);
         }
-      }
-    },
-    async created() {
-      const authorStore = useAuthorStore();
-      try {
-        console.log(authorStore.authorId, authorStore.authToken)
-        const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postId + '/comments/');
-        console.log(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postId + '/comments/')
-        // this.comments.push({
-        //     author: response.data.commenter, 
-        //     content: response.comment,
-        //   });
-      } catch (error) {
-        console.error('Error while fetching posts:', error);
       }
     },
   }
 };
 </script>
+
   
 <style>
 .comment-section {

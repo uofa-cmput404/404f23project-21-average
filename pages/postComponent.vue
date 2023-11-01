@@ -79,7 +79,6 @@ export default {
   async created() {
     const authorStore = useAuthorStore();
     try {
-      console.log('http://localhost:8000/api/post/' + this.postID)
       const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
       console.log(response)
       this.postMainContent = response.data.results['content'] // Updat
@@ -104,6 +103,7 @@ export default {
       // Implement the logic to get likes
       // Example:
       try {
+        console.log("likessssss")
         const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/likes/');
         if (response.status === 200) {
           console.log('109', response.data)
