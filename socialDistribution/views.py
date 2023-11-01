@@ -179,8 +179,9 @@ class CommentViewSet(generics.ListCreateAPIView):
     )
     def get(self, request, author_pk, post_pk, format=None):
         comments = Comment.objects.filter(parentPost=post_pk)
+        page = self.paginate_queryset(comments)
         serializer = CommentSerializer(comments, many=True)
-        return Response(serializer.data)
+        return self.get_paginated_response(serializer.data)
 
     @extend_schema(
         tags=['Comments'],
@@ -195,7 +196,7 @@ class CommentViewSet(generics.ListCreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class AddLikeToPostView(APIView):
+class AddLikeToPostView(generics.ListCreateAPIView):
     queryset = PostLike.objects.all()
     serializer_class = PostLikeSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -207,8 +208,9 @@ class AddLikeToPostView(APIView):
     def get(self, request, author_pk, post_pk, format=None):
         post = Post.objects.get(pk=post_pk)
         likes = PostLike.objects.filter(post=post)
+        page = self.paginate_queryset(likes)
         serializer = PostLikeSerializer(likes, many=True)
-        return Response(serializer.data)
+        return self.get_paginated_response(serializer.data)
 
     @extend_schema(
         tags=['Likes'],
@@ -228,7 +230,7 @@ class AddLikeToPostView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class AddLikeToCommentView(APIView):
+class AddLikeToCommentView(generics.ListCreateAPIView):
     queryset = CommentLike.objects.all()
     serializer_class = CommentLikeSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -257,8 +259,9 @@ class AddLikeToCommentView(APIView):
     def get(self, request, author_pk, post_pk, comment_pk, format=None):
         comment = Comment.objects.get(pk=comment_pk)
         likes = CommentLike.objects.filter(comment=comment)
+        page = self.paginate_queryset(likes)
         serializer = CommentLikeSerializer(likes, many=True)
-        return Response(serializer.data)
+        return self.get_paginated_response(serializer.data)
 
 
 class GetAllAuthorLikes(generics.ListAPIView):
