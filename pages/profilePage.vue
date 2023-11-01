@@ -47,7 +47,7 @@ export default {
     console.log(authorStore.authorId, authorStore.authToken)
     console.log(authorStore.getAuthToken)
     try {
-      const response = await axios.get('http://127.0.0.1:8000/authors/' + authorStore.authorId + '/posts/');
+      const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.authorId + '/posts/');
       // await axios.get('http://localhost:8000/api/posts/');
       console.log(response)
       if (response.status === 200) {

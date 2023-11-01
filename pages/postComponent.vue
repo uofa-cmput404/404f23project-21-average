@@ -79,11 +79,11 @@ export default {
     const authorStore = useAuthorStore();
     try {
       console.log('http://localhost:8000/api/post/' + this.postID)
-      const response = await axios.get('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/');
+      const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
       console.log(response)
       this.postMainContent = response.data.results['content'] // Updat
       // Fetch post details
-      const response1 = await axios.get('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/' + this.postID);
+      const response1 = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID);
       if (response.status === 200) {
         this.post = response.data;
         // Fetch likes
@@ -102,7 +102,7 @@ export default {
       // Implement the logic to get likes
       // Example:
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/post/' + this.postID + '/likes');
+        const response = await axios.get(authorStore.BASE_URL + '/api/post/' + this.postID + '/likes');
         if (response.status === 200) {
           this.likeCount = response.data.likeCount;
           this.liked = response.data.userLiked; // Assuming the API returns if the current user liked the post
@@ -115,11 +115,11 @@ export default {
       try {
         if (this.liked) {
           // Logic to unlike the post
-          await axios.post('http://127.0.0.1:8000/api/post/' + this.postID + '/unlike');
+          await axios.post(authorStore.BASE_URL + '/api/post/' + this.postID + '/unlike');
           this.likeCount -= 1;
         } else {
           // Logic to like the post
-          await axios.post('http://127.0.0.1:8000/api/post/' + this.postID + '/like');
+          await axios.post(authorStore.BASE_URL + '/api/post/' + this.postID + '/like');
           this.likeCount += 1;
         }
         this.liked = !this.liked;
@@ -158,7 +158,7 @@ export default {
         categories: 'string', // Adjust as per your requirement
       };
       axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
-      const response = await axios.post('http://127.0.0.1:8000/authors/' + authorStore.getAuthorId + '/posts/' + this.postID, payload);
+      const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID, payload);
       console.log(response)
     }
 
