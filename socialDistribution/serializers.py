@@ -37,6 +37,7 @@ class AuthorSerializer(ModelSerializer):
 
 
 class PostSerializer(ModelSerializer):
+    owner = AuthorSerializer(read_only=True)
 
     class Meta:
         model = Post
@@ -70,6 +71,7 @@ class FriendRequestSerializer(ModelSerializer):
 
 
 class PostLikeSerializer(ModelSerializer):
+    
     class Meta:
         model = PostLike
         fields = ['published', 'author', 'post', 'id']

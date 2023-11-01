@@ -11,7 +11,8 @@
       <!-- Posts rendering section -->
       <div class="posts-feed">
         <h2>Posts</h2>
-        <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :postID="post.id" />
+        <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :userId="post.owner.username"
+          :postID="post.id" />
       </div>
       <SidebarComponent />
     </div>
