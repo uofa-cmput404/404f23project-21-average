@@ -5,7 +5,10 @@
       <div class="user-section">
         <input type="file" id="profilePhotoInput" ref="profilePhotoInput" @change="changeProfilePhoto" style="display: none;">
         <img :src="profilePhoto" class="profile-photo" @click="triggerProfilePhotoUpload">
-        <h2>{{ username }}</h2>
+        
+        <div class="username">
+          <h2>{{ username }}</h2>
+        </div>
         <div class="follow-info">
           <button>Followers: </button>
           <button>Following: </button>
@@ -20,7 +23,8 @@
         </div>
         <div class="posts-section">
           <h3>MY POSTS:</h3>
-          <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :postID="post.id" />
+          <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :userId="post.owner.username"
+          :postID="post.id" />
         </div>
       </div>
     </main>
@@ -30,31 +34,62 @@
 <script>
 import PostComponent from './postComponent.vue';
 import SidebarComponent from './sidebar.vue';
+import commentComponent from './commentComponent.vue';
 import axios from 'axios';
 import { useAuthorStore } from '../stores/authorStore';
+import defaultProfilePic from '../pages/defualtprofilepic.jpg'; // Import the default profile image
 
 export default {
   name: "SocialDistributionApp",
   components: {
     PostComponent,
     SidebarComponent,
+    commentComponent,
   },
+  props: {
+    postContent: {
+      type: String,
+      default: ''
+    },
+    profilePicture: {
+      type: String,
+      default: ''
+    },
+    userId: String,
+    postID: String,
+    postContent: String,
+  },
+
   data() {
     return {
       posts: [], // Initialize posts as an empty array
       bio: "Write a Bio",
       editingBio: false,
-      //profilePhoto: "@/pages/spiderman.jpeg", // Initialize with default image
-      
-      username: 'USER', // Add this line to store the fetched username
+      profilePhoto: defaultProfilePic, // Initialize with default image
+
+      username : '' // Add this line to store the fetched username
     };
 
   },
   async mounted() {
-    // this.fetchPosts();
     const authorStore = useAuthorStore();
-    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
-    this.posts = response.data.results;
+    try {
+      // Fetch user's posts
+      let postsResponse = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
+      this.posts = postsResponse.data.results;
+
+      // Fetch user's profile
+      let profileResponse = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId);
+      this.username = profileResponse.data.username; // Update this line to match your API response structure
+
+      // Set profile photo if available
+      if (profileResponse.data.profilePicture) {
+        this.profilePhoto = profileResponse.data.profilePicture;
+      }
+
+    } catch (error) {
+      console.error('Error while fetching data:', error);
+    }
   },
   
   methods: {
@@ -93,10 +128,17 @@ export default {
     //     });
     // },
   },
+  
   async created() {
 
     const authorStore = useAuthorStore();
-    this.fetchPosts();
+
+    try {
+      const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
+    } catch (error) {
+      console.error('Error while fetching posts:', error);
+    }
+    
   },
 };
 </script>
