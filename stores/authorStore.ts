@@ -9,15 +9,14 @@ export const useAuthorStore = defineStore({
     authToken: "",
     BASE_URL: "https://avergae-21-b951939c31ad.herokuapp.com",
   }),
-  getters: {
+  getters: {},
+  actions: {
     getAuthorId() {
       return localStorage.getItem("authorId");
     },
     getAuthToken() {
       return localStorage.getItem("token");
     },
-  },
-  actions: {
     async setAuthorId(id: string) {
       this.authorId = id;
       localStorage.setItem("authorId", id);

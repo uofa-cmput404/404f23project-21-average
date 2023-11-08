@@ -16,7 +16,7 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = 'django-insecure-7r=x&jfdtv*(hou@1p3$k07glf=zyc*$je0$t_6rwy34g74ift'
+# SECRET_KEY = 'django-insecure-7r=x&jfdtv*(hou@1p3$k07glf=zyc*$je0$t_6rwy34g74ift'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -229,7 +229,7 @@ STORAGES = {
     },
 }
 
-try:
-    from local_settings import *
-except ImportError:
-    pass
+# try:
+#     from local_settings import *
+# except ImportError:
+#     pass
