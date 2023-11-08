@@ -67,7 +67,7 @@ export default {
       editingBio: false,
       profilePhoto: defaultProfilePic, // Initialize with default image
 
-      username : '' // Add this line to store the fetched username
+      username : '' 
     };
 
   },
@@ -112,21 +112,7 @@ export default {
       // For demonstration purposes, we'll just log it
       console.log(this.bio);
     },
-    // fetchPosts() {
-    //   const authorStore = useAuthorStore();
-    //   // Replace '/api/posts/' with your actual endpoint that retrieves the user's posts
-    //   axios.get(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/`)
-    //     .then(response => {
-    //       if (response.status === 200) {
-    //         this.posts = response.data; // Assuming the data is an array of posts
-    //       } else {
-    //         console.error('Failed to fetch posts:', response);
-    //       }
-    //     })
-    //     .catch(error => {
-    //       console.error("Error fetching posts:", error);
-    //     });
-    // },
+    
   },
   
   async created() {
