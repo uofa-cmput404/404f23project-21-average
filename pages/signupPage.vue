@@ -60,16 +60,28 @@ const register = async () => {
       username: username.value,
       password1: password.value,
       password2: password.value,
+    }
+    const registerData ={
+      host: "string",
+      displayName: username.value,
+      github: githubId.value,
+      image: "string",
       first_name: firstName.value,
       last_name: lastName.value,
-      github_id: githubId.value 
+      email: email.value,
+      username: username.value,
+      groups: [
+        0
+      ]
     }
     try {
       console.log(data)
       const response = await axios.post(authorStore.BASE_URL + '/api/auth/register/', data)
-      // axios.defaults.headers.common['Authorization'] = 'Token ' + response.data.key;
+      console.log(response)
       await authorStore.setAuthToken(response.data.access)
       await authorStore.setAuthorId(response.data.user.pk)
+      axios.defaults.headers.common['Authorization'] = 'Bearer ' + authorStore.getAuthToken;
+      const registerResponse = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/', registerData)
       window.location.href = "/homePage";
     } catch (error) {
       console.log(error)
