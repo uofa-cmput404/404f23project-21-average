@@ -10,14 +10,6 @@
         <h2>REGISTER</h2>
         <form>
           <div class="input-group">
-          <label for="first_name">First Name</label>
-          <input type="text" id="first_name" v-model="firstName" placeholder="First Name" />
-        </div>
-        <div class="input-group">
-          <label for="last_name">Last Name</label>
-          <input type="text" id="last_name" v-model="lastName" placeholder="Last Name" />
-        </div>
-          <div class="input-group">
             <label for="email">Email</label>
             <input type="email" id="email" v-model="email" placeholder="Email" />
           </div>
@@ -28,10 +20,6 @@
           <div class="input-group">
             <label for="password">Password</label>
             <input type="password" id="password" v-model="password" placeholder="Password" />
-            <div class="input-group">
-          <label for="github_id">GitHub ID (Optional)</label>
-          <input type="text" id="github_id" v-model="githubId" placeholder="GitHub ID" />
-        </div>
           </div>
           <button type="button" @click="register();">SIGN UP</button>
         </form>
@@ -49,9 +37,6 @@ const authorStore = useAuthorStore();
 const email = ref('')
 const username = ref('')
 const password = ref('')
-const firstName = ref('')
-const lastName = ref('')
-const githubId = ref('')
 const register = async () => {
 
   try {
@@ -59,10 +44,7 @@ const register = async () => {
       email: email.value,
       username: username.value,
       password1: password.value,
-      password2: password.value,
-      first_name: firstName.value,
-      last_name: lastName.value,
-      github_id: githubId.value 
+      password2: password.value
     }
     try {
       console.log(data)
@@ -112,8 +94,8 @@ const register = async () => {
   background-color: #333;
   padding: 20px;
   border-radius: 10px;
-  width: 500px;
-  height: auto;
+  width: 450px;
+  height: 550px;
   /* Increased the height to accommodate the additional input field */
   margin: 0 auto;
 }
