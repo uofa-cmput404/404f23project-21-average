@@ -5,7 +5,7 @@
       <div class="user-section">
         <input type="file" id="profilePhotoInput" ref="profilePhotoInput" @change="changeProfilePhoto" style="display: none;">
         <img :src="profilePhoto" class="profile-photo" @click="triggerProfilePhotoUpload">
-        <h2>User1</h2>
+        <h2>{{ username }}</h2>
         <div class="follow-info">
           <button>Followers: </button>
           <button>Following: </button>
@@ -44,9 +44,19 @@ export default {
       posts: [], // Initialize posts as an empty array
       bio: "Write a Bio",
       editingBio: false,
-      profilePhoto: "@/pages/spiderman.jpeg", // Initialize with default image
+      //profilePhoto: "@/pages/spiderman.jpeg", // Initialize with default image
+      
+      username: 'USER', // Add this line to store the fetched username
     };
+
   },
+  async mounted() {
+    // this.fetchPosts();
+    const authorStore = useAuthorStore();
+    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
+    this.posts = response.data.results;
+  },
+  
   methods: {
     triggerProfilePhotoUpload() {
       this.$refs.profilePhotoInput.click();
@@ -67,10 +77,26 @@ export default {
       // For demonstration purposes, we'll just log it
       console.log(this.bio);
     },
+    // fetchPosts() {
+    //   const authorStore = useAuthorStore();
+    //   // Replace '/api/posts/' with your actual endpoint that retrieves the user's posts
+    //   axios.get(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/`)
+    //     .then(response => {
+    //       if (response.status === 200) {
+    //         this.posts = response.data; // Assuming the data is an array of posts
+    //       } else {
+    //         console.error('Failed to fetch posts:', response);
+    //       }
+    //     })
+    //     .catch(error => {
+    //       console.error("Error fetching posts:", error);
+    //     });
+    // },
   },
   async created() {
+
     const authorStore = useAuthorStore();
-    // ...
+    this.fetchPosts();
   },
 };
 </script>
