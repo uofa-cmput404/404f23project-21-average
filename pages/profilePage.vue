@@ -3,26 +3,29 @@
     <SidebarComponent />
     <main class="main-content">
       <div class="user-section">
-        <img src="@/pages/spiderman.jpeg" class="profile-photo">
+        <input type="file" id="profilePhotoInput" ref="profilePhotoInput" @change="changeProfilePhoto" style="display: none;">
+        <img :src="profilePhoto" class="profile-photo" @click="triggerProfilePhotoUpload">
         <h2>User1</h2>
         <div class="follow-info">
           <button>Followers: </button>
           <button>Following: </button>
         </div>
-        <div class="bio-section">
-          <textarea placeholder="Write a Bio"></textarea>
+        <div class="bio-section" v-if="!editingBio">
+          <p>{{ bio }}</p>
+          <button class="edit" @click="editingBio = true">Edit</button>
         </div>
-        <button class="edit">Edit</button>
+        <div class="bio-section" v-else>
+          <textarea v-model="bio"></textarea>
+          <button class="edit" @click="saveBio">Save</button>
+        </div>
         <div class="posts-section">
           <h3>MY POSTS:</h3>
-          <!-- Use v-for directive to loop over each post -->
           <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :postID="post.id" />
         </div>
       </div>
     </main>
   </div>
 </template>
-
 
 <script>
 import PostComponent from './postComponent.vue';
@@ -38,29 +41,40 @@ export default {
   },
   data() {
     return {
-      posts: [] // Initialize posts as an empty array
+      posts: [], // Initialize posts as an empty array
+      bio: "Write a Bio",
+      editingBio: false,
+      profilePhoto: "@/pages/spiderman.jpeg", // Initialize with default image
     };
+  },
+  methods: {
+    triggerProfilePhotoUpload() {
+      this.$refs.profilePhotoInput.click();
+    },
+    changeProfilePhoto(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.profilePhoto = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+    saveBio() {
+      // Here you should implement the logic to save the bio, perhaps sending it to a server
+      this.editingBio = false;
+      // For demonstration purposes, we'll just log it
+      console.log(this.bio);
+    },
   },
   async created() {
     const authorStore = useAuthorStore();
-    // authorStore.fetchAuthor()
-    console.log(authorStore.authorId, authorStore.authToken)
-    console.log(authorStore.getAuthToken)
-    try {
-      const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.authorId + '/posts/');
-      // await axios.get('http://localhost:8000/api/posts/');
-      console.log(response)
-      if (response.status === 200) {
-        this.posts = response.data.results; // Update the posts data property with the fetched posts
-      } else {
-        console.error('Error fetching posts:', response);
-      }
-    } catch (error) {
-      console.error('Error while fetching posts:', error);
-    }
+    // ...
   },
 };
 </script>
+
 
 
 <style scoped>
@@ -112,6 +126,19 @@ export default {
 
 }
 
+.bio-section p {
+  display: block; /* Ensures the element is block-level, affecting layout */
+  width: 80%; /* Match textarea width */
+  margin: auto auto; /* Center it */
+  margin-bottom: 20px; /* Adjust this value to increase or decrease the space */
+  padding: 10px; /* Match textarea padding */
+  background-color: black; /* Match textarea background color */
+  color: white; /* Match textarea text color */
+  border: none; /* No border as per textarea */
+  white-space: pre-wrap; /* Ensures that whitespace and newlines are preserved */
+  word-wrap: break-word; /* Ensures the text breaks to prevent overflow */
+}
+
 .bio-section textarea {
   display: flex;
   justify-content: center;
@@ -159,6 +186,7 @@ button {
 .edit {
   margin-left: auto;
   margin-right: auto;
+  margin-top: 20px; /* Add top margin to the edit button for space */
   display: block;
   /* To enable margin auto to work for horizontal centering */
   font-size: 10px;
@@ -168,3 +196,4 @@ button {
 
 }
 </style>
+ 
