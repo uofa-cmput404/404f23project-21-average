@@ -65,7 +65,8 @@ ROOT_URLCONF = 'project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(Path(__file__).resolve().parent.parent.parent, '.nuxt/dist')],
+        'DIRS': [os.path.join(BASE_DIR, 'dist')],
+        # 'DIRS': [os.path.join(Path(__file__).resolve().parent.parent.parent, '.nuxt/dist')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -79,6 +80,9 @@ TEMPLATES = [
 ]
 
 # STATICFILES_DIRS = [os.path.join(BASE_DIR, '.output/server'), os.path.join(BASE_DIR, '.nuxt/dist')]
+STATICFILES_DIRS = [
+  os.path.join(BASE_DIR, 'dist/static'),
+]
 
 
 WSGI_APPLICATION = 'project.wsgi.application'
@@ -187,10 +191,10 @@ SITE_ID = 1  # make sure SITE_ID is set
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ORIGIN_ALLOW_ALL = True
 
-DEBUG = True
-# SECRET_KEY = os.environ['SECRET_KEY']
-# ALLOWED_HOSTS = ['avergae-21-b951939c31ad.herokuapp.com/',
-#                  'localhost', '127.0.0.1', 'localhost:3000']
+# DEBUG = True
+SECRET_KEY = os.environ['SECRET_KEY']
+ALLOWED_HOSTS = ['avergae-21-b951939c31ad.herokuapp.com/',
+                 'localhost', '127.0.0.1', 'localhost:3000']
 # SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 # CORS_ALLOWED_ORIGINS = [
 #     # "https://example.com",
