@@ -1,31 +1,73 @@
-import 'bootstrap-icons/font/bootstrap-icons.css';
+<!-- SearchPage.vue -->
 <template>
-    <div class="app-container">
-      <SidebarComponent/>
-      <main class="main-content">
-        <div class="search-bar">
-          <input type="text" placeholder="Search for friends" />
-        </div>
-  
-      </main>
-    </div>
-  </template>
-  
-  <script>
-  import SidebarComponent from './sidebar.vue';
-  import 'bootstrap-icons/font/bootstrap-icons.css';
-  export default {
-    name: "SocialDistributionApp",
-    components:{
-    SidebarComponent
-  }
-  };
+  <div class="app-container">
+    <SidebarComponent/>
+    <main class="main-content">
+      <div class="search-bar">
+        <input type="text" placeholder="Search for friends" v-model="searchQuery" @input="searchFriends"/>
+      </div>
+      <div class="user-list">
+        <FriendComponent
+          v-for="friend in filteredFriends"
+          :id="friend.id"
+          :username="friend.username"
+          :fs = "friends.first_name"
+          :ls = "friends.last_name"
+        />
+      </div>
+    </main>
+  </div>
+</template>
 
+<script>
+import axios from 'axios'
+import SidebarComponent from './sidebar.vue';
+import FriendComponent from './friendComponent.vue';
 
-  </script>
-  
-  <style scoped>
-  .app-container {
+export default {
+  name: "SearchPage",
+  components: {
+    SidebarComponent,
+    FriendComponent,
+  },
+  data() {
+    return {
+      searchQuery: '',
+      friends: [], // This will hold the list of friends fetched from the server
+      filteredFriends: [],
+    };
+  },
+
+  async created() {
+    const authorStore = useAuthorStore();
+    const response = await axios.get(authorStore.BASE_URL + '/authors/');
+    this.filteredFriends = response.data.results;
+    console.log(this.filteredFriends)
+  }, 
+
+  methods: {
+    searchFriends() {
+      // Implement the search logic here
+      // This might involve filtering the `friends` array based on `searchQuery`
+      this.filteredFriends = this.friends.filter(friend =>
+        friend.username.toLowerCase().includes(this.searchQuery.toLowerCase())
+      );
+    },
+    fetchFriends() {
+      // Fetch the list of friends from the server
+      // For example, using axios:
+      // axios.get('/api/friends').then(response => {
+      //   this.friends = response.data;
+      //   this.filteredFriends = response.data;
+      // });
+    },
+  },
+
+};
+</script>
+
+<style scoped>
+.app-container {
     width:100%;
     height:100%;
     position:fixed;
@@ -47,16 +89,6 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
     background-color: #00C58E;
   }
   
-  .bi{
-    font-size: 60px;
-    margin-left:20px;
-
-  }
-
-  .sidebar i.bi {
-    display: block;
-    margin-bottom: 10px; /* Optional: Add space between the icons */
-}
   .search-bar input {
     width: 80%;
     padding: 10px;
@@ -66,8 +98,10 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
   }
   
   .user-list {
-    background-color: black;
     padding: 20px;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
   }
   
-  </style>
+</style>
