@@ -4,4 +4,10 @@ export default defineNuxtConfig({
     // ...
     "@pinia/nuxt",
   ],
+  nitro: {
+    prerender: {
+      ignore: ["/"],
+    },
+  },
+  ssr: false,
 });

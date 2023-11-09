@@ -1,1 +1,6 @@
-export { default } from "file:///Users/afaqnabi/Desktop/CMPUT404/project/404f23project-21-average/node_modules/@nuxt/vite-builder/dist/runtime/vite-node.mjs"
+const entrySpa = () => {
+};
+export {
+  entrySpa as default
+};
+//# sourceMappingURL=server.mjs.map

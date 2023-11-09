@@ -81,7 +81,7 @@ TEMPLATES = [
 
 # STATICFILES_DIRS = [os.path.join(BASE_DIR, '.output/server'), os.path.join(BASE_DIR, '.nuxt/dist')]
 STATICFILES_DIRS = [
-  os.path.join(BASE_DIR, 'dist/static'),
+  os.path.join(BASE_DIR, 'dist/_nuxt'),
 ]
 
 
