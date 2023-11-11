@@ -1,0 +1,21 @@
+setup:
+  addons:
+    - plan: heroku-postgresql
+      as: DATABASE
+  config:
+    env_file: prod.env
+build:
+  docker:
+    web: backend/dockerfile
+    worker: frontend/dockerfile
+# release:
+#   command:
+#     - ./deployment-tasks.sh
+#   image: worker
+run:
+  web: bash -c "python manage.py migrate && python manage.py collectstatic --no-input --clear && gunicorn --workers 3  --bind  0.0.0.0:8000 project.wsgi:application"
+  worker: yarn start
+  # asset-syncer:
+  #   command:
+  #     - python asset-syncer.py
+  #   image: worker

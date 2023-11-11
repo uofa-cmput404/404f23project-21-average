@@ -66,3 +66,4 @@ zipp==3.17.0
 Pillow==10.1.0
 mysqlclient==2.1.0
 idna==3.4
+django-environ==0.6.0

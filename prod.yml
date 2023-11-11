@@ -1,6 +1,7 @@
 version: "3"
 services:
   backend:
+    platform: linux/amd64
     build: ./backend
     command: bash -c "python manage.py migrate && python manage.py collectstatic --no-input --clear && gunicorn --workers 3  --bind  0.0.0.0:8000 project.wsgi:application"
     expose:
@@ -9,14 +10,17 @@ services:
       - static:/usr/src/app/static_root
       - media:/usr/src/app/media
     environment:
-      - ALLOWED_HOSTS=127.0.0.1
+      - ALLOWED_HOSTS=127.0.0.1 https://cmput-average-21-b54788720538.herokuapp.com/
       - SUPERUSER_NAME=admin
       - SUPERUSER_PASSWORD=admin123
-      - DJANGO_SETTINGS_MODULE=project.pro_settings
+      - DJANGO_SETTINGS_MODULE=project.settings.production
     depends_on:
       - db
+    env_file:
+      - prod.env
 
   frontend:
+    platform: linux/amd64
     build:
       context: ./frontend
       args:
@@ -28,3 +32,5 @@ services:
     environment:
       - AXIOS_BASEURL=http://backend:8000/api
       - AXIOS_BROWSER_BASEURL=/api
+    env_file:
+      - prod.env

@@ -15,11 +15,14 @@ from pathlib import Path
 import os
 # import decouple 
 # import config
+import environ
+
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = 'django-insecure-7r=x&jfdtv*(hou@1p3$k07glf=zyc*$je0$t_6rwy34g74ift'
-# SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = env('SECRET_KEY')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -91,36 +94,22 @@ STATICFILES_DIRS = [
 WSGI_APPLICATION = 'project.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-       "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": os.environ.get("SQL_DATABASE", os.path.join(BASE_DIR, 'db.sqlite3')),
-        "USER": os.environ.get("SQL_USER", "myuser"),
-        "PASSWORD": os.environ.get("SQL_PASSWORD", "myuserpassword"),
-        "HOST": os.environ.get("SQL_HOST", "localhost"),
-        "PORT": os.environ.get("SQL_PORT", "3306"),
-    }
-}
-
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    # {
-    #     'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    # },
-    # {
-    #     'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    # },
-    # {
-    #     'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    # },
-    # {
-    #     'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    # },
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
 ]
 
 
@@ -189,13 +178,6 @@ REST_AUTH = {
 
 SITE_ID = 1  # make sure SITE_ID is set
 
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ORIGIN_ALLOW_ALL = True
-
-# DEBUG = True
-# SECRET_KEY = os.environ['SECRET_KEY']
-ALLOWED_HOSTS = ['avergae-21-b951939c31ad.herokuapp.com',
-                 'localhost', '127.0.0.1', 'localhost:3000']
 # SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 # CORS_ALLOWED_ORIGINS = [
 #     # "https://example.com",
@@ -229,8 +211,3 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
-
-# try:
-#     from local_settings import *
-# except ImportError:
-#     pass

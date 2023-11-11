@@ -12,6 +12,7 @@ services:
     environment:
       - SUPERUSER_NAME=admin
       - SUPERUSER_PASSWORD=admin123
+      - DJANGO_SETTINGS_MODULE=project.settings.development
 
   frontend:
     build:

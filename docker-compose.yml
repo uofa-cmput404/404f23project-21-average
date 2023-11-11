@@ -2,15 +2,29 @@ version: "3"
 services:
   db:
     image: postgres
+    platform: linux/amd64
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     volumes:
       - pgdata:/var/lib/postgresql/data
+    env_file:
+      - prod.env
+
+  cache:
+    image: redis:6.2-alpine
+    platform: linux/amd64
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    volumes: 
+      - cache:/data
 
   nginx:
     image: nginx:1.13
+    platform: linux/amd64
     ports:
       - "80:80"
     volumes:
@@ -25,3 +39,5 @@ volumes:
   static:
   media:
   pgdata:
+  cache:
+    driver: local
