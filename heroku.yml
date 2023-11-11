@@ -3,6 +3,10 @@ setup:
     - plan: heroku-postgresql
       as: DATABASE
   config:
+  DJANGO_SETTINGS_MODULE: project.settings.production
+  SECRET_KEY:ac20a7df5e29c68095b13454b565fee9a52b8e7648a4fd243330961626dfac260e1d8d0a2241e7458b3ae92c5a9bc266ac396e8a88e506067248b92f3116afad77c9d8361f08b58878ed16754c99c956b737df3398e73e642618c6d64fcac214b2c9388e
+  DJANGO_ALLOWED_HOSTS: localhost 127.0.0.1 [::1] cmput-average-21.herokuapp.com/
+
     env_file: prod.env
 build:
   docker:
