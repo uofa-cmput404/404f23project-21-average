@@ -9,7 +9,7 @@ environ.Env.read_env()
 DEBUG = False
 DATABASES = {
     'default': {
-       "ENGINE": 'postgres',
+       "ENGINE": 'django.db.backends.postgres',
         "NAME": 'SocialDistribution',
         "USER": 'postgres',
         "PASSWORD": 'postgres',
