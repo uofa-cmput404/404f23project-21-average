@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import datetime
 from pathlib import Path
 import os
-import django_heroku
+# import django_heroku
 # import decouple 
 # import config
 import environ
