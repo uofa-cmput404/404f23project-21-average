@@ -54,7 +54,7 @@ const register = async () => {
       axios.defaults.headers.common[
         "Access-Control-Allow-Headers"
       ] = `Origin, Content-Type, X-Auth-Token, Access-Control-Allow-Origin, Authorization, X-Requested-With, Accept, Access-Control-Allow-Methods, Access-Control-Allow-Headers, Access-Control-Allow-Credentials`;
-      const response = await axios.post(authorStore.BASE_URL + '/api/auth/register/', data)
+      const response = await axios.post(authorStore.BASE_URL + '/auth/register/', data)
       console.log(response)
       // axios.defaults.headers.common['Authorization'] = 'Token ' + response.data.key;
       await authorStore.setAuthToken(response.data.access)

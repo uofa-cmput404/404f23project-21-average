@@ -60,7 +60,7 @@ export default {
           categories: '', // Adjust as per your requirement
           count: 0 // Adjust as per your requirement
         };
-        const response = await axios.post(authorStore.BASE_URL + '/api/posts', payload);
+        const response = await axios.post(authorStore.BASE_URL + '/posts', payload);
         if (response.status === 200 || response.status === 201) {
           // Handle success scenario
           console.log('Post created successfully:', response.data);
