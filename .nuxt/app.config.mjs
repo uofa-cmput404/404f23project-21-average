@@ -1,10 +1,10 @@
 
-import { updateAppConfig } from '#app'
-import { defuFn } from '/Users/afaqnabi/Desktop/CMPUT404/project/404f23project-21-average/node_modules/defu/dist/defu.mjs'
+import { updateAppConfig } from '#app/config'
+import { defuFn } from 'defu'
 
 const inlineConfig = {
   "nuxt": {
-    "buildId": "79307d5c-4910-4a12-b5e3-a16080151dba"
+    "buildId": "849ddb0a-76d3-4e36-95a3-c32af0f87f6e"
   }
 }
 
