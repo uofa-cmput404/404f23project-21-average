@@ -59,14 +59,22 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # "corsheaders.middleware.CorsMiddleware",
+    # 'django.middleware.security.SecurityMiddleware',
+    # 'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'django.middleware.common.CommonMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # 'django.contrib.messages.middleware.MessageMiddleware',
+    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'allauth.account.middleware.AccountMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
@@ -213,6 +221,9 @@ SITE_ID = 1  # make sure SITE_ID is set
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = ['*']
+
 
 DEBUG = False
 # SECRET_KEY = os.environ['SECRET_KEY']
@@ -220,7 +231,7 @@ DEBUG = False
 #                  'localhost', '127.0.0.1', 'localhost:3000']
 # SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 # ALLOWED_HOSTS = ['cmput-average-21.herokuapp.com', '127.0.0.1:8000', 'localhost', 'frontend-21-average.herokuapp.com']
-ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['*']
 # CORS_ALLOWED_ORIGINS = [
 #     # "https://example.com",
 #     # "https://sub.example.com",
