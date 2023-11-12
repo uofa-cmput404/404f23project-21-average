@@ -230,14 +230,18 @@ DEBUG = True
 # ALLOWED_HOSTS = ['avergae-21-b951939c31ad.herokuapp.com/',
 #                  'localhost', '127.0.0.1', 'localhost:3000']
 # SECURE_CROSS_ORIGIN_OPENER_POLICY = None
-ALLOWED_HOSTS = ['cmput-average-21.herokuapp.com', '127.0.0.1', 'localhost:8000', 'frontend-21-average.herokuapp.com']
+ALLOWED_HOSTS = ['cmput-average-21.herokuapp.com', '127.0.0.1', 'localhost:8000', 'frontend-21-average.herokuapp.com', 
+                 'frontend-21-average-f45e3b82895c.herokuapp.com', 'cmput-average-21-b54788720538.herokuapp.com']
 # ALLOWED_HOSTS = ['*']
 CORS_ALLOWED_ORIGINS = [
     'https://frontend-21-average.herokuapp.com',
     "http://localhost:8000",
     "http://127.0.0.1:8000",
     'https://cmput-average-21.herokuapp.com',
-    'http://frontend-21-average.herokuapp.com'
+    'http://frontend-21-average.herokuapp.com',
+    'https://frontend-21-average-f45e3b82895c.herokuapp.com',
+    'https://cmput-average-21-b54788720538.herokuapp.com'
+    
 ]
 
 SPECTACULAR_SETTINGS = {
