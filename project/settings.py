@@ -72,7 +72,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # 'DIRS': [ os.path.join(BASE_DIR, '.output'), os.path.join(BASE_DIR, '.nuxt')],
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'dist'),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
