@@ -36,22 +36,26 @@ export default defineNuxtConfig({
   // },
   axios: {
     baseURL: "https://cmput-average-21-b54788720538.herokuapp.com/api",
+    common: {
+      Accept: "application/json, text/plain, */*",
+      "Access-Control-Allow-Origin": "*",
+    },
   },
   // build: {
-    // analyze: {
-    //   analyzerMode: 'server',
-    //   openAnalyzer: true
-    // },
-    // publicPath: "https://cdn.nuxtjs.org",
-    // extractCSS: true,
-    // postcss: {
-    //   parser: "postcss-scss",
-    //   // Add plugin names as key and arguments as value
-    //   plugins: {
-    //     tailwindcss: path.resolve(__dirname, "./tailwind.config.js"),
-    //     "postcss-nested": {},
-    //   },
-    // },
+  // analyze: {
+  //   analyzerMode: 'server',
+  //   openAnalyzer: true
+  // },
+  // publicPath: "https://cdn.nuxtjs.org",
+  // extractCSS: true,
+  // postcss: {
+  //   parser: "postcss-scss",
+  //   // Add plugin names as key and arguments as value
+  //   plugins: {
+  //     tailwindcss: path.resolve(__dirname, "./tailwind.config.js"),
+  //     "postcss-nested": {},
+  //   },
+  // },
   // },
 
   /*
