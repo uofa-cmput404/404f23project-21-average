@@ -34,6 +34,9 @@ export default defineNuxtConfig({
     ],
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
   },
+  // axios: {
+  //   baseURL: "http://localhost:8000/api",
+  // },
   build: {
     // analyze: {
     //   analyzerMode: 'server',
