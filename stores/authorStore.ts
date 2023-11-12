@@ -9,15 +9,14 @@ export const useAuthorStore = defineStore({
     authToken: "",
     BASE_URL: "http://127.0.0.1:8000",
   }),
-  getters: {
+  getters: {},
+  actions: {
     getAuthorId() {
       return localStorage.getItem("authorId");
     },
     getAuthToken() {
       return localStorage.getItem("token");
     },
-  },
-  actions: {
     async setAuthorId(id: string) {
       this.authorId = id;
       localStorage.setItem("authorId", id);

@@ -489,7 +489,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import("./_nuxt/commentComponent-7c93a4e7.js").then((m) => m.default || m)
+    component: () => import("./_nuxt/commentComponent-18cc2d46.js").then((m) => m.default || m)
   },
   {
     name: "createPostComponent",
@@ -497,7 +497,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import("./_nuxt/createPostComponent-16daa84c.js").then((m) => m.default || m)
+    component: () => import("./_nuxt/createPostComponent-1680e9bd.js").then((m) => m.default || m)
   },
   {
     name: "editPostComponent",
@@ -521,7 +521,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import("./_nuxt/homePage-5005b387.js").then((m) => m.default || m)
+    component: () => import("./_nuxt/homePage-d197cae1.js").then((m) => m.default || m)
   },
   {
     name: "loginPage",
@@ -529,7 +529,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import("./_nuxt/loginPage-0571fd02.js").then((m) => m.default || m)
+    component: () => import("./_nuxt/loginPage-534c0baa.js").then((m) => m.default || m)
   },
   {
     name: "postComponent",
@@ -537,7 +537,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import("./_nuxt/postComponent-4898b5b2.js").then((m) => m.default || m)
+    component: () => import("./_nuxt/postComponent-a7f7d34f.js").then((m) => m.default || m)
   },
   {
     name: "profilePage",
@@ -545,7 +545,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import("./_nuxt/profilePage-d246ff10.js").then((m) => m.default || m)
+    component: () => import("./_nuxt/profilePage-8f7298c6.js").then((m) => m.default || m)
   },
   {
     name: "searchPage",
@@ -569,7 +569,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import("./_nuxt/signupPage-e730a273.js").then((m) => m.default || m)
+    component: () => import("./_nuxt/signupPage-0482b384.js").then((m) => m.default || m)
   }
 ];
 const routerOptions0 = {

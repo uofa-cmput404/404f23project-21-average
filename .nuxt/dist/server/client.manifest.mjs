@@ -1,30 +1,30 @@
 export default {
-  "_authorStore.99b1f75e.js": {
+  "_authorStore.17402b56.js": {
     "resourceType": "script",
     "module": true,
     "prefetch": true,
     "preload": true,
-    "file": "authorStore.99b1f75e.js",
+    "file": "authorStore.17402b56.js",
     "imports": [
       "node_modules/nuxt/dist/app/entry.js"
     ]
   },
-  "_nuxt-link.488deb15.js": {
+  "_nuxt-link.45edca7a.js": {
     "resourceType": "script",
     "module": true,
     "prefetch": true,
     "preload": true,
-    "file": "nuxt-link.488deb15.js",
+    "file": "nuxt-link.45edca7a.js",
     "imports": [
       "node_modules/nuxt/dist/app/entry.js"
     ]
   },
-  "_vue.f36acd1f.d41947fc.js": {
+  "_vue.f36acd1f.b7aef133.js": {
     "resourceType": "script",
     "module": true,
     "prefetch": true,
     "preload": true,
-    "file": "vue.f36acd1f.d41947fc.js",
+    "file": "vue.f36acd1f.b7aef133.js",
     "imports": [
       "node_modules/nuxt/dist/app/entry.js"
     ]
@@ -42,10 +42,10 @@ export default {
     "prefetch": true,
     "preload": true,
     "css": [],
-    "file": "error-404.487f353b.js",
+    "file": "error-404.c6193e1a.js",
     "imports": [
-      "_nuxt-link.488deb15.js",
-      "_vue.f36acd1f.d41947fc.js",
+      "_nuxt-link.45edca7a.js",
+      "_vue.f36acd1f.b7aef133.js",
       "node_modules/nuxt/dist/app/entry.js"
     ],
     "isDynamicEntry": true,
@@ -70,9 +70,9 @@ export default {
     "prefetch": true,
     "preload": true,
     "css": [],
-    "file": "error-500.8e9fec64.js",
+    "file": "error-500.6386d1ac.js",
     "imports": [
-      "_vue.f36acd1f.d41947fc.js",
+      "_vue.f36acd1f.b7aef133.js",
       "node_modules/nuxt/dist/app/entry.js"
     ],
     "isDynamicEntry": true,
@@ -105,7 +105,7 @@ export default {
       "node_modules/@nuxt/ui-templates/dist/templates/error-404.vue",
       "node_modules/@nuxt/ui-templates/dist/templates/error-500.vue"
     ],
-    "file": "entry.ea2bd76f.js",
+    "file": "entry.448beef3.js",
     "isEntry": true,
     "src": "node_modules/nuxt/dist/app/entry.js"
   },
@@ -114,9 +114,9 @@ export default {
     "module": true,
     "prefetch": true,
     "preload": true,
-    "file": "app.6a77738b.js",
+    "file": "app.4b5050d5.js",
     "imports": [
-      "_nuxt-link.488deb15.js",
+      "_nuxt-link.45edca7a.js",
       "node_modules/nuxt/dist/app/entry.js"
     ],
     "isDynamicEntry": true,
@@ -135,9 +135,9 @@ export default {
     "prefetch": true,
     "preload": true,
     "css": [],
-    "file": "commentComponent.cbe13561.js",
+    "file": "commentComponent.d9fda011.js",
     "imports": [
-      "_authorStore.99b1f75e.js",
+      "_authorStore.17402b56.js",
       "node_modules/nuxt/dist/app/entry.js"
     ],
     "isDynamicEntry": true,
@@ -162,9 +162,9 @@ export default {
     "prefetch": true,
     "preload": true,
     "css": [],
-    "file": "createPostComponent.2a191c90.js",
+    "file": "createPostComponent.bcee663e.js",
     "imports": [
-      "_authorStore.99b1f75e.js",
+      "_authorStore.17402b56.js",
       "node_modules/nuxt/dist/app/entry.js"
     ],
     "isDynamicEntry": true,
@@ -189,7 +189,7 @@ export default {
     "prefetch": true,
     "preload": true,
     "css": [],
-    "file": "editPostComponent.25b83b47.js",
+    "file": "editPostComponent.6405c9e2.js",
     "imports": [
       "node_modules/nuxt/dist/app/entry.js"
     ],
@@ -215,11 +215,11 @@ export default {
     "prefetch": true,
     "preload": true,
     "css": [],
-    "file": "friendsPage.c489501f.js",
+    "file": "friendsPage.dcf2cc47.js",
     "imports": [
       "pages/sidebar.vue",
       "node_modules/nuxt/dist/app/entry.js",
-      "_nuxt-link.488deb15.js"
+      "_nuxt-link.45edca7a.js"
     ],
     "isDynamicEntry": true,
     "src": "pages/friendsPage.vue"
@@ -243,14 +243,14 @@ export default {
     "prefetch": true,
     "preload": true,
     "css": [],
-    "file": "homePage.9551cd61.js",
+    "file": "homePage.448acbd8.js",
     "imports": [
-      "_authorStore.99b1f75e.js",
+      "_authorStore.17402b56.js",
       "pages/postComponent.vue",
       "pages/sidebar.vue",
       "node_modules/nuxt/dist/app/entry.js",
       "pages/commentComponent.vue",
-      "_nuxt-link.488deb15.js"
+      "_nuxt-link.45edca7a.js"
     ],
     "isDynamicEntry": true,
     "src": "pages/homePage.vue"
@@ -274,10 +274,10 @@ export default {
     "prefetch": true,
     "preload": true,
     "css": [],
-    "file": "loginPage.db60f482.js",
+    "file": "loginPage.4d2c8a6e.js",
     "imports": [
       "node_modules/nuxt/dist/app/entry.js",
-      "_authorStore.99b1f75e.js"
+      "_authorStore.17402b56.js"
     ],
     "isDynamicEntry": true,
     "src": "pages/loginPage.vue"
@@ -301,10 +301,10 @@ export default {
     "prefetch": true,
     "preload": true,
     "css": [],
-    "file": "postComponent.78f48f94.js",
+    "file": "postComponent.7b19cc8d.js",
     "imports": [
       "pages/commentComponent.vue",
-      "_authorStore.99b1f75e.js",
+      "_authorStore.17402b56.js",
       "node_modules/nuxt/dist/app/entry.js"
     ],
     "isDynamicEntry": true,
@@ -332,14 +332,14 @@ export default {
       "spiderman.53e41ff7.jpeg"
     ],
     "css": [],
-    "file": "profilePage.edad1af2.js",
+    "file": "profilePage.197e34b0.js",
     "imports": [
       "pages/postComponent.vue",
       "pages/sidebar.vue",
-      "_authorStore.99b1f75e.js",
+      "_authorStore.17402b56.js",
       "node_modules/nuxt/dist/app/entry.js",
       "pages/commentComponent.vue",
-      "_nuxt-link.488deb15.js"
+      "_nuxt-link.45edca7a.js"
     ],
     "isDynamicEntry": true,
     "src": "pages/profilePage.vue"
@@ -369,11 +369,11 @@ export default {
     "prefetch": true,
     "preload": true,
     "css": [],
-    "file": "searchPage.a5b78e22.js",
+    "file": "searchPage.d7c70ff1.js",
     "imports": [
       "pages/sidebar.vue",
       "node_modules/nuxt/dist/app/entry.js",
-      "_nuxt-link.488deb15.js"
+      "_nuxt-link.45edca7a.js"
     ],
     "isDynamicEntry": true,
     "src": "pages/searchPage.vue"
@@ -401,9 +401,9 @@ export default {
       "bootstrap-icons.4d4572ef.woff"
     ],
     "css": [],
-    "file": "sidebar.470ae4b7.js",
+    "file": "sidebar.0135b395.js",
     "imports": [
-      "_nuxt-link.488deb15.js",
+      "_nuxt-link.45edca7a.js",
       "node_modules/nuxt/dist/app/entry.js"
     ],
     "isDynamicEntry": true,
@@ -438,10 +438,10 @@ export default {
     "prefetch": true,
     "preload": true,
     "css": [],
-    "file": "signupPage.fa39c236.js",
+    "file": "signupPage.46e8f6ca.js",
     "imports": [
       "node_modules/nuxt/dist/app/entry.js",
-      "_authorStore.99b1f75e.js"
+      "_authorStore.17402b56.js"
     ],
     "isDynamicEntry": true,
     "src": "pages/signupPage.vue"

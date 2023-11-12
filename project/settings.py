@@ -71,7 +71,7 @@ ROOT_URLCONF = 'project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, '.nuxt/dist'), os.path.join(BASE_DIR, '.output/server')],
+        'DIRS': [os.path.join(BASE_DIR, 'dist/_nuxt'), os.path.join(BASE_DIR, '.output/server')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -145,7 +145,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     # os.path.join(BASE_DIR, 'build/static'),
-    os.path.join(BASE_DIR, '.nuxt/'),
+    os.path.join(BASE_DIR, 'dist/_nuxt'),
 ]
 
 # Default primary key field type
