@@ -35,7 +35,7 @@ export default defineNuxtConfig({
   //   link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
   // },
   axios: {
-    baseURL: "https://cmput-average-21-b54788720538.herokuapp.com/api/",
+    baseURL: "https://cmput-average-21-b54788720538.herokuapp.com/api",
   },
   // build: {
     // analyze: {
