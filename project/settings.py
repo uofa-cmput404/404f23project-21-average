@@ -155,7 +155,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     # os.path.join(BASE_DIR, 'build/static'),
     # os.path.join(BASE_DIR, 'dist'),
-    os.path.join(BASE_DIR, '.output/public'),
+    # os.path.join(BASE_DIR, '.output/public'),
     # os.path.join(BASE_DIR, '.nuxt'),
 ]
 
@@ -211,8 +211,8 @@ REST_AUTH = {
 
 SITE_ID = 1  # make sure SITE_ID is set
 
-# CORS_ALLOW_ALL_ORIGINS = True
-# CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ORIGIN_ALLOW_ALL = True
 
 DEBUG = False
 # SECRET_KEY = os.environ['SECRET_KEY']
@@ -256,7 +256,7 @@ STORAGES = {
 # except ImportError:
 #     pass
 
-import django_heroku
-django_heroku.settings(locals(), staticfiles=False)
-options = DATABASES['default'].get('OPTIONS', {})
-options.pop('sslmode', None)
+# import django_heroku
+# django_heroku.settings(locals(), staticfiles=False)
+# options = DATABASES['default'].get('OPTIONS', {})
+# options.pop('sslmode', None)
