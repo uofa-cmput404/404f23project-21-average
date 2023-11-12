@@ -22,6 +22,8 @@ export const useAuthorStore = defineStore({
       axios.defaults.headers.common[
         "Access-Control-Allow-Headers"
       ] = `Origin, Content-Type, X-Auth-Token`;
+      axios.defaults.headers.common["Access-Control-Allow-Credentials"] =
+        "true";
       return localStorage.getItem("token");
     },
     async setAuthorId(id: string) {
