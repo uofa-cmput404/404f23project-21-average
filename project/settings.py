@@ -219,7 +219,8 @@ DEBUG = False
 # ALLOWED_HOSTS = ['avergae-21-b951939c31ad.herokuapp.com/',
 #                  'localhost', '127.0.0.1', 'localhost:3000']
 # SECURE_CROSS_ORIGIN_OPENER_POLICY = None
-ALLOWED_HOSTS = ['cmput-average-21.herokuapp.com', '127.0.0.1:8000', 'localhost', 'frontend-21-average.herokuapp.com']
+# ALLOWED_HOSTS = ['cmput-average-21.herokuapp.com', '127.0.0.1:8000', 'localhost', 'frontend-21-average.herokuapp.com']
+ALLOWED_HOSTS = ['*']
 # CORS_ALLOWED_ORIGINS = [
 #     # "https://example.com",
 #     # "https://sub.example.com",
