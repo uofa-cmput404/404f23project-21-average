@@ -47,8 +47,15 @@ const register = async () => {
       password2: password.value
     }
     try {
-      console.log(data)
+      axios.defaults.headers.common["Access-Control-Allow-Origin"] = `*`;
+      axios.defaults.headers.common[
+        "Access-Control-Allow-Methods"
+      ] = `GET, POST, PATCH, PUT, DELETE, OPTIONS`;
+      axios.defaults.headers.common[
+        "Access-Control-Allow-Headers"
+      ] = `Origin, Content-Type, X-Auth-Token`;
       const response = await axios.post(authorStore.BASE_URL + '/api/auth/register/', data)
+      console.log(response)
       // axios.defaults.headers.common['Authorization'] = 'Token ' + response.data.key;
       await authorStore.setAuthToken(response.data.access)
       await authorStore.setAuthorId(response.data.user.pk)
