@@ -189,7 +189,7 @@ SITE_ID = 1  # make sure SITE_ID is set
 
 DEBUG = False
 # SECRET_KEY = os.environ['SECRET_KEY']
-ALLOWED_HOSTS = ['cmput-average-21.herokuapp.com',
+ALLOWED_HOSTS = ['cmput-average-21.herokuapp.com', 'cmput-average-21-b54788720538.herokuapp.com',
                  'localhost', '127.0.0.1', 'localhost:3000']
 # SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 # CORS_ALLOWED_ORIGINS = [
@@ -225,7 +225,7 @@ STORAGES = {
     },
 }
 
-try:
-    from local_settings import *
-except ImportError:
-    pass
+# try:
+#     from local_settings import *
+# except ImportError:
+#     pass
