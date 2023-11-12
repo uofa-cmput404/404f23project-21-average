@@ -36,7 +36,7 @@ export default {
     async fetchComments() {
       const authorStore = useAuthorStore();
       try {
-        const response = await axios.get(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postId}/comments/`);
+        const response = await axios.get(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId()}/posts/${this.postId}/comments/`);
         console.log('40', response.data)
         this.comments = response.data.results;
         console.log("jjkkkjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj")
@@ -55,7 +55,7 @@ export default {
             published: new Date().toISOString(),
           };
           axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
-          await axios.post(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postId}/comments/`, payload);
+          await axios.post(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId()}/posts/${this.postId}/comments/`, payload);
           console.log(payload)
           this.newComment = '';
           await this.fetchComments(); // Fetch comments again to update the list

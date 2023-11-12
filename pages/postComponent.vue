@@ -79,11 +79,11 @@ export default {
   async created() {
     const authorStore = useAuthorStore();
     try {
-      const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
+      const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId() + '/posts/');
       console.log(response)
       this.postMainContent = response.data.results['content'] // Updat
       // Fetch post details
-      const response1 = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID);
+      const response1 = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId() + '/posts/' + this.postID);
       if (response.status === 200) {
         this.post = response.data;
         // Fetch likes
@@ -104,7 +104,7 @@ export default {
       // Example:
       try {
         console.log("likessssss")
-        const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/likes/');
+        const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId() + '/posts/' + this.postID + '/likes/');
         if (response.status === 200) {
           console.log('109', response.data)
           this.likeCount = response.data.count;
@@ -121,12 +121,12 @@ export default {
         axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
         if (this.liked) {
           // Logic to unlike the post
-          await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/likes/',
+          await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId() + '/posts/' + this.postID + '/likes/',
             { published: new Date().toISOString() });
           this.likeCount -= 1;
         } else {
           // Logic to like the post
-          await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/likes/',
+          await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId() + '/posts/' + this.postID + '/likes/',
             { published: new Date().toISOString() });
           this.likeCount += 1;
         }
@@ -166,7 +166,7 @@ export default {
         categories: 'string', // Adjust as per your requirement
       };
       axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
-      const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID, payload);
+      const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId() + '/posts/' + this.postID, payload);
       console.log(response)
     }
 
