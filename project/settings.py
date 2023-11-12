@@ -150,9 +150,10 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, '.output/public'),
     # os.path.join(BASE_DIR, '.nuxt'),
 ]
-TEMPLATE_DIRS = [
-    os.path.join(BASE_DIR, 'templates/'),
-]
+
+# TEMPLATE_DIRS = [
+#     os.path.join(BASE_DIR, 'templates/'),
+# ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
