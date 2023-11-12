@@ -233,10 +233,11 @@ DEBUG = False
 # ALLOWED_HOSTS = ['cmput-average-21.herokuapp.com', '127.0.0.1:8000', 'localhost', 'frontend-21-average.herokuapp.com']
 # ALLOWED_HOSTS = ['*']
 CORS_ALLOWED_ORIGINS = [
-    'frontend-21-average.herokuapp.com'
+    'https://frontend-21-average.herokuapp.com',
     "http://localhost:8000",
     "http://127.0.0.1:8000",
-    'cmput-average-21.herokuapp.com'
+    'https://cmput-average-21.herokuapp.com',
+    'http://frontend-21-average.herokuapp.com'
 ]
 
 SPECTACULAR_SETTINGS = {
