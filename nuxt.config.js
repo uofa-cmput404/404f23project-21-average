@@ -1,8 +1,8 @@
 export default defineNuxtConfig({
   // ... other options
   target: "static",
-  mode: "spa",
-  ssr: false,
+  // mode: "spa",
+  // ssr: false,
 
   modules: [
     // ...
@@ -13,36 +13,36 @@ export default defineNuxtConfig({
       ignore: ["/"],
     },
   },
-  generate: {
-    staticAssets: {
-      version: "1",
-    },
-  },
-  server: {
-    host: "0.0.0.0", // default: localhost
-  },
+  // generate: {
+  //   staticAssets: {
+  //     version: "1",
+  //   },
+  // },
+  // server: {
+  //   host: "0.0.0.0", // default: localhost
+  // },
   // outputDir must be added to Django's TEMPLATE_DIRS
-  outputDir: "./dist/",
-  // assetsDir must match Django's STATIC_URL
-  assetsDir: "static",
-  head: {
-    title: "Django Nuxt SSR - To Do With Vue",
-    meta: [
-      { charset: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { hid: "description", name: "description", content: "Django & Nuxt SSR" },
-    ],
-    link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
-  },
+  // outputDir: "./dist/",
+  // // assetsDir must match Django's STATIC_URL
+  // assetsDir: "static",
+  // head: {
+  //   title: "Django Nuxt SSR - To Do With Vue",
+  //   meta: [
+  //     { charset: "utf-8" },
+  //     { name: "viewport", content: "width=device-width, initial-scale=1" },
+  //     { hid: "description", name: "description", content: "Django & Nuxt SSR" },
+  //   ],
+  //   link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
+  // },
   // axios: {
   //   baseURL: "http://localhost:8000/api",
   // },
-  build: {
+  // build: {
     // analyze: {
     //   analyzerMode: 'server',
     //   openAnalyzer: true
     // },
-    publicPath: "https://cdn.nuxtjs.org",
+    // publicPath: "https://cdn.nuxtjs.org",
     // extractCSS: true,
     // postcss: {
     //   parser: "postcss-scss",
@@ -52,7 +52,7 @@ export default defineNuxtConfig({
     //     "postcss-nested": {},
     //   },
     // },
-  },
+  // },
 
   /*
    ** You can extend webpack config here
