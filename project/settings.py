@@ -246,7 +246,7 @@ STORAGES = {
 # except ImportError:
 #     pass
 
-import django_heroku
-django_heroku.settings(locals(), staticfiles=False)
-options = DATABASES['default'].get('OPTIONS', {})
-options.pop('sslmode', None)
+# import django_heroku
+# django_heroku.settings(locals(), staticfiles=False)
+# options = DATABASES['default'].get('OPTIONS', {})
+# options.pop('sslmode', None)
