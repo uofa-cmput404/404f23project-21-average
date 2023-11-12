@@ -74,7 +74,7 @@ export default {
   async mounted() {
     // this.fetchPosts();
     const authorStore = useAuthorStore();
-    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId() + '/posts/');
+    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
     this.posts = response.data.results;
   },
   methods: {
@@ -109,7 +109,7 @@ export default {
           image: this.postImage,
         };
         axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
-        const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId() + '/posts/', payload);
+        const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/', payload);
       } catch (error) {
         console.error('Error while creating post:', error);
       }
@@ -119,7 +119,7 @@ export default {
   async created() {
     const authorStore = useAuthorStore();
     try {
-      const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId() + '/posts/');
+      const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
     } catch (error) {
       console.error('Error while fetching posts:', error);
     }
