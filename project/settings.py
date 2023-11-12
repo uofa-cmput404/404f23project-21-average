@@ -243,9 +243,6 @@ STORAGES = {
 #     pass
 
 import django_heroku
-django_heroku.settings(locals())
-config = locals()
-config['STORAGES']['staticfiles'] = config['STATICFILES_STORAGE']
-del config['STATICFILES_STORAGE']
+django_heroku.settings(locals(), staticfiles=False)
 options = DATABASES['default'].get('OPTIONS', {})
 options.pop('sslmode', None)
