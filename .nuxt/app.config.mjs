@@ -4,7 +4,7 @@ import { defuFn } from '/Users/afaqnabi/Desktop/CMPUT404/project/404f23project-2
 
 const inlineConfig = {
   "nuxt": {
-    "buildId": "977aa8a6-557b-4487-86ea-a6b8d2f53246"
+    "buildId": "79307d5c-4910-4a12-b5e3-a16080151dba"
   }
 }
 
