@@ -15,9 +15,9 @@ from pathlib import Path
 import os
 import dotenv
 import dj_database_url
-import cloudinary 
-import cloudinary.uploader 
-import cloudinary.api
+# import cloudinary 
+# import cloudinary.uploader 
+# import cloudinary.api
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    "django.contrib.sites",
     'django.contrib.staticfiles',
     'socialDistribution',
     'rest_framework',
@@ -50,12 +51,11 @@ INSTALLED_APPS = [
     "authentication.apps.AuthenticationConfig",
     "allauth",
     "allauth.account",
-    "django.contrib.sites",
     "dj_rest_auth",
     "corsheaders",
     "dj_rest_auth.registration",
-    'cloudinary_storage',
-    'cloudinary',
+    # 'cloudinary_storage',
+    # 'cloudinary',
 ]
 
 MIDDLEWARE = [
@@ -95,6 +95,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'project.wsgi.application'
 
+MEDIA_URL = '/media/'  # or any prefix you choose
+# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -146,10 +148,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
-# STATIC_HOST = os.environ.get("DJANGO_STATIC_HOST", "")
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
+# STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
 STATICFILES_DIRS = [
     # os.path.join(BASE_DIR, 'build/static'),
     # os.path.join(BASE_DIR, 'dist'),
@@ -238,9 +240,9 @@ SPECTACULAR_SETTINGS = {
 AUTH_USER_MODEL = 'socialDistribution.Author'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
-MEDIA_URL = '/media/'  # Base URL for serving media files.
+# MEDIA_URL = '/media/'  # Base URL for serving media files.
 # Leads to the media directory in the root of our project.
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STORAGES = {
     "staticfiles": {
