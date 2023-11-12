@@ -144,7 +144,8 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'build/static')
+    # os.path.join(BASE_DIR, 'build/static'),
+    os.path.join(BASE_DIR, '.nuxt/'),
 ]
 
 # Default primary key field type
@@ -228,10 +229,7 @@ MEDIA_URL = '/media/'  # Base URL for serving media files.
 # Leads to the media directory in the root of our project.
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-# STATICFILES_STORAGE = 'whitenoise.django.CompressedStaticFilesStorage'
 STORAGES = {
-    # ...
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },

@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "homepage": ".",
+  "proxy": "http://localhost:8000",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",

@@ -583,7 +583,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import('./_nuxt/commentComponent-e4cc29d3.mjs').then((m) => m.default || m)
+    component: () => import('./_nuxt/commentComponent-7c93a4e7.mjs').then((m) => m.default || m)
   },
   {
     name: "createPostComponent",
@@ -615,7 +615,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import('./_nuxt/homePage-20ee57a2.mjs').then((m) => m.default || m)
+    component: () => import('./_nuxt/homePage-5005b387.mjs').then((m) => m.default || m)
   },
   {
     name: "loginPage",
@@ -631,7 +631,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import('./_nuxt/postComponent-ca1f59bb.mjs').then((m) => m.default || m)
+    component: () => import('./_nuxt/postComponent-4898b5b2.mjs').then((m) => m.default || m)
   },
   {
     name: "profilePage",
@@ -639,7 +639,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import('./_nuxt/profilePage-27f074c9.mjs').then((m) => m.default || m)
+    component: () => import('./_nuxt/profilePage-d246ff10.mjs').then((m) => m.default || m)
   },
   {
     name: "searchPage",
