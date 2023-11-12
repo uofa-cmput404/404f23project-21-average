@@ -11,7 +11,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "start": "node .output/server/index.mjs",
-    "heroku-postbuild": "npm run build && npm run generate"
+    "heroku-postbuild": "npm run build"
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
