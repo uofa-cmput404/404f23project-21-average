@@ -222,7 +222,7 @@ SITE_ID = 1  # make sure SITE_ID is set
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_HEADERS = ['*']
+# CORS_ALLOW_HEADERS = ['*']
 
 
 DEBUG = False
@@ -232,12 +232,12 @@ DEBUG = False
 # SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 # ALLOWED_HOSTS = ['cmput-average-21.herokuapp.com', '127.0.0.1:8000', 'localhost', 'frontend-21-average.herokuapp.com']
 # ALLOWED_HOSTS = ['*']
-# CORS_ALLOWED_ORIGINS = [
-#     # "https://example.com",
-#     # "https://sub.example.com",
-#     # "http://localhost:8000",
-#     # "http://127.0.0.1:8000",
-# ]
+CORS_ALLOWED_ORIGINS = [
+    'frontend-21-average.herokuapp.com'
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    'cmput-average-21.herokuapp.com'
+]
 
 SPECTACULAR_SETTINGS = {
     'TITLE': '21 Average Social Distribution API',
