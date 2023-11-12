@@ -7,7 +7,7 @@ export const useAuthorStore = defineStore({
     authorId: "",
     author: null,
     authToken: "",
-    BASE_URL: "http://127.0.0.1:8000",
+    BASE_URL: "https://cmput-average-21-b54788720538.herokuapp.com/api/",
   }),
   getters: {},
   actions: {

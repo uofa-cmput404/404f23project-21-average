@@ -34,9 +34,9 @@ export default defineNuxtConfig({
   //   ],
   //   link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
   // },
-  // axios: {
-  //   baseURL: "http://localhost:8000/api",
-  // },
+  axios: {
+    baseURL: "https://cmput-average-21-b54788720538.herokuapp.com/api/",
+  },
   // build: {
     // analyze: {
     //   analyzerMode: 'server',
