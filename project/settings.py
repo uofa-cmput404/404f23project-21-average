@@ -15,6 +15,9 @@ from pathlib import Path
 import os
 import dotenv
 import dj_database_url
+import cloudinary 
+import cloudinary.uploader 
+import cloudinary.api
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -51,6 +54,8 @@ INSTALLED_APPS = [
     "dj_rest_auth",
     "corsheaders",
     "dj_rest_auth.registration",
+    'cloudinary_storage',
+    'cloudinary',
 ]
 
 MIDDLEWARE = [
@@ -142,6 +147,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 # STATIC_HOST = os.environ.get("DJANGO_STATIC_HOST", "")
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
