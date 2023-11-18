@@ -310,9 +310,33 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
     serializer_class = FriendRequestSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+    
 
 class ConnectedNodeViewSet(viewsets.ModelViewSet):
     queryset = ConnectedNode.objects.all()
     serializer_class = ConnectedNodeSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     pagination_class = Pagination
+
+class InboxItemView(generics.CreateAPIView):
+    queryset = Inbox.objects.all()
+    serializer_class = InboxSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @receiver(post_save, sender=Inbox)
+    def process_inbox_item(sender, instance, **kwargs):
+        """
+        Custom signal to process actions when an item is added to the inbox.
+        For example, send notifications, update counters, etc.
+        """
+        # Need to add more based on inbox item type
+        if instance.type == "friend_request":
+            process_friend_request_notification(instance)
+
+    def process_friend_request_notification(instance):
+        pass

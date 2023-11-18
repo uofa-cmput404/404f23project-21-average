@@ -2,7 +2,7 @@ from django.urls import path, include
 # from rest_framework import routers
 from rest_framework.routers import DefaultRouter
 from .views import AddLikeToCommentView, AddLikeToPostView, AuthorDetailView, AuthorListViewSet, GetAllAuthorLikes, \
-    ImageViewSet, PostDetail, PostList, CommentViewSet, FollowViewSet, FriendRequestViewSet, ConnectedNodeViewSet
+    ImageViewSet, PostDetail, PostList, CommentViewSet, FollowViewSet, FriendRequestViewSet, ConnectedNodeViewSet, InboxItemView
 
 # The API URLs are now determined automatically by the router.
 urlpatterns = [
@@ -30,4 +30,6 @@ urlpatterns = [
          AddLikeToCommentView.as_view(), name='likes'),
     #     path('authors/<slug:author_pk>/liked/',
     #          GetAllAuthorLikes.as_view(), name='likes'),
+    # inbox
+    path('inbox/', InboxItemView.as_view(), name='inbox'),
 ]

@@ -3,7 +3,7 @@ from .models import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Author, Post
+from .models import Author, Post, Inbox
 from drf_spectacular.utils import extend_schema_field
 
 
@@ -91,3 +91,9 @@ class ConnectedNodeSerializer(ModelSerializer):
     class Meta:
         model = ConnectedNode
         fields = ['id', 'url', 'host', 'teamName']
+
+#Added Model Serializer of Inbox
+class InboxSerializer(ModelSerializer):
+    class Meta:
+        model = Inbox
+        fields = '__all__'
