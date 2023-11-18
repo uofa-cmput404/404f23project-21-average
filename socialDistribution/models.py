@@ -152,18 +152,3 @@ def process_friend_request_notification(instance):
         timestamp=timezone.now(),
         friend_request_status=instance.status,
     )
-
-@receiver(post_save, sender=FriendRequest)
-def process_friend_request(sender, instance, **kwargs):
-    if instance.status == "PENDING":
-        # For Pending Friend Requests
-        send_friend_request_notification(instance)
-        update_friend_request_counters(instance.to_author)
-
-def send_friend_request_notification(friend_request):
-    #Sending Friend request notifications. Called whe n a friend request is pending. 
-    pass
-
-def update_friend_request_counters(author):
-    # Update Counters for Pending friend requests.
-    pass
