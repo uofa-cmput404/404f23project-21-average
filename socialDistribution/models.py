@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 # Create your models here.
 
 
@@ -141,6 +142,16 @@ def process_friend_request_notification(instance):
     sender = instance.from_author
     recipient = instance.to_author
     content = f"You have a new friend request from {sender.display_name}."
+
+    #Inbox Entry: 
+    inbox_item = Inbox.objects.create(
+        recipient=recipient,
+        sender=sender,
+        content=content,
+        type="friend_request",
+        timestamp=timezone.now(),
+        friend_request_status=instance.status,
+    )
 
 @receiver(post_save, sender=FriendRequest)
 def process_friend_request(sender, instance, **kwargs):
