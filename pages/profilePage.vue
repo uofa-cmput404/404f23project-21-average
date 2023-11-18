@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    <button class="logout-button" @click="logout">Logout</button>
     <SidebarComponent />
     <main class="main-content">
       <div class="user-section">
@@ -113,6 +114,14 @@ export default {
       console.log(this.bio);
     },
     
+    logout() {
+    // Here you should implement the logic to clear user data and redirect
+    // For demonstration, let's just log out and redirect to a login page
+    console.log("Logging out");
+    // Clear user data (local storage/session storage)
+    // Redirect to login page
+    window.location.href = '/loginPage'; // Replace with your login page URL
+  }
   },
   
   async created() {
@@ -141,6 +150,18 @@ export default {
   right: 0;
 }
 
+.logout-button {
+  position: fixed; /* changed from absolute to fixed to ensure it's relative to the viewport */
+  top: 10px; /* distance from the top */
+  right: 10px; /* distance from the right, changed from left to right */
+  padding: 8px 15px;
+  background-color: black; /* background color changed to black */
+  color: white; /* text color changed to white */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 1000; /* high z-index to ensure it's above other elements */
+}
 
 .main-content {
   position: fixed;
