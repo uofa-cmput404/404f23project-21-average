@@ -96,7 +96,6 @@ class PostList(generics.ListCreateAPIView):
     def post(self, request, author_pk, format=None):
         author = Author.objects.get(pk=author_pk)
         serializer = PostSerializer(data=request.data)
-        print(request.headers, 'afaq')
         
         if serializer.is_valid():
             post = serializer.save(owner=author, origin=request.build_absolute_uri())
@@ -121,7 +120,6 @@ class PostDetail(APIView):
         description='Update the post whose id is POST_ID (must be authenticated)'
     )
     def post(self, request, author_pk, post_pk, format=None):
-        print(request.data, author_pk, post_pk,  'afaq')
         author = Author.objects.get(pk=author_pk)
         post = Post.objects.get(pk=post_pk)
         serializer = PostSerializer(post, data=request.data)

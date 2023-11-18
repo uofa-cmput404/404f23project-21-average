@@ -19,11 +19,9 @@ class CustomRegisterSerializer(RegisterSerializer):
     #     }
 
     def custom_signup(self, request, user):
-        print('26', user, request)
         user.github = self.validated_data.get('github', '')
         user.first_name = self.validated_data.get('first_name', '')
         user.last_name = self.validated_data.get('last_name', '')
-        print('30', request.data, request.headers)
         user.host = request.build_absolute_uri()
         user.save()
         return user

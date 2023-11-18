@@ -147,8 +147,6 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 # STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
-STATICFILES_DIRS = [
-]
 
 # TEMPLATE_DIRS = [
 #     os.path.join(BASE_DIR, 'templates/'),
@@ -243,11 +241,11 @@ SPECTACULAR_SETTINGS = {
 AUTH_USER_MODEL = 'socialDistribution.Author'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
-# MEDIA_URL = '/media/'  # Base URL for serving media files.
-# Leads to the media directory in the root of our project.
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
@@ -256,12 +254,8 @@ STORAGES = {
 REST_AUTH_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'authentication.serializers.CustomRegisterSerializer'
 }
+
 # try:
 #     from local_settings import *
 # except ImportError:
 #     pass
-
-# import django_heroku
-# django_heroku.settings(locals(), staticfiles=False)
-# options = DATABASES['default'].get('OPTIONS', {})
-# options.pop('sslmode', None)
