@@ -86,7 +86,6 @@ class FriendRequest(models.Model):
         Author, on_delete=models.CASCADE, related_name='to_author')
     status = models.CharField(max_length=255)
 
-
 class PostLike(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
@@ -107,3 +106,46 @@ class ConnectedNode(models.Model):
     url = models.CharField(max_length=255)
     host = models.CharField(max_length=255)
     teamName = models.CharField(max_length=255)
+
+class Inbox(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    recipient = models.ForeignKey(
+        Author, on_delete=models.CASCADE, related_name='inbox_recipient')
+    sender = models.ForeignKey(
+        Author, on_delete=models.CASCADE, related_name='inbox_sender')
+    content = models.TextField()
+    type = models.CharField(max_length=255)  # post, like, comment, friend_request
+    timestamp = models.DateTimeField(default=datetime.now)
+    friend_request_status = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.sender} to {self.recipient}: {self.content}"
+    
+
+@receiver(post_save, sender=Inbox)
+def process_inbox_item(sender, instance, **kwargs):
+    """
+    Custom signal to process actions when an item is added to the inbox.
+    """
+    # Need to add more based on inbox item type
+    if instance.type == "friend_request":
+        process_friend_request_notification(instance)
+    
+def process_friend_request_notification(instance):
+    # To send friend request
+    pass
+
+@receiver(post_save, sender=FriendRequest)
+def process_friend_request(sender, instance, **kwargs):
+    if instance.status == "PENDING":
+        # For Pending Friend Requests
+        send_friend_request_notification(instance)
+        update_friend_request_counters(instance.to_author)
+
+def send_friend_request_notification(friend_request):
+    #Sending Friend request notifications. Called whe n a friend request is pending. 
+    pass
+
+def update_friend_request_counters(author):
+    # Update Counters for Pending friend requests.
+    pass
