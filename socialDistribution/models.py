@@ -86,6 +86,11 @@ class FriendRequest(models.Model):
         Author, on_delete=models.CASCADE, related_name='to_author')
     status = models.CharField(max_length=255)
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # After saving the friend request, trigger the notification
+        process_friend_request_notification(self)
+
 class PostLike(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
