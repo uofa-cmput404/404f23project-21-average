@@ -339,4 +339,26 @@ class InboxItemView(generics.CreateAPIView):
             process_friend_request_notification(instance)
 
     def process_friend_request_notification(instance):
-        pass
+        # To send friend request
+        sender = instance.from_author
+        recipient = instance.to_author
+        content = f"You have a new friend request from {sender.display_name}."
+
+        # Send the Friend Request
+        friend_request = FriendRequest.objects.create(
+            from_author=sender,
+            to_author=recipient,
+            status=instance.status,
+        )
+
+        # Inbox Entry:
+        inbox_item = Inbox.objects.create(
+            recipient=recipient,
+            sender=sender,
+            content=content,
+            type="friend_request",
+            timestamp=timezone.now(),
+            friend_request_status=instance.status,
+        )
+
+        print(f"Notification: {sender.display_name} sent a friend request to {recipient.display_name}")
