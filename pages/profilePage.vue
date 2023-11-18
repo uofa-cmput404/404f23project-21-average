@@ -81,7 +81,7 @@ export default {
       // Fetch user's profile
       let profileResponse = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId);
       this.username = profileResponse.data.username; // Update this line to match your API response structure
-
+      
       // Set profile photo if available
       if (profileResponse.data.profilePicture) {
         this.profilePhoto = profileResponse.data.profilePicture;
