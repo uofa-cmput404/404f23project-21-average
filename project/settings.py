@@ -59,14 +59,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    # "corsheaders.middleware.CorsMiddleware",
-    # 'django.middleware.security.SecurityMiddleware',
-    # 'django.contrib.sessions.middleware.SessionMiddleware',
-    # 'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
-    # 'django.contrib.auth.middleware.AuthenticationMiddleware',
-    # 'django.contrib.messages.middleware.MessageMiddleware',
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -84,8 +76,7 @@ ROOT_URLCONF = 'project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # 'DIRS': [ os.path.join(BASE_DIR, '.output'), os.path.join(BASE_DIR, '.nuxt')],
-        'DIRS': [os.path.join(BASE_DIR, 'dist'),],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -97,9 +88,6 @@ TEMPLATES = [
         },
     },
 ]
-
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, '.output/server'), os.path.join(BASE_DIR, '.nuxt/dist')]
-
 
 WSGI_APPLICATION = 'project.wsgi.application'
 
@@ -141,7 +129,6 @@ AUTH_PASSWORD_VALIDATORS = [
     # },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -161,10 +148,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 # STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
 STATICFILES_DIRS = [
-    # os.path.join(BASE_DIR, 'build/static'),
-    # os.path.join(BASE_DIR, 'dist'),
-    # os.path.join(BASE_DIR, '.output/public'),
-    # os.path.join(BASE_DIR, '.nuxt'),
 ]
 
 # TEMPLATE_DIRS = [
@@ -212,6 +195,7 @@ JWT_AUTH = {
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "none"
 REST_AUTH = {
+    # 'REGISTER_SERIALIZER': 'authentication.serializers.CustomRegisterSerializer',
     'USE_JWT': True,
     'JWT_AUTH_COOKIE': 'social-auth-token',
     'JWT_AUTH_REFRESH_COOKIE': 'social-auth-refresh-token',
@@ -231,7 +215,8 @@ DEBUG = True
 #                  'localhost', '127.0.0.1', 'localhost:3000']
 # SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 ALLOWED_HOSTS = ['cmput-average-21.herokuapp.com', '127.0.0.1', 'localhost:8000', 'frontend-21-average.herokuapp.com', 
-                 'frontend-21-average-f45e3b82895c.herokuapp.com', 'cmput-average-21-b54788720538.herokuapp.com']
+                 'frontend-21-average-f45e3b82895c.herokuapp.com', 'cmput-average-21-b54788720538.herokuapp.com',
+                 'vibely-23b7dc4c736d.herokuapp.com']
 # ALLOWED_HOSTS = ['*']
 CORS_ALLOWED_ORIGINS = [
     'https://frontend-21-average.herokuapp.com',
@@ -240,7 +225,8 @@ CORS_ALLOWED_ORIGINS = [
     'https://cmput-average-21.herokuapp.com',
     'http://frontend-21-average.herokuapp.com',
     'https://frontend-21-average-f45e3b82895c.herokuapp.com',
-    'https://cmput-average-21-b54788720538.herokuapp.com'
+    'https://cmput-average-21-b54788720538.herokuapp.com',
+    'https://vibely-23b7dc4c736d.herokuapp.com'
     
 ]
 
@@ -267,6 +253,9 @@ STORAGES = {
     },
 }
 
+REST_AUTH_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'authentication.serializers.CustomRegisterSerializer'
+}
 # try:
 #     from local_settings import *
 # except ImportError:

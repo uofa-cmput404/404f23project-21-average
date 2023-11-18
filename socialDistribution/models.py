@@ -20,15 +20,17 @@ class Author(AbstractUser):
         return self.displayName
 
 
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Author.objects.create(displayName=instance, user=instance)
+# @receiver(post_save, sender=User)
+# def create_user_profile(sender, instance, created, **kwargs):
+#     print('25: ', sender, instance, created, kwargs)
+#     if created:
+#         Author.objects.create(displayName=instance, user=instance)
 
 
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.User.save()
+# @receiver(post_save, sender=User)
+# def save_user_profile(sender, instance, **kwargs):
+#     print('32: ', sender, instance, kwargs)
+#     instance.User.save()
 
 
 class Post(models.Model):

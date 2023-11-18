@@ -25,9 +25,9 @@ urlpatterns = [
          ImageViewSet.as_view(), name='image'),
     # likes
     path('authors/<slug:author_pk>/posts/<slug:post_pk>/likes/',
-         AddLikeToPostView.as_view(), name='likes'),
+         AddLikeToPostView.as_view(), name='post-likes'),
     path('authors/<slug:author_pk>/posts/<slug:post_pk>/comments/<slug:comment_pk>/likes/',
-         AddLikeToCommentView.as_view(), name='likes'),
+         AddLikeToCommentView.as_view(), name='comment-likes'),
     #     path('authors/<slug:author_pk>/liked/',
     #          GetAllAuthorLikes.as_view(), name='likes'),
 ]

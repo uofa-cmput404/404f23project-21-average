@@ -1,6 +1,7 @@
 export default defineNuxtConfig({
   // ... other options
   target: "static",
+  preset: "node-server",
   mode: "spa",
   ssr: false,
 

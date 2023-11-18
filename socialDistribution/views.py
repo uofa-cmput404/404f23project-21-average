@@ -10,9 +10,7 @@ from .serializers import *
 from rest_framework.decorators import action
 from rest_framework import status
 from rest_framework import generics
-from django.db.models import Q
 from drf_spectacular.utils import extend_schema
-from django.contrib.auth import get_user_model
 
 # Create your views here.
 
@@ -38,25 +36,12 @@ class AuthorListViewSet(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     pagination_class = Pagination
     paginate_by_param = 'page_size'
-
+    
+    @extend_schema(
+        tags=['authors'],
+    )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
-
-    # def list(self, request, *args, **kwargs):
-    #     user = get_user_model()
-    #     all_users = user.objects.all()
-    #     # query = Author.objects.all()
-    #     serializer = CurrentUserSerializer(all_users, many=True)
-    #     return Response(serializer.data)
-
-    # def get_queryset(self):
-    #     user = self.request.user
-    #     if user.is_authenticated:
-    #         # Filter posts based on shared_with_friends and user relationship
-    #         return Post.objects.filter(
-    #             Q(shared_with_friends=False) | Q(owner__followers=user.author)
-    #         )
-    #     return Post.objects.filter(shared_with_friends=False)
 
 
 class AuthorDetailView(APIView):
@@ -97,6 +82,7 @@ class PostList(generics.ListCreateAPIView):
 
     @extend_schema(
         tags=['Posts'],
+        description='[local, remote] get the recent posts from author AUTHOR_ID (paginated)'
     )
     def get(self, request, author_pk, format=None):
         posts = Post.objects.filter(owner=author_pk)
@@ -105,12 +91,15 @@ class PostList(generics.ListCreateAPIView):
 
     @extend_schema(
         tags=['Posts'],
+        description='Create a new post but generate a new id'
     )
     def post(self, request, author_pk, format=None):
         author = Author.objects.get(pk=author_pk)
         serializer = PostSerializer(data=request.data)
+        print(request.headers, 'afaq')
+        
         if serializer.is_valid():
-            post = serializer.save(owner=author)
+            post = serializer.save(owner=author, origin=request.build_absolute_uri())
             return Response(PostSerializer(post).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -129,6 +118,7 @@ class PostDetail(APIView):
 
     @extend_schema(
         tags=['Posts'],
+        description='Update the post whose id is POST_ID (must be authenticated)'
     )
     def post(self, request, author_pk, post_pk, format=None):
         print(request.data, author_pk, post_pk,  'afaq')
@@ -142,6 +132,7 @@ class PostDetail(APIView):
 
     @extend_schema(
         tags=['Posts'],
+        description='create a post where its id is POST_ID'
     )
     def put(self, request, author_pk, post_pk, format=None):
         author = Author.objects.get(pk=author_pk)
@@ -161,6 +152,7 @@ class PostDetail(APIView):
 
     @extend_schema(
         tags=['Posts'],
+        description='Delete a post'
     )
     def delete(self, request, author_pk, post_pk, format=None):
         post = self.get_object(post_pk)
@@ -185,6 +177,7 @@ class CommentViewSet(generics.ListCreateAPIView):
 
     @extend_schema(
         tags=['Comments'],
+        
     )
     def post(self, request, author_pk, post_pk, format=None):
         author = Author.objects.get(pk=author_pk)

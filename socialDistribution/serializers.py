@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField
+from rest_framework.serializers import ModelSerializer
 from .models import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -6,18 +6,6 @@ from rest_framework import status
 from .models import Author, Post
 from drf_spectacular.utils import extend_schema_field
 
-
-# class RegistrationSerializer(RegisterSerializer):
-#     class Meta:
-#         model: User
-#         fields = ['id', 'username', 'email',
-#                   'password', 'first_name', 'last_name']
-
-#     def save(self, request):
-#         user = super().save(request)
-#         user.is_active = False
-#         user.save()
-#         return user
 
 class CurrentUserSerializer(ModelSerializer):
     class Meta:
@@ -27,8 +15,6 @@ class CurrentUserSerializer(ModelSerializer):
 
 
 class AuthorSerializer(ModelSerializer):
-    # url = HyperlinkedIdentityField(
-    #     view_name='authors-list', lookup_field='id')
 
     class Meta:
         model = Author
