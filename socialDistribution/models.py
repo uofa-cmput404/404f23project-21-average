@@ -143,6 +143,13 @@ def process_friend_request_notification(instance):
     recipient = instance.to_author
     content = f"You have a new friend request from {sender.display_name}."
 
+    #Send the Friend Request
+    friend_request = FriendRequest.objects.create(
+        from_author=sender,
+        to_author=recipient,
+        status=instance.status,
+    )
+
     #Inbox Entry: 
     inbox_item = Inbox.objects.create(
         recipient=recipient,
