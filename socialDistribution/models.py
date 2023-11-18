@@ -138,7 +138,9 @@ def process_inbox_item(sender, instance, **kwargs):
     
 def process_friend_request_notification(instance):
     # To send friend request
-    pass
+    sender = instance.from_author
+    recipient = instance.to_author
+    content = f"You have a new friend request from {sender.display_name}."
 
 @receiver(post_save, sender=FriendRequest)
 def process_friend_request(sender, instance, **kwargs):
