@@ -7,12 +7,12 @@
     "module": true,
     "resourceType": "script"
   },
-  "C:/Desktop/CMPUT 404 project/404f23project-21-average/node_modules/nuxt/dist/app/entry.js": {
+  "/Users/aryamanraina/404f23project-21-average-1/node_modules/nuxt/dist/app/entry.js": {
     "resourceType": "script",
     "module": true,
     "prefetch": true,
     "preload": true,
     "isEntry": true,
-    "file": "C:/Desktop/CMPUT 404 project/404f23project-21-average/node_modules/nuxt/dist/app/entry.js"
+    "file": "/Users/aryamanraina/404f23project-21-average-1/node_modules/nuxt/dist/app/entry.js"
   }
 }

@@ -11,8 +11,8 @@
           v-for="friend in filteredFriends"
           :id="friend.id"
           :username="friend.username"
-          :fs = "friends.first_name"
-          :ls = "friends.last_name"
+          :fs="friend.first_name" 
+          :ls="friend.last_name"   
         />
       </div>
     </main>
@@ -39,11 +39,16 @@ export default {
   },
 
   async created() {
-    const authorStore = useAuthorStore();
+  const authorStore = useAuthorStore();
+  try {
     const response = await axios.get(authorStore.BASE_URL + '/authors/');
-    this.filteredFriends = response.data.results;
-    console.log(this.filteredFriends)
-  }, 
+    this.friends = response.data.results; // Save the data in friends
+    this.filteredFriends = [...this.friends]; // Initialize filteredFriends
+  } catch (error) {
+    console.error('Error fetching friends:', error);
+  }
+},
+ 
 
   methods: {
     searchFriends() {
