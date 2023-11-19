@@ -11,8 +11,8 @@
       <!-- Posts rendering section -->
       <div class="posts-feed">
         <h2>Posts</h2>
-        <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :userId="post.owner.username" :postImage="post.image"
-          :postID="post.id" />
+        <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :userId="post.owner.username"
+          :postImage="post.image" :postID="post.id" />
       </div>
       <SidebarComponent />
     </div>
@@ -53,7 +53,6 @@
 import { useAuthorStore } from '../stores/authorStore';
 import PostComponent from './postComponent.vue';
 import SidebarComponent from './sidebar.vue';
-import { storeToRefs } from 'pinia'
 import axios from 'axios';
 
 export default {
@@ -115,16 +114,17 @@ export default {
       }
       this.showPostPopup = false; // Close the popup after submitting the post
     },
-  async created() {
-    const authorStore = useAuthorStore();
-    try {
-      const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
-    } catch (error) {
-      console.error('Error while fetching posts:', error);
-    }
-  },
+    async created() {
+      const authorStore = useAuthorStore();
+      try {
+        const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
+      } catch (error) {
+        console.error('Error while fetching posts:', error);
+      }
+    },
 
-}};
+  }
+};
 </script>
 
 <style>

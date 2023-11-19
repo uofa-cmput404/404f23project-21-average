@@ -34,6 +34,7 @@ class PostList(generics.ListCreateAPIView):
     def post(self, request, author_pk, format=None):
         author = Author.objects.get(pk=author_pk)
         serializer = PostSerializer(data=request.data)
+        print(request.data)
         
         if serializer.is_valid():
             post = serializer.save(owner=author, origin=request.headers['Origin'])
