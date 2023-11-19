@@ -2,6 +2,7 @@ from django.urls import path
 
 from socialDistribution.views.authorView import AuthorListViewSet, AuthorDetailView
 from socialDistribution.views.commentView import CommentViewSet
+from socialDistribution.views.followerView import FollowDeatilViewSet, FollowViewSet
 from socialDistribution.views.likesView import AddLikeToCommentView, AddLikeToPostView
 from socialDistribution.views.postView import ImageViewSet, PostList, PostDetail
 
@@ -16,14 +17,14 @@ urlpatterns = [
     # posts
     path('authors/<slug:author_pk>/posts/',
          PostList.as_view(), name='posts-list'),
-    path('authors/<slug:author_pk>/posts/<slug:post_pk>',
+    path('authors/<slug:author_pk>/posts/<slug:post_pk>/',
          PostDetail.as_view(), name='posts-detail'),
 
     # comments
     path('authors/<slug:author_pk>/posts/<slug:post_pk>/comments/',
          CommentViewSet.as_view(), name='comments'),
     
-    path('authors/<slug:author_pk>/posts/<slug:post_pk>/image',
+    path('authors/<slug:author_pk>/posts/<slug:post_pk>/image/',
          ImageViewSet.as_view(), name='image'),
    
     # likes
@@ -31,4 +32,8 @@ urlpatterns = [
          AddLikeToPostView.as_view(), name='post-likes'),
     path('authors/<slug:author_pk>/posts/<slug:post_pk>/comments/<slug:comment_pk>/likes/',
          AddLikeToCommentView.as_view(), name='comment-likes'),
+    
+    # followers
+    path('authors/<slug:author_pk>/followers/', FollowViewSet.as_view(), name='followers'),
+    path('authors/<slug:author_pk>/followers/<slug:foreign_author_pk>/', FollowDeatilViewSet.as_view(), name='followers-detail')
 ]
