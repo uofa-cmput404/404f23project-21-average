@@ -7,20 +7,12 @@
     "module": true,
     "resourceType": "script"
   },
-<<<<<<< HEAD
-  "C:/Users/shrey/cmput-404/Project/404f23project-21-average/node_modules/nuxt/dist/app/entry.js": {
-=======
   "/Users/aryamanraina/404f23project-21-average-1/node_modules/nuxt/dist/app/entry.js": {
->>>>>>> 35bd763bc9d458a934ee96527104d8411fdd7bfd
     "resourceType": "script",
     "module": true,
     "prefetch": true,
     "preload": true,
     "isEntry": true,
-<<<<<<< HEAD
-    "file": "C:/Users/shrey/cmput-404/Project/404f23project-21-average/node_modules/nuxt/dist/app/entry.js"
-=======
     "file": "/Users/aryamanraina/404f23project-21-average-1/node_modules/nuxt/dist/app/entry.js"
->>>>>>> 35bd763bc9d458a934ee96527104d8411fdd7bfd
   }
 }
