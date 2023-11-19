@@ -15,7 +15,6 @@ class CurrentUserSerializer(ModelSerializer):
 
 
 class AuthorSerializer(ModelSerializer):
-
     class Meta:
         model = Author
         fields = ['id', 'host', 'displayName', 'github', 'image', 'first_name',
@@ -24,6 +23,7 @@ class AuthorSerializer(ModelSerializer):
 
 class PostSerializer(ModelSerializer):
     owner = AuthorSerializer(read_only=True)
+    # source = hyperlinked_identity_field(view_name='post-detail')
 
     class Meta:
         model = Post
@@ -34,13 +34,13 @@ class PostSerializer(ModelSerializer):
 
 
 class CommentSerializer(ModelSerializer):
-    commenter = AuthorSerializer(read_only=True)
+    author = AuthorSerializer(read_only=True)
 
     class Meta:
         model = Comment
-        fields = ['id', 'commenter', 'parentPost',  'comment',
+        fields = ['id', 'author', 'parentPost',  'comment',
                   'contentType', 'published']
-        read_only_fields = ['commenter', 'parentPost']
+        read_only_fields = ['author', 'parentPost']
         ordering = ['-id']
 
 

@@ -35,7 +35,6 @@ class Author(AbstractUser):
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
     title = models.TextField(blank=True, null=True)
     source = models.CharField(max_length=255, blank=True, null=True)
     origin = models.CharField(max_length=255, blank=True, null=True)
@@ -48,6 +47,7 @@ class Post(models.Model):
     count = models.IntegerField(default=0)
     visibility = models.CharField(max_length=255, default="PUBLIC")
     unlisted = models.BooleanField(default=False)
+
     # Posts can be links to images.
     imageOnlyPost = models.BooleanField(default=False)
     image_link = models.URLField(blank=True, null=True)
