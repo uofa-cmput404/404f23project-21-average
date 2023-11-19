@@ -1,5 +1,5 @@
 from requests import Response
-from socialDistribution.models import ConnectedNode, Follow, FriendRequest
+from socialDistribution.models import Author, ConnectedNode, Follow, FriendRequest
 from socialDistribution.pagination import Pagination
 from socialDistribution.serializers import ConnectedNodeSerializer, FollowSerializer, FriendRequestSerializer
 from rest_framework import generics
@@ -51,7 +51,14 @@ class FollowDeatilViewSet(generics.RetrieveUpdateDestroyAPIView):
         tags=['Followers'],
         description='Add FOREIGN_AUTHOR_ID as a follower of AUTHOR_ID (must be authenticated)'
     )
-    def put(self, request, author_pk, format=None):
+    def put(self, request, author_pk, foreign_author_pk, format=None):
+        author = Author.objects.get(pk=author_pk)
+        foreign_author = Author.objects.get(pk=foreign_author_pk)
+        follows = Follow.objects.filter(from_author=author_pk)
+        page = self.paginate_queryset(follows)
+        return self.get_paginated_response(FollowSerializer(page, many=True).data)
+    
+    def create(self, request, author_pk, format=None):
         follows = Follow.objects.filter(from_author=author_pk)
         page = self.paginate_queryset(follows)
         return self.get_paginated_response(FollowSerializer(page, many=True).data)
