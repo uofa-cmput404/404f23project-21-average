@@ -12,7 +12,7 @@
       <div class="posts-feed">
         <h2>Posts</h2>
         <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :userId="post.owner.username"
-          :postID="post.id" />
+          :postImage="post.image" :postID="post.id" />
       </div>
       <SidebarComponent />
     </div>
@@ -53,7 +53,6 @@
 import { useAuthorStore } from '../stores/authorStore';
 import PostComponent from './postComponent.vue';
 import SidebarComponent from './sidebar.vue';
-import { storeToRefs } from 'pinia'
 import axios from 'axios';
 
 export default {
@@ -81,58 +80,50 @@ export default {
     // Methods for CreatePostComponent
     onImageSelected(event) {
       const file = event.target.files[0];
-      if (file && file.type.match('image.*')) {
+      if (file) {
         this.postImage = file;
-      } else {
-        alert("Please select an image file.");
       }
     },
 
-
-
-      // Image selection logic
-
-      async submitPost() {
-        const authorStore = useAuthorStore();
-        try {
-          let formData = new FormData();
-          formData.append('visibility', this.isPublic ? 'PUBLIC' : 'FRIENDS');
-          formData.append('unlisted', false);
-          formData.append('title', 'Your Title Here');
-          formData.append('source', 'Your Source Here');
-          formData.append('origin', 'Your Origin Here');
-          formData.append('description', 'Your Description Here');
-          formData.append('contentType', 'Your ContentType Here');
-          formData.append('content', this.postContent);
-          formData.append('published', new Date().toISOString());
-          formData.append('categories', 'Your Categories Here');
-          if (this.postImage) {
-            formData.append('image', this.postImage);
-          }
-
-          axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
-          const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/', formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          });
-          // Handle response...
-        } catch (error) {
-          console.error('Error while creating post:', error);
+    async submitPost() {
+      const authorStore = useAuthorStore();
+      try {
+        let formData = new FormData();
+        formData.append('visibility', this.isPublic ? 'PUBLIC' : 'FRIENDS');
+        formData.append('unlisted', false);
+        formData.append('title', 'Your Title Here'); // Adjust accordingly
+        formData.append('source', 'Your Source Here'); // Adjust accordingly
+        formData.append('origin', 'Your Origin Here'); // Adjust accordingly
+        formData.append('description', 'Your Description Here'); // Adjust accordingly
+        formData.append('contentType', 'Your ContentType Here'); // Adjust accordingly
+        formData.append('content', this.postContent);
+        formData.append('published', new Date().toISOString());
+        formData.append('categories', 'Your Categories Here'); // Adjust accordingly
+        if (this.postImage) {
+          formData.append('image', this.postImage);
         }
-        this.showPostPopup = false; // Close the popup after submitting the post
+
+        axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+        const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+      } catch (error) {
+        console.error('Error while creating post:', error);
       }
+      this.showPostPopup = false; // Close the popup after submitting the post
+    },
+    async created() {
+      const authorStore = useAuthorStore();
+      try {
+        const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
+      } catch (error) {
+        console.error('Error while fetching posts:', error);
+      }
+    },
 
-  },
-  async created() {
-    const authorStore = useAuthorStore();
-    try {
-      const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
-    } catch (error) {
-      console.error('Error while fetching posts:', error);
-    }
-  },
-
+  }
 };
 </script>
 

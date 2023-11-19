@@ -3,12 +3,8 @@
     <SidebarComponent />
     <main class="main-content">
       <div class="user-section">
-        <input type="file" id="profilePhotoInput" ref="profilePhotoInput" @change="changeProfilePhoto" style="display: none;">
-        <img :src="profilePhoto" class="profile-photo" @click="triggerProfilePhotoUpload">
-        
-        <div class="username">
-          <h2>{{ username }}</h2>
-        </div>
+        <img class="profile-photo" :src="profileImage">
+        <!-- <h2>{{ author.username }}</h2> -->
         <div class="follow-info">
           <button>Followers: </button>
           <button>Following: </button>
@@ -118,9 +114,19 @@ export default {
   async created() {
 
     const authorStore = useAuthorStore();
-
     try {
+      const author = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/');
+      console.log(author.data)
       const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
+      console.log(response)
+      if (response.status === 200) {
+        this.posts = response.data.results; // Update the posts data property with the fetched posts
+        this.author = author.data;
+        this.profileImage = author.data.image;
+        // console.log((await this).profileImage, (await this).author)
+      } else {
+        console.error('Error fetching posts:', response);
+      }
     } catch (error) {
       console.error('Error while fetching posts:', error);
     }

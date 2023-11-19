@@ -10,9 +10,9 @@ from django.contrib.auth.models import AbstractUser
 
 class Author(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    host = models.CharField(max_length=255)
-    displayName = models.CharField(max_length=255)
-    github = models.TextField()
+    host = models.CharField(max_length=255, blank=True, null=True)
+    displayName = models.CharField(max_length=255, blank=True, null=True)
+    github = models.TextField(blank=True, null=True)
     image = models.ImageField(
         upload_to='profile_images/', blank=True, null=True)
 
@@ -20,20 +20,21 @@ class Author(AbstractUser):
         return self.displayName
 
 
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Author.objects.create(displayName=instance, user=instance)
+# @receiver(post_save, sender=User)
+# def create_user_profile(sender, instance, created, **kwargs):
+#     print('25: ', sender, instance, created, kwargs)
+#     if created:
+#         Author.objects.create(displayName=instance, user=instance)
 
 
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.User.save()
+# @receiver(post_save, sender=User)
+# def save_user_profile(sender, instance, **kwargs):
+#     print('32: ', sender, instance, kwargs)
+#     instance.User.save()
 
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
     title = models.TextField(blank=True, null=True)
     source = models.CharField(max_length=255, blank=True, null=True)
     origin = models.CharField(max_length=255, blank=True, null=True)
@@ -46,6 +47,7 @@ class Post(models.Model):
     count = models.IntegerField(default=0)
     visibility = models.CharField(max_length=255, default="PUBLIC")
     unlisted = models.BooleanField(default=False)
+
     # Posts can be links to images.
     imageOnlyPost = models.BooleanField(default=False)
     image_link = models.URLField(blank=True, null=True)
@@ -59,7 +61,7 @@ class Comment(models.Model):
     parentPost = models.ForeignKey(Post, on_delete=models.CASCADE)
     comment = models.TextField()
     contentType = models.CharField(max_length=255)
-    published = models.DateTimeField()
+    published = models.DateTimeField(default=datetime.now)
 
 
 @receiver(post_save, sender=Comment)
@@ -75,7 +77,6 @@ class Follow(models.Model):
         Author, on_delete=models.CASCADE, related_name='from_author_follow')
     to_author = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name='to_author_follow')
-    status = models.CharField(max_length=255)
 
 
 class FriendRequest(models.Model):
@@ -84,14 +85,13 @@ class FriendRequest(models.Model):
         Author, on_delete=models.CASCADE, related_name='from_author')
     to_author = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name='to_author')
-    status = models.CharField(max_length=255)
 
 
 class PostLike(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    published = models.DateTimeField()
+    published = models.DateTimeField(default=datetime.now)
 
 
 class CommentLike(models.Model):
@@ -99,7 +99,7 @@ class CommentLike(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     # post = models.ForeignKey(Post, on_delete=models.CASCADE) # maybe dont need it??
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
-    published = models.DateTimeField()
+    published = models.DateTimeField(default=datetime.now)
 
 
 class ConnectedNode(models.Model):

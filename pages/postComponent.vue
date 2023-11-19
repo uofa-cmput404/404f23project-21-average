@@ -10,10 +10,12 @@
         <img :src="profilePicture" alt="User Profile Picture" class="profile-pic" />
         <span class="user-id">{{ userId }}</span>
       </div>
-      <div v-if="postImageUrl" class="post-image-container">
-        <img :src="postImageUrl" alt="Post Image" class="post-image" />
+      <div>
+        <img v-if="postImage" :src="postImage" alt="Post Image">
+
+        <p style="margin-top: 25px;">{{ postContent }}</p>
       </div>
-      <p style = "margin-top: 25px;">{{ postContent }}</p>
+
       <div class="post-actions">
         <button @click="toggleLike">{{ liked ? 'Unlike' : 'Like' }}</button>
         <span class="like-count">{{ likeCount }} like(s)</span>
@@ -66,6 +68,7 @@ export default {
     userId: String,
     postID: String,
     postContent: String,
+    postImage: String,
   },
 
   data() {
@@ -75,11 +78,15 @@ export default {
       showEditPost: false,
       postMainContent: this.postContent,
       editedPostContent: '',  // initialized from the prop
-      postImage: null,
-      isPublic: false,  // You can set the initial value as needed
-      postImageUrl: null,
+      postImage: this.postImage,
+      isPublic: false  // You can set the initial value as needed
     };
   },
+  async mounted() {
+    const authorStore = useAuthorStore();
+    this.postImage = authorStore.BASE_URL.split('/api')[0] + this.postImage;
+  },
+
   async created() {
     const authorStore = useAuthorStore();
     try {
@@ -100,6 +107,7 @@ export default {
       console.error('Error while fetching post:', error);
     }
   },
+
 
 
   methods: {
@@ -201,6 +209,11 @@ export default {
   right: 17px;
   font-size: 1.5em;
   /* adjust as needed */
+}
+
+img {
+  width: 200px;
+  height: 300px;
 }
 
 .bi {

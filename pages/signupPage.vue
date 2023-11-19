@@ -76,8 +76,8 @@ const register = async () => {
     }
     try {
       console.log(data)
-      const response = await axios.post(authorStore.BASE_URL + '/api/auth/register/', data)
-      console.log(response)
+      const response = await axios.post(authorStore.BASE_URL + '/auth/register/', data)
+      // axios.defaults.headers.common['Authorization'] = 'Token ' + response.data.key;
       await authorStore.setAuthToken(response.data.access)
       await authorStore.setAuthorId(response.data.user.pk)
       axios.defaults.headers.common['Authorization'] = 'Bearer ' + authorStore.getAuthToken;
