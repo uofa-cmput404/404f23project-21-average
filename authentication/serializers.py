@@ -1,11 +1,19 @@
 from rest_framework import serializers
 from dj_rest_auth.registration.serializers import RegisterSerializer
+from rest_framework.serializers import ModelSerializer
+
+from socialDistribution.models import Author
 
 class CustomRegisterSerializer(RegisterSerializer):
     github = serializers.CharField(required=False,)
     host = serializers.CharField(required=False, read_only=True)
     first_name = serializers.CharField(required=False)
     last_name = serializers.CharField(required=False)
+
+    # class Meta:
+    #     model = Author
+    #     fields = ('email', 'username', 'password', 'github', 'host', 'first_name', 'last_name')
+    #     read_only_fields = ('host',)
         
     # override get_cleaned_data of RegisterSerializer
     # def get_cleaned_data(self):
@@ -22,7 +30,7 @@ class CustomRegisterSerializer(RegisterSerializer):
         user.github = self.validated_data.get('github', '')
         user.first_name = self.validated_data.get('first_name', '')
         user.last_name = self.validated_data.get('last_name', '')
-        user.host = request.build_absolute_uri()
+        user.host = request.headers['Origin']
         user.save()
         return user
 
