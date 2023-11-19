@@ -11,9 +11,26 @@
           <h2>{{ username }}</h2>
         </div>
         <div class="follow-info">
-          <button>Followers: </button>
+          <div class="popup" v-if="showFollowersPopup">
+            <div class="popup-content">
+
+              <span class="close" @click="toggleFollowersPopup(false)">&times;</span>
+              <h3>Followers</h3>
+              <button @click="fetchFollowers">Followers</button>
+            </div>
+          </div>
+          <button @click="fetchFollowers">Followers</button>
           <button @click="showFriends">Friends</button> <!-- New Friends button -->
           <button>Following: </button>
+        </div>
+        <div class="popup" v-if="showFollowersPopup">
+          <div class="popup-content">
+            <span class="close" @click="toggleFollowersPopup(false)">&times;</span>
+            <h3>Followers</h3>
+            <ul>
+              <li v-for="follower in followers" :key="follower.id">{{ follower.name }}</li>
+            </ul>
+          </div>
         </div>
         
         <div class="posts-section">
@@ -61,7 +78,8 @@ export default {
       bio: "Write a Bio",
       editingBio: false,
       profilePhoto: defaultProfilePic, // Initialize with default image
-
+      showFollowersPopup: false,
+      followers: [], // This will hold your followers data
       username : '' 
     };
 
@@ -101,8 +119,18 @@ export default {
         reader.readAsDataURL(file);
       }
     },
-    showFollowers() {
-      // Logic to show followers
+    fetchFollowers() {
+    // Here you would fetch your followers from the backend and populate the followers array
+    // For now, let's use dummy data
+    this.followers = [
+      { id: 1, name: 'John Doe' },
+      { id: 2, name: 'Jane Smith' },
+      // ... more followers ...
+    ];
+    this.showFollowersPopup = true;
+    },
+    toggleFollowersPopup(shouldShow) {
+      this.showFollowersPopup = shouldShow;
     },
     showFollowing() {
       // Logic to show following
@@ -233,6 +261,79 @@ button {
   margin: auto auto;
   width: auto;
 }
+
+
+.popup {
+  display: flex;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+  justify-content: center;
+  align-items: center;
+  z-index: 10000; /* High z-index to make sure it's on top */
+}
+
+.popup-content {
+  background-color: grey; /* Black background for the content */
+  color: white; /* White text */
+  padding: 40px; /* Increased padding for more space inside */
+  border-radius: 5px;
+  width: 70%; /* Increase the width as needed */
+  max-width: 400px; /* Adjust max-width as needed */
+  min-height: 400px; /* Add a minimum height if needed */
+  z-index: 10001; /* Ensure content is above the semi-transparent background */
+  position: relative; /* Needed for absolute positioning of the close button */
+  box-sizing: border-box; /* Ensure padding is included in width calculation */
+  overflow-y: auto; /* Add scroll for content overflow */
+  overflow-x: auto;
+  align-items: center;
+  text-align: center;
+
+}
+.popup-content h3 {
+  font-size: 24px; /* Increase the font size as needed */
+  color: white; /* Optional: specify the color if different from the default */
+  margin-bottom: 20px; /* Optional: add some space below the heading */
+  /* Additional styling like font-weight, letter-spacing, etc., can be added here */
+}
+
+
+.close {
+  color: white;
+  position: absolute;
+  top: 0;
+  right: 10px;
+  font-size: 30px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: #ccc;
+  text-decoration: none; /* Removes underline text on hover */
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  padding: 5px 0; /* Spacing between list items */
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  cursor: pointer;
+  font-size: 1.5em;
+}
+
+
 
 .edit {
   margin-left: auto;
