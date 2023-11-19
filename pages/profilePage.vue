@@ -11,27 +11,31 @@
           <h2>{{ username }}</h2>
         </div>
         <div class="follow-info">
-          <div class="popup" v-if="showFollowersPopup">
-            <div class="popup-content">
-
-              <span class="close" @click="toggleFollowersPopup(false)">&times;</span>
-              <h3>Followers</h3>
-              <button @click="fetchFollowers">Followers</button>
-            </div>
-          </div>
+          
           <button @click="fetchFollowers">Followers</button>
-          <button @click="showFriends">Friends</button> <!-- New Friends button -->
-          <button>Following: </button>
-        </div>
-        <div class="popup" v-if="showFollowersPopup">
-          <div class="popup-content">
-            <span class="close" @click="toggleFollowersPopup(false)">&times;</span>
-            <h3>Followers</h3>
-            <ul>
-              <li v-for="follower in followers" :key="follower.id">{{ follower.name }}</li>
-            </ul>
+          <button @click="fetchFriends">Friends</button> <!-- New Friends button -->
+          <button @click="fetchFollowing">Following</button> <!-- New Friends button -->
+          
           </div>
-        </div>
+          <UserListPopup 
+            :visible="showFollowersPopup" 
+            :users="followers" 
+            title="Followers" 
+            @update:visible="showFollowersPopup = $event" />
+          <UserListPopup 
+            :visible="showFriendsPopup" 
+            :users="friends" 
+            title="Friends" 
+            @update:visible="showFriendsPopup = $event" />
+          <UserListPopup 
+            :visible="showFollowingPopup" 
+            :users="following" 
+            title="Following" 
+            @update:visible="showFollowingPopup = $event" />
+          <!-- ... other content ... -->
+  
+        
+        
         
         <div class="posts-section">
           <h3>MY POSTS:</h3>
@@ -50,6 +54,7 @@ import commentComponent from './commentComponent.vue';
 import axios from 'axios';
 import { useAuthorStore } from '../stores/authorStore';
 import defaultProfilePic from '../pages/defualtprofilepic.jpg'; // Import the default profile image
+import UserListPopup from './UserListPopup.vue';
 
 export default {
   name: "SocialDistributionApp",
@@ -57,6 +62,7 @@ export default {
     PostComponent,
     SidebarComponent,
     commentComponent,
+    UserListPopup,
   },
   props: {
     postContent: {
@@ -79,7 +85,8 @@ export default {
       editingBio: false,
       profilePhoto: defaultProfilePic, // Initialize with default image
       showFollowersPopup: false,
-      followers: [], // This will hold your followers data
+      showFriendsPopup: false,
+      showFollowingPopup: false,
       username : '' 
     };
 
@@ -120,24 +127,17 @@ export default {
       }
     },
     fetchFollowers() {
-    // Here you would fetch your followers from the backend and populate the followers array
-    // For now, let's use dummy data
-    this.followers = [
-      { id: 1, name: 'John Doe' },
-      { id: 2, name: 'Jane Smith' },
-      // ... more followers ...
-    ];
+    // Fetch and populate followers
     this.showFollowersPopup = true;
-    },
-    toggleFollowersPopup(shouldShow) {
-      this.showFollowersPopup = shouldShow;
-    },
-    showFollowing() {
-      // Logic to show following
-    },
-    showFriends() {
-      // Logic to show friends
-    },
+  },
+  fetchFriends() {
+    // Fetch and populate friends
+    this.showFriendsPopup = true;
+  },
+  fetchFollowing() {
+    // Fetch and populate following
+    this.showFollowingPopup = true;
+  },
     
   
     
