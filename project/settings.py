@@ -22,11 +22,13 @@ import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = 'django-insecure-7r=x&jfdtv*(hou@1p3$k07glf=zyc*$je0$t_6rwy34g74ift'
 
 dotenv_file = os.path.join(BASE_DIR, ".env")
 if os.path.isfile(dotenv_file):
     dotenv.load_dotenv(dotenv_file)
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -92,24 +94,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'project.wsgi.application'
 
 MEDIA_URL = '/media/'  # or any prefix you choose
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {}
 DATABASES['default'] = dj_database_url.config(conn_max_age=600)
-# DATABASES = {
-#     'default': {
-#         # 'ENGINE': 'django.db.backends.mysql',
-#         # 'NAME': 'socialDB',
-#         # 'USER': 'root',
-#         # 'PASSWORD': 'root',
-#         # 'HOST': 'localhost',
-#         # 'PORT': '3306',
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -147,10 +138,6 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 # STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
-
-# TEMPLATE_DIRS = [
-#     os.path.join(BASE_DIR, 'templates/'),
-# ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -193,7 +180,6 @@ JWT_AUTH = {
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "none"
 REST_AUTH = {
-    # 'REGISTER_SERIALIZER': 'authentication.serializers.CustomRegisterSerializer',
     'USE_JWT': True,
     'JWT_AUTH_COOKIE': 'social-auth-token',
     'JWT_AUTH_REFRESH_COOKIE': 'social-auth-refresh-token',
@@ -208,10 +194,6 @@ CORS_ALLOW_HEADERS = ['*']
 
 
 DEBUG = True
-# SECRET_KEY = os.environ['SECRET_KEY']
-# ALLOWED_HOSTS = ['avergae-21-b951939c31ad.herokuapp.com/',
-#                  'localhost', '127.0.0.1', 'localhost:3000']
-# SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 ALLOWED_HOSTS = ['cmput-average-21.herokuapp.com', '127.0.0.1', 'localhost:8000', 'frontend-21-average.herokuapp.com', 
                  'frontend-21-average-f45e3b82895c.herokuapp.com', 'cmput-average-21-b54788720538.herokuapp.com',
                  'vibely-23b7dc4c736d.herokuapp.com']
@@ -254,8 +236,3 @@ STORAGES = {
 REST_AUTH_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'authentication.serializers.CustomRegisterSerializer'
 }
-
-# try:
-#     from local_settings import *
-# except ImportError:
-#     pass
