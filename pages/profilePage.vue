@@ -200,31 +200,8 @@ export default {
 
 }
 
-.bio-section p {
-  display: block; /* Ensures the element is block-level, affecting layout */
-  width: 80%; /* Match textarea width */
-  margin: auto auto; /* Center it */
-  margin-bottom: 20px; /* Adjust this value to increase or decrease the space */
-  padding: 10px; /* Match textarea padding */
-  background-color: black; /* Match textarea background color */
-  color: white; /* Match textarea text color */
-  border: none; /* No border as per textarea */
-  white-space: pre-wrap; /* Ensures that whitespace and newlines are preserved */
-  word-wrap: break-word; /* Ensures the text breaks to prevent overflow */
-}
 
-.bio-section textarea {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 80%;
-  margin: auto auto;
-  padding: 10px;
-  border: none;
-  background-color: black;
-  color: white;
-  margin-bottom: 20px;
-}
+
 
 .posts-section h3 {
   color: black;
