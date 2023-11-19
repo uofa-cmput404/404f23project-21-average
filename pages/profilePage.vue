@@ -12,16 +12,10 @@
         </div>
         <div class="follow-info">
           <button>Followers: </button>
+          <button @click="showFriends">Friends</button> <!-- New Friends button -->
           <button>Following: </button>
         </div>
-        <div class="bio-section" v-if="!editingBio">
-          <p>{{ bio }}</p>
-          <button class="edit" @click="editingBio = true">Edit</button>
-        </div>
-        <div class="bio-section" v-else>
-          <textarea v-model="bio"></textarea>
-          <button class="edit" @click="saveBio">Save</button>
-        </div>
+        
         <div class="posts-section">
           <h3>MY POSTS:</h3>
           <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :userId="post.owner.username"
@@ -107,12 +101,17 @@ export default {
         reader.readAsDataURL(file);
       }
     },
-    saveBio() {
-      // Here you should implement the logic to save the bio, perhaps sending it to a server
-      this.editingBio = false;
-      // For demonstration purposes, we'll just log it
-      console.log(this.bio);
+    showFollowers() {
+      // Logic to show followers
     },
+    showFollowing() {
+      // Logic to show following
+    },
+    showFriends() {
+      // Logic to show friends
+    },
+    
+  
     
     logout() {
     // Here you should implement the logic to clear user data and redirect
