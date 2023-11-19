@@ -11,7 +11,7 @@
       <!-- Posts rendering section -->
       <div class="posts-feed">
         <h2>Posts</h2>
-        <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :userId="post.owner.username"
+        <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :userId="post.owner.username" :postImage="post.image"
           :postID="post.id" />
       </div>
       <SidebarComponent />
@@ -82,40 +82,39 @@ export default {
     onImageSelected(event) {
       const file = event.target.files[0];
       if (file) {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (e) => {
-          this.postImage = e.target.result;
-        };
+        this.postImage = file;
       }
-      // Image selection logic
     },
+
     async submitPost() {
       const authorStore = useAuthorStore();
-      // authorStore.fetchAuthor()
-      // Post submission logic
       try {
-        const payload = {
-          visibility: this.isPublic ? 'PUBLIC' : 'FRIENDS', // Adjust as per your requirement
-          unlisted: false, // Adjust as per your requirement
-          title: 'string', // You can add a title input field in your template
-          source: 'string', // Adjust as per your requirement
-          origin: 'string', // Adjust as per your requirement
-          description: 'string', // You can add a description input field in your template
-          contentType: 'string', // Adjust based on your content type
-          content: this.postContent,
-          published: new Date().toISOString(),
-          categories: 'string', // Adjust as per your requirement
-          image: this.postImage,
-        };
+        let formData = new FormData();
+        formData.append('visibility', this.isPublic ? 'PUBLIC' : 'FRIENDS');
+        formData.append('unlisted', false);
+        formData.append('title', 'Your Title Here'); // Adjust accordingly
+        formData.append('source', 'Your Source Here'); // Adjust accordingly
+        formData.append('origin', 'Your Origin Here'); // Adjust accordingly
+        formData.append('description', 'Your Description Here'); // Adjust accordingly
+        formData.append('contentType', 'Your ContentType Here'); // Adjust accordingly
+        formData.append('content', this.postContent);
+        formData.append('published', new Date().toISOString());
+        formData.append('categories', 'Your Categories Here'); // Adjust accordingly
+        if (this.postImage) {
+          formData.append('image', this.postImage);
+        }
+
         axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
-        const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/', payload);
+        const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
       } catch (error) {
         console.error('Error while creating post:', error);
       }
       this.showPostPopup = false; // Close the popup after submitting the post
-    }
-  },
+    },
   async created() {
     const authorStore = useAuthorStore();
     try {
@@ -125,7 +124,7 @@ export default {
     }
   },
 
-};
+}};
 </script>
 
 <style>

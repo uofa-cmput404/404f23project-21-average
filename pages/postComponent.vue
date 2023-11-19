@@ -10,6 +10,7 @@
         <img :src="profilePicture" alt="User Profile Picture" class="profile-pic" />
         <span class="user-id">{{ userId }}</span>
       </div>
+      <img v-if="postImage" :src="postImage" alt="Post Image">
       <p style = "margin-top: 25px;">{{ postContent }}</p>
       <div class="post-actions">
         <button @click="toggleLike">{{ liked ? 'Unlike' : 'Like' }}</button>
@@ -63,6 +64,7 @@ export default {
     userId: String,
     postID: String,
     postContent: String,
+    postImage: String,
   },
 
   data() {
