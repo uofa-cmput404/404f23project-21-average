@@ -22,6 +22,7 @@ urlpatterns = [
     # comments
     path('authors/<slug:author_pk>/posts/<slug:post_pk>/comments/',
          CommentViewSet.as_view(), name='comments'),
+    
     path('authors/<slug:author_pk>/posts/<slug:post_pk>/image',
          ImageViewSet.as_view(), name='image'),
    

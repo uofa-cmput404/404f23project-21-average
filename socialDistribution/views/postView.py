@@ -102,6 +102,9 @@ class ImageViewSet(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     pagination_class = Pagination
 
+    @extend_schema(
+        tags=['Posts'],
+    )
     def get(self, request, author_pk, post_pk, format=None):
         post = Post.objects.get(pk=post_pk)
         if post.imageOnlyPost:
