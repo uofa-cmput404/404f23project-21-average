@@ -11,15 +11,8 @@
         </div>
         <div class="follow-info">
           <button>Followers: </button>
+          <button>Friends: </button>
           <button>Following: </button>
-        </div>
-        <div class="bio-section" v-if="!editingBio">
-          <p>{{ bio }}</p>
-          <button class="edit" @click="editingBio = true">Edit</button>
-        </div>
-        <div class="bio-section" v-else>
-          <textarea v-model="bio"></textarea>
-          <button class="edit" @click="saveBio">Save</button>
         </div>
         <div class="posts-section">
           <h3>MY POSTS:</h3>
@@ -63,10 +56,8 @@ export default {
   data() {
     return {
       posts: [], // Initialize posts as an empty array
-      bio: "Write a Bio",
       editingBio: false,
       profilePhoto: defaultProfilePic, // Initialize with default image
-
       username : '' 
     };
 
@@ -106,12 +97,6 @@ export default {
         reader.readAsDataURL(file);
       }
     },
-    saveBio() {
-      // Here you should implement the logic to save the bio, perhaps sending it to a server
-      this.editingBio = false;
-      // For demonstration purposes, we'll just log it
-      console.log(this.bio);
-    },
     
   },
   
@@ -140,8 +125,7 @@ export default {
   top: 0;
   right: 0;
 }
-
-
+ 
 .main-content {
   position: fixed;
   left: 26%;
@@ -180,32 +164,6 @@ export default {
 
 }
 
-.bio-section p {
-  display: block; /* Ensures the element is block-level, affecting layout */
-  width: 80%; /* Match textarea width */
-  margin: auto auto; /* Center it */
-  margin-bottom: 20px; /* Adjust this value to increase or decrease the space */
-  padding: 10px; /* Match textarea padding */
-  background-color: black; /* Match textarea background color */
-  color: white; /* Match textarea text color */
-  border: none; /* No border as per textarea */
-  white-space: pre-wrap; /* Ensures that whitespace and newlines are preserved */
-  word-wrap: break-word; /* Ensures the text breaks to prevent overflow */
-}
-
-.bio-section textarea {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 80%;
-  margin: auto auto;
-  padding: 10px;
-  border: none;
-  background-color: black;
-  color: white;
-  margin-bottom: 20px;
-}
-
 .posts-section h3 {
   color: black;
   margin-bottom: 20px;
@@ -235,19 +193,6 @@ button {
   transition: background-color 0.2s;
   margin: auto auto;
   width: auto;
-}
-
-.edit {
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 20px; /* Add top margin to the edit button for space */
-  display: block;
-  /* To enable margin auto to work for horizontal centering */
-  font-size: 10px;
-  /* Smaller font size */
-  padding: 10px 15px;
-  width: auto;
-
 }
 </style>
  
