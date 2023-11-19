@@ -77,7 +77,6 @@ class Follow(models.Model):
         Author, on_delete=models.CASCADE, related_name='from_author_follow')
     to_author = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name='to_author_follow')
-    status = models.CharField(max_length=255)
 
 
 class FriendRequest(models.Model):
@@ -86,7 +85,6 @@ class FriendRequest(models.Model):
         Author, on_delete=models.CASCADE, related_name='from_author')
     to_author = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name='to_author')
-    status = models.CharField(max_length=255)
 
 
 class PostLike(models.Model):

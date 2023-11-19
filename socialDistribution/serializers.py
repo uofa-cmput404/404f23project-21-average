@@ -43,13 +43,13 @@ class CommentSerializer(ModelSerializer):
 class FollowSerializer(ModelSerializer):
     class Meta:
         model = Follow
-        fields = ['from_author', 'to_author', 'status']
+        fields = ['from_author', 'to_author']
 
 
 class FriendRequestSerializer(ModelSerializer):
     class Meta:
         model = FriendRequest
-        fields = ['id', 'from_author', 'to_author', 'status']
+        fields = [ 'from_author', 'to_author']
 
 
 class PostLikeSerializer(ModelSerializer):
