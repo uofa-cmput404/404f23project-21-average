@@ -1,22 +1,38 @@
 <template>
   <div class="app-container">
+    <button class="logout-button" @click="logout">Logout</button>
     <SidebarComponent />
     <main class="main-content">
       <div class="user-section">
         <img class="profile-photo" :src="profileImage">
         <!-- <h2>{{ author.username }}</h2> -->
         <div class="follow-info">
-          <button>Followers: </button>
-          <button>Following: </button>
-        </div>
-        <div class="bio-section" v-if="!editingBio">
-          <p>{{ bio }}</p>
-          <button class="edit" @click="editingBio = true">Edit</button>
-        </div>
-        <div class="bio-section" v-else>
-          <textarea v-model="bio"></textarea>
-          <button class="edit" @click="saveBio">Save</button>
-        </div>
+          
+          <button @click="fetchFollowers">Followers</button>
+          <button @click="fetchFriends">Friends</button> <!-- New Friends button -->
+          <button @click="fetchFollowing">Following</button> <!-- New Friends button -->
+          
+          </div>
+          <UserListPopup 
+            :visible="showFollowersPopup" 
+            :users="followers" 
+            title="Followers" 
+            @update:visible="showFollowersPopup = $event" />
+          <UserListPopup 
+            :visible="showFriendsPopup" 
+            :users="friends" 
+            title="Friends" 
+            @update:visible="showFriendsPopup = $event" />
+          <UserListPopup 
+            :visible="showFollowingPopup" 
+            :users="following" 
+            title="Following" 
+            @update:visible="showFollowingPopup = $event" />
+          <!-- ... other content ... -->
+  
+        
+        
+        
         <div class="posts-section">
           <h3>MY POSTS:</h3>
           <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :userId="post.owner.username"
@@ -34,6 +50,7 @@ import commentComponent from './commentComponent.vue';
 import axios from 'axios';
 import { useAuthorStore } from '../stores/authorStore';
 import defaultProfilePic from '../pages/defualtprofilepic.jpg'; // Import the default profile image
+import UserListPopup from './UserListPopup.vue';
 
 export default {
   name: "SocialDistributionApp",
@@ -41,6 +58,7 @@ export default {
     PostComponent,
     SidebarComponent,
     commentComponent,
+    UserListPopup,
   },
   props: {
     postContent: {
@@ -62,7 +80,9 @@ export default {
       bio: "Write a Bio",
       editingBio: false,
       profilePhoto: defaultProfilePic, // Initialize with default image
-
+      showFollowersPopup: false,
+      showFriendsPopup: false,
+      showFollowingPopup: false,
       username : '' 
     };
 
@@ -77,7 +97,7 @@ export default {
       // Fetch user's profile
       let profileResponse = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId);
       this.username = profileResponse.data.username; // Update this line to match your API response structure
-
+      
       // Set profile photo if available
       if (profileResponse.data.profilePicture) {
         this.profilePhoto = profileResponse.data.profilePicture;
@@ -102,13 +122,29 @@ export default {
         reader.readAsDataURL(file);
       }
     },
-    saveBio() {
-      // Here you should implement the logic to save the bio, perhaps sending it to a server
-      this.editingBio = false;
-      // For demonstration purposes, we'll just log it
-      console.log(this.bio);
-    },
+    fetchFollowers() {
+    // Fetch and populate followers
+    this.showFollowersPopup = true;
+  },
+  fetchFriends() {
+    // Fetch and populate friends
+    this.showFriendsPopup = true;
+  },
+  fetchFollowing() {
+    // Fetch and populate following
+    this.showFollowingPopup = true;
+  },
     
+  
+    
+    logout() {
+    // Here you should implement the logic to clear user data and redirect
+    // For demonstration, let's just log out and redirect to a login page
+    console.log("Logging out");
+    // Clear user data (local storage/session storage)
+    // Redirect to login page
+    window.location.href = '/loginPage'; // Replace with your login page URL
+  }
   },
   
   async created() {
@@ -147,6 +183,18 @@ export default {
   right: 0;
 }
 
+.logout-button {
+  position: fixed; /* changed from absolute to fixed to ensure it's relative to the viewport */
+  top: 10px; /* distance from the top */
+  right: 10px; /* distance from the right, changed from left to right */
+  padding: 8px 15px;
+  background-color: black; /* background color changed to black */
+  color: white; /* text color changed to white */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 1000; /* high z-index to ensure it's above other elements */
+}
 
 .main-content {
   position: fixed;
@@ -186,31 +234,8 @@ export default {
 
 }
 
-.bio-section p {
-  display: block; /* Ensures the element is block-level, affecting layout */
-  width: 80%; /* Match textarea width */
-  margin: auto auto; /* Center it */
-  margin-bottom: 20px; /* Adjust this value to increase or decrease the space */
-  padding: 10px; /* Match textarea padding */
-  background-color: black; /* Match textarea background color */
-  color: white; /* Match textarea text color */
-  border: none; /* No border as per textarea */
-  white-space: pre-wrap; /* Ensures that whitespace and newlines are preserved */
-  word-wrap: break-word; /* Ensures the text breaks to prevent overflow */
-}
 
-.bio-section textarea {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 80%;
-  margin: auto auto;
-  padding: 10px;
-  border: none;
-  background-color: black;
-  color: white;
-  margin-bottom: 20px;
-}
+
 
 .posts-section h3 {
   color: black;
@@ -242,6 +267,79 @@ button {
   margin: auto auto;
   width: auto;
 }
+
+
+.popup {
+  display: flex;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+  justify-content: center;
+  align-items: center;
+  z-index: 10000; /* High z-index to make sure it's on top */
+}
+
+.popup-content {
+  background-color: grey; /* Black background for the content */
+  color: white; /* White text */
+  padding: 40px; /* Increased padding for more space inside */
+  border-radius: 5px;
+  width: 70%; /* Increase the width as needed */
+  max-width: 400px; /* Adjust max-width as needed */
+  min-height: 400px; /* Add a minimum height if needed */
+  z-index: 10001; /* Ensure content is above the semi-transparent background */
+  position: relative; /* Needed for absolute positioning of the close button */
+  box-sizing: border-box; /* Ensure padding is included in width calculation */
+  overflow-y: auto; /* Add scroll for content overflow */
+  overflow-x: auto;
+  align-items: center;
+  text-align: center;
+
+}
+.popup-content h3 {
+  font-size: 24px; /* Increase the font size as needed */
+  color: white; /* Optional: specify the color if different from the default */
+  margin-bottom: 20px; /* Optional: add some space below the heading */
+  /* Additional styling like font-weight, letter-spacing, etc., can be added here */
+}
+
+
+.close {
+  color: white;
+  position: absolute;
+  top: 0;
+  right: 10px;
+  font-size: 30px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: #ccc;
+  text-decoration: none; /* Removes underline text on hover */
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  padding: 5px 0; /* Spacing between list items */
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  cursor: pointer;
+  font-size: 1.5em;
+}
+
+
 
 .edit {
   margin-left: auto;
