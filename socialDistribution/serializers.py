@@ -1,10 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from .models import *
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from .models import Author, Post
-from drf_spectacular.utils import extend_schema_field
 
 
 class CurrentUserSerializer(ModelSerializer):
@@ -29,7 +25,7 @@ class PostSerializer(ModelSerializer):
         model = Post
         fields = ['id', 'title', 'source', 'origin', 'description', 'contentType', 'visibility', 'unlisted',
                   'content', 'published', 'owner', 'categories', 'image_link', 'image', 'imageOnlyPost', 'count']
-        read_only_fields = ['owner', 'count', ]
+        read_only_fields = ['owner', 'count', 'published', 'id']
         ordering = ['-id']
 
 
@@ -40,7 +36,7 @@ class CommentSerializer(ModelSerializer):
         model = Comment
         fields = ['id', 'author', 'parentPost',  'comment',
                   'contentType', 'published']
-        read_only_fields = ['author', 'parentPost']
+        read_only_fields = ['author', 'parentPost', 'published', 'id']
         ordering = ['-id']
 
 
@@ -61,7 +57,7 @@ class PostLikeSerializer(ModelSerializer):
     class Meta:
         model = PostLike
         fields = ['published', 'author', 'post', 'id']
-        read_only_fields = ['author', 'post', 'id']
+        read_only_fields = ['author', 'post', 'id', 'published']
         ordering = ['-id']
 
 
@@ -70,7 +66,7 @@ class CommentLikeSerializer(ModelSerializer):
         model = CommentLike
         fields = ['published', 'author', 'comment', 'id']
         ordering = ['-id']
-        read_only_fields = ['author', 'comment', 'id']
+        read_only_fields = ['author', 'comment', 'id', 'published']
 
 
 class ConnectedNodeSerializer(ModelSerializer):

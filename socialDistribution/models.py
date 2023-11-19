@@ -10,9 +10,9 @@ from django.contrib.auth.models import AbstractUser
 
 class Author(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    host = models.CharField(max_length=255)
-    displayName = models.CharField(max_length=255)
-    github = models.TextField()
+    host = models.CharField(max_length=255, blank=True, null=True)
+    displayName = models.CharField(max_length=255, blank=True, null=True)
+    github = models.TextField(blank=True, null=True)
     image = models.ImageField(
         upload_to='profile_images/', blank=True, null=True)
 
@@ -61,7 +61,7 @@ class Comment(models.Model):
     parentPost = models.ForeignKey(Post, on_delete=models.CASCADE)
     comment = models.TextField()
     contentType = models.CharField(max_length=255)
-    published = models.DateTimeField()
+    published = models.DateTimeField(default=datetime.now)
 
 
 @receiver(post_save, sender=Comment)
@@ -93,7 +93,7 @@ class PostLike(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    published = models.DateTimeField()
+    published = models.DateTimeField(default=datetime.now)
 
 
 class CommentLike(models.Model):
@@ -101,7 +101,7 @@ class CommentLike(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     # post = models.ForeignKey(Post, on_delete=models.CASCADE) # maybe dont need it??
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
-    published = models.DateTimeField()
+    published = models.DateTimeField(default=datetime.now)
 
 
 class ConnectedNode(models.Model):
