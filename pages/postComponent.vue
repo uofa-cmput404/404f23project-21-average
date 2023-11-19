@@ -83,12 +83,8 @@ export default {
     };
   },
   async mounted() {
-    // Fetch likes
     const authorStore = useAuthorStore();
-    // console.log(props.postImage)
-    // const postImage1 = ref('')
     this.postImage = authorStore.BASE_URL.split('/api')[0] + this.postImage;
-    // postImage1.value = 
   },
 
   async created() {

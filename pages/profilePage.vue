@@ -3,8 +3,8 @@
     <SidebarComponent />
     <main class="main-content">
       <div class="user-section">
-        <img src="@/pages/spiderman.jpeg" class="profile-photo">
-        <h2>User1</h2>
+        <img class="profile-photo" :src="profileImage">
+        <!-- <h2>{{ author.username }}</h2> -->
         <div class="follow-info">
           <button>Followers: </button>
           <button>Following: </button>
@@ -38,20 +38,23 @@ export default {
   },
   data() {
     return {
+      author: {},
+      profileImage: '',
       posts: [] // Initialize posts as an empty array
     };
   },
   async created() {
     const authorStore = useAuthorStore();
-    // authorStore.fetchAuthor()
-    console.log(authorStore.authorId, authorStore.authToken)
-    console.log(authorStore.getAuthToken)
     try {
-      const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.authorId + '/posts/');
-      // await axios.get('http://localhost:8000/api/posts/');
+      const author = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/');
+      console.log(author.data)
+      const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
       console.log(response)
       if (response.status === 200) {
         this.posts = response.data.results; // Update the posts data property with the fetched posts
+        this.author = author.data;
+        this.profileImage = author.data.image;
+        // console.log((await this).profileImage, (await this).author)
       } else {
         console.error('Error fetching posts:', response);
       }
