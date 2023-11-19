@@ -10,6 +10,9 @@
         <img :src="profilePicture" alt="User Profile Picture" class="profile-pic" />
         <span class="user-id">{{ userId }}</span>
       </div>
+      <div v-if="postImageUrl" class="post-image-container">
+        <img :src="postImageUrl" alt="Post Image" class="post-image" />
+      </div>
       <p style = "margin-top: 25px;">{{ postContent }}</p>
       <div class="post-actions">
         <button @click="toggleLike">{{ liked ? 'Unlike' : 'Like' }}</button>
@@ -73,7 +76,8 @@ export default {
       postMainContent: this.postContent,
       editedPostContent: '',  // initialized from the prop
       postImage: null,
-      isPublic: false  // You can set the initial value as needed
+      isPublic: false,  // You can set the initial value as needed
+      postImageUrl: null,
     };
   },
   async created() {
@@ -86,6 +90,7 @@ export default {
       const response1 = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID);
       if (response.status === 200) {
         this.post = response.data;
+        this.postImageUrl = this.post.image;
         // Fetch likes
         this.getLikes();
       } else {
@@ -145,6 +150,7 @@ export default {
         reader.readAsDataURL(file);
         reader.onload = (e) => {
           this.postImage = e.target.result;
+          this.postImageUrl = e.target.result; // Update the image URL for display
         };
       }
     },
@@ -372,6 +378,18 @@ input:checked+.slider:before {
   color: white;
   font-size: 0.9em;
 }
+
+.post-image-container {
+  text-align: center; /* Center the image */
+  margin-top: 10px;
+}
+
+.post-image {
+  max-width: 100%; /* Ensure the image doesn't overflow */
+  height: auto; /* Maintain aspect ratio */
+  border-radius: 5px; /* Optional: for rounded corners */
+}
+
 
 /* Styles from EditPostComponent.vue */
 /* ... */
