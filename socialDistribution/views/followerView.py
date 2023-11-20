@@ -1,7 +1,7 @@
 from rest_framework.response import Response
-from socialDistribution.models import Author, ConnectedNode, Follow, FriendRequest
+from socialDistribution.models import Author, Follow
 from socialDistribution.pagination import Pagination
-from socialDistribution.serializers import AuthorSerializer, ConnectedNodeSerializer, FollowSerializer, FriendRequestSerializer
+from socialDistribution.serializers import AuthorSerializer, FollowSerializer
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status

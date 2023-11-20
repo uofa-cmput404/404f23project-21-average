@@ -8,14 +8,13 @@ from rest_framework import status
 from drf_spectacular.utils import extend_schema
 
 
-class FriendRequestDetailViewSet(generics.ListCreateAPIView):
+class FriendRequestDetailViewSet(generics.RetrieveUpdateAPIView):
     queryset = FriendRequest.objects.all()
     serializer_class = FriendRequestSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     
     @extend_schema(
         tags=['Befriend'],
-        description='Add FOREIGN_AUTHOR_ID as a friend of AUTHOR_ID (must be authenticated)'
     )
     def get(self, request, author_pk, foreign_author_pk, format=None):
         friend_requests = FriendRequest.objects.filter(to_author=author_pk)
@@ -24,7 +23,7 @@ class FriendRequestDetailViewSet(generics.ListCreateAPIView):
 
     @extend_schema(
         tags=['Befriend'],
-        description='Add FOREIGN_AUTHOR_ID as a friend of AUTHOR_ID (must be authenticated)'
+        description='Send a friend request from FOREIGN_AUTHOR_ID'
     )
     def put(self, request, author_pk, foreign_author_pk, format=None):
         author = Author.objects.get(pk=author_pk)
@@ -36,6 +35,20 @@ class FriendRequestDetailViewSet(generics.ListCreateAPIView):
         follow = FriendRequest.objects.create(from_author=foreign_author, to_author=author)
         return Response(FriendRequestSerializer(follow).data, status=status.HTTP_201_CREATED)
 
+    @extend_schema(
+        tags=['Befriend'],
+        description='Accept a friend request from FOREIGN_AUTHOR_ID'
+    )
+    def post(self, request, author_pk, foreign_author_pk, format=None):
+        author = Author.objects.get(pk=author_pk)
+        foreign_author = Author.objects.get(pk=foreign_author_pk)
+        # create follow object
+        friendRequest = FriendRequest.objects.filter(from_author=foreign_author, to_author=author)
+        if not friendRequest:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        friendRequest.status = "Accepted"
+        return Response(status=status.HTTP_200_OK)
 
 class FriendRequestListViewSet(generics.ListAPIView):
     queryset = FriendRequest.objects.all()
@@ -45,7 +58,6 @@ class FriendRequestListViewSet(generics.ListAPIView):
     
     @extend_schema(
         tags=['Befriend'],
-        description='[local] get a list of friend requests for AUTHOR_ID (paginated)'
     )
     def get(self, request, author_pk, format=None):
         friend_requests = FriendRequest.objects.filter(to_author=author_pk)

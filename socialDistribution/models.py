@@ -86,6 +86,7 @@ class FriendRequest(models.Model):
         Author, on_delete=models.CASCADE, related_name='from_author')
     to_author = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name='to_author')
+    status = models.CharField(max_length=255, default="pending")
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
