@@ -15,7 +15,7 @@
           </div>
           <UserListPopup 
             :visible="showFollowersPopup" 
-            :users="followers" 
+            :users="followers.from_author" 
             title="Followers" 
             @update:visible="showFollowersPopup = $event" />
           <UserListPopup 
@@ -77,6 +77,7 @@ export default {
   data() {
     return {
       posts: [], // Initialize posts as an empty array
+      followers: [],
       bio: "Write a Bio",
       editingBio: false,
       profilePhoto: defaultProfilePic, // Initialize with default image
@@ -126,6 +127,9 @@ export default {
     // Fetch and populate followers
     const authorStore = useAuthorStore();
     const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/');
+    console.log("yoyoyoyo")
+    console.log(response)
+    this.followers = response.data.results
     this.showFollowersPopup = true;
   },
   fetchFriends() {
