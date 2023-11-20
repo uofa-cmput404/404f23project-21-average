@@ -41,13 +41,11 @@ const login = async () => {
       password: password.value
     };
     console.log(authorStore.BASE_URL)
-    // console.log(process.env);
 
     const response = await axios.post(authorStore.BASE_URL + '/auth/login/', data)
     console.log(response)
     await authorStore.setAuthToken(response.data.access)
     await authorStore.setAuthorId(response.data.user.pk)
-    console.log('set')
     window.location.href = "/homePage";
   } catch (error) {
     // Handle errors (e.g., network issues)

@@ -1,12 +1,9 @@
-<template>
-    <div class="comment-section">
-
-    </div>
-</template>
+<template></template>
     
 <script lang="ts" setup>
-import { navigateTo } from 'nuxt/app';
+import { navigateTo, useRuntimeConfig } from 'nuxt/app';
+const config = useRuntimeConfig();
 
-navigateTo('https://cmput-average-21-b54788720538.herokuapp.com/api/', { external: true })
+navigateTo(config.public.baseUrl, { external: true })
 
 </script>

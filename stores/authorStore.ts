@@ -13,7 +13,6 @@ export const useAuthorStore = defineStore({
   }),
   getters: {
     getAuthorId() {
-      console.log(process.env);
       return localStorage.getItem("authorId");
     },
     getAuthToken() {
