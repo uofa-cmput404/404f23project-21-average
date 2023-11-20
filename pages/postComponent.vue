@@ -10,7 +10,12 @@
         <img :src="profilePicture" alt="User Profile Picture" class="profile-pic" />
         <span class="user-id">{{ userId }}</span>
       </div>
-      <p style = "margin-top: 25px;">{{ postContent }}</p>
+      <div>
+        <img v-if="postImage" :src="postImage" >
+
+        <p style="margin-top: 25px;">{{ postContent }}</p>
+      </div>
+
       <div class="post-actions">
         <button @click="toggleLike">{{ liked ? 'Unlike' : 'Like' }}</button>
         <span class="like-count">{{ likeCount }} like(s)</span>
@@ -63,6 +68,7 @@ export default {
     userId: String,
     postID: String,
     postContent: String,
+    postImage: String,
   },
 
   data() {
@@ -72,10 +78,15 @@ export default {
       showEditPost: false,
       postMainContent: this.postContent,
       editedPostContent: '',  // initialized from the prop
-      postImage: null,
+      postImage: this.postImage,
       isPublic: false  // You can set the initial value as needed
     };
   },
+  async mounted() {
+    const authorStore = useAuthorStore();
+    this.postImage = authorStore.BASE_URL.split('/api')[0] + this.postImage;
+  },
+
   async created() {
     const authorStore = useAuthorStore();
     try {
@@ -86,6 +97,7 @@ export default {
       const response1 = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID);
       if (response.status === 200) {
         this.post = response.data;
+        this.postImageUrl = this.post.image;
         // Fetch likes
         this.getLikes();
       } else {
@@ -95,6 +107,7 @@ export default {
       console.error('Error while fetching post:', error);
     }
   },
+
 
 
   methods: {
@@ -145,6 +158,7 @@ export default {
         reader.readAsDataURL(file);
         reader.onload = (e) => {
           this.postImage = e.target.result;
+          this.postImageUrl = e.target.result; // Update the image URL for display
         };
       }
     },
@@ -195,6 +209,11 @@ export default {
   right: 17px;
   font-size: 1.5em;
   /* adjust as needed */
+}
+
+img {
+  width: 200px;
+  height: 300px;
 }
 
 .bi {
@@ -372,6 +391,18 @@ input:checked+.slider:before {
   color: white;
   font-size: 0.9em;
 }
+
+.post-image-container {
+  text-align: center; /* Center the image */
+  margin-top: 10px;
+}
+
+.post-image {
+  max-width: 100%; /* Ensure the image doesn't overflow */
+  height: auto; /* Maintain aspect ratio */
+  border-radius: 5px; /* Optional: for rounded corners */
+}
+
 
 /* Styles from EditPostComponent.vue */
 /* ... */

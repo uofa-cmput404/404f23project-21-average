@@ -1,6 +1,0 @@
-- Do we use the requests library to make requests to other nodes?
-- are the reponse structures meant to stay the same?
-- Server adminstuff can be done in django admin panel?
-- No need for any PUT, DELETE methods? "HTTP Methods not explicitly listed are not allowed methods"
-- does pk need to be in URL format?
-

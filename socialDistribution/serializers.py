@@ -1,23 +1,7 @@
-from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField
+from rest_framework.serializers import ModelSerializer
 from .models import *
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from .models import Author, Post
-from drf_spectacular.utils import extend_schema_field
 
-
-# class RegistrationSerializer(RegisterSerializer):
-#     class Meta:
-#         model: User
-#         fields = ['id', 'username', 'email',
-#                   'password', 'first_name', 'last_name']
-
-#     def save(self, request):
-#         user = super().save(request)
-#         user.is_active = False
-#         user.save()
-#         return user
 
 class CurrentUserSerializer(ModelSerializer):
     class Meta:
@@ -27,9 +11,6 @@ class CurrentUserSerializer(ModelSerializer):
 
 
 class AuthorSerializer(ModelSerializer):
-    # url = HyperlinkedIdentityField(
-    #     view_name='authors-list', lookup_field='id')
-
     class Meta:
         model = Author
         fields = ['id', 'host', 'displayName', 'github', 'image', 'first_name',
@@ -38,36 +19,40 @@ class AuthorSerializer(ModelSerializer):
 
 class PostSerializer(ModelSerializer):
     owner = AuthorSerializer(read_only=True)
+    # source = hyperlinked_identity_field(view_name='post-detail')
 
     class Meta:
         model = Post
         fields = ['id', 'title', 'source', 'origin', 'description', 'contentType', 'visibility', 'unlisted',
-                  'content', 'published', 'owner', 'categories', 'image_link', 'image']
-        read_only_fields = ['owner', 'count', ]
+                  'content', 'published', 'owner', 'categories', 'image_link', 'image', 'imageOnlyPost', 'count']
+        read_only_fields = ['owner', 'count', 'published', 'id']
         ordering = ['-id']
 
 
 class CommentSerializer(ModelSerializer):
-    commenter = AuthorSerializer(read_only=True)
+    author = AuthorSerializer(read_only=True)
 
     class Meta:
         model = Comment
-        fields = ['id', 'commenter', 'parentPost',  'comment',
+        fields = ['id', 'author', 'parentPost',  'comment',
                   'contentType', 'published']
-        read_only_fields = ['commenter', 'parentPost']
+        read_only_fields = ['author', 'parentPost', 'published', 'id']
         ordering = ['-id']
 
 
 class FollowSerializer(ModelSerializer):
+    from_author = AuthorSerializer(read_only=True)
+    to_author = AuthorSerializer(read_only=True)
     class Meta:
         model = Follow
-        fields = ['from_author', 'to_author', 'status']
+        fields = ['from_author', 'to_author']
+        read_only_fields = ['from_author', 'to_author']
 
 
 class FriendRequestSerializer(ModelSerializer):
     class Meta:
         model = FriendRequest
-        fields = ['id', 'from_author', 'to_author', 'status']
+        fields = [ 'from_author', 'to_author']
 
 
 class PostLikeSerializer(ModelSerializer):
@@ -75,7 +60,7 @@ class PostLikeSerializer(ModelSerializer):
     class Meta:
         model = PostLike
         fields = ['published', 'author', 'post', 'id']
-        read_only_fields = ['author', 'post', 'id']
+        read_only_fields = ['author', 'post', 'id', 'published']
         ordering = ['-id']
 
 
@@ -84,7 +69,7 @@ class CommentLikeSerializer(ModelSerializer):
         model = CommentLike
         fields = ['published', 'author', 'comment', 'id']
         ordering = ['-id']
-        read_only_fields = ['author', 'comment', 'id']
+        read_only_fields = ['author', 'comment', 'id', 'published']
 
 
 class ConnectedNodeSerializer(ModelSerializer):
