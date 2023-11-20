@@ -1,3 +1,4 @@
+import requests
 from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,6 +10,10 @@ from socialDistribution.models import Author, Post
 from socialDistribution.pagination import Pagination
 from socialDistribution.permissions import IsSharedWithFriends
 from socialDistribution.serializers import PostSerializer
+import base64
+from io import BytesIO
+from PIL import Image
+from django.http import HttpResponse
 
 
 class PostList(generics.ListCreateAPIView):
@@ -23,6 +28,16 @@ class PostList(generics.ListCreateAPIView):
         description='[local, remote] get the recent posts from author AUTHOR_ID (paginated)'
     )
     def get(self, request, author_pk, format=None):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         posts = Post.objects.filter(owner=author_pk)
         page = self.paginate_queryset(posts)
         return self.get_paginated_response(PostSerializer(page, many=True).data)
@@ -32,6 +47,16 @@ class PostList(generics.ListCreateAPIView):
         description='Create a new post but generate a new id'
     )
     def post(self, request, author_pk, format=None):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         author = Author.objects.get(pk=author_pk)
         serializer = PostSerializer(data=request.data)
         print(request.data)
@@ -59,8 +84,20 @@ class PostDetail(APIView):
         description='Update the post whose id is POST_ID (must be authenticated)'
     )
     def post(self, request, author_pk, post_pk, format=None):
+        """
+        
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            post_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         author = Author.objects.get(pk=author_pk)
-        post = Post.objects.get(pk=post_pk)
+        post = Post.objects.get(pk=post_pk, owner=author)
         serializer = PostSerializer(post, data=request.data)
         if serializer.is_valid():
             serializer.save(owner=author, id=post_pk)
@@ -72,6 +109,18 @@ class PostDetail(APIView):
         description='create a post where its id is POST_ID'
     )
     def put(self, request, author_pk, post_pk, format=None):
+        """
+        
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            post_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         author = Author.objects.get(pk=author_pk)
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
@@ -83,6 +132,18 @@ class PostDetail(APIView):
         tags=['Posts'],
     )
     def get(self, request, author_pk, post_pk, format=None):
+        """
+        
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            post_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         post = self.get_object(post_pk)
         serializer = PostSerializer(post)
         return Response(serializer.data)
@@ -92,6 +153,18 @@ class PostDetail(APIView):
         description='Delete a post'
     )
     def delete(self, request, author_pk, post_pk, format=None):
+        """
+        
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            post_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         post = self.get_object(post_pk)
         post.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -107,7 +180,28 @@ class ImageViewSet(APIView):
         tags=['Posts'],
     )
     def get(self, request, author_pk, post_pk, format=None):
+        """
+        
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            post_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         post = Post.objects.get(pk=post_pk)
         if post.imageOnlyPost:
-            serializer = PostSerializer(post)
-            return Response(serializer.data.get('image_link'))
+            # https://stackoverflow.com/questions/31826335/how-to-convert-pil-image-image-object-to-base64-string
+            if post.image_link:
+                im = Image.open(requests.get(post.image_link, stream=True).raw)
+                buffered = BytesIO()
+                im.save(buffered, format="JPEG")
+                base64_data = base64.b64encode(buffered.getvalue())
+            elif post.image:
+                with open( post.image.path, "rb") as img_file:
+                    base64_data = base64.b64encode(img_file.read())
+            return HttpResponse(base64_data)
+        return Response(status=status.HTTP_400_BAD_REQUEST)

@@ -1,6 +1,11 @@
 from rest_framework.serializers import ModelSerializer
 from .models import *
 from .models import Author, Post
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Author, Post, Inbox
+from drf_spectacular.utils import extend_schema_field
 
 
 class CurrentUserSerializer(ModelSerializer):
@@ -19,8 +24,6 @@ class AuthorSerializer(ModelSerializer):
 
 class PostSerializer(ModelSerializer):
     owner = AuthorSerializer(read_only=True)
-    # source = hyperlinked_identity_field(view_name='post-detail')
-
     class Meta:
         model = Post
         fields = ['id', 'title', 'source', 'origin', 'description', 'contentType', 'visibility', 'unlisted',
@@ -31,7 +34,6 @@ class PostSerializer(ModelSerializer):
 
 class CommentSerializer(ModelSerializer):
     author = AuthorSerializer(read_only=True)
-
     class Meta:
         model = Comment
         fields = ['id', 'author', 'parentPost',  'comment',
@@ -52,7 +54,8 @@ class FollowSerializer(ModelSerializer):
 class FriendRequestSerializer(ModelSerializer):
     class Meta:
         model = FriendRequest
-        fields = [ 'from_author', 'to_author']
+        fields = [ 'from_author', 'to_author', 'status']
+        read_only_fields = ['from_author', 'to_author', 'status']
 
 
 class PostLikeSerializer(ModelSerializer):
@@ -76,3 +79,9 @@ class ConnectedNodeSerializer(ModelSerializer):
     class Meta:
         model = ConnectedNode
         fields = ['id', 'url', 'host', 'teamName']
+
+#Added Model Serializer of Inbox
+class InboxSerializer(ModelSerializer):
+    class Meta:
+        model = Inbox
+        fields = '__all__'

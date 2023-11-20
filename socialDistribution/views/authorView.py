@@ -17,9 +17,17 @@ class AuthorListViewSet(generics.ListAPIView):
     paginate_by_param = 'page_size'
     
     @extend_schema(
-        tags=['authors'],
+        tags=['Authors'],
     )
     def get(self, request, *args, **kwargs):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         return super().get(request, *args, **kwargs)
 
 
@@ -30,9 +38,20 @@ class AuthorDetailView(APIView):
     pagination_class = Pagination
 
     @extend_schema(
-        tags=['authors'],
+        tags=['Authors'],
     )
     def get(self, request, author_pk, format=None):
+        """
+        
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         author = get_object_or_404(Author, pk=author_pk)
         serializer_context = {
             'request': request,
@@ -41,9 +60,19 @@ class AuthorDetailView(APIView):
         return Response(serializer.data)
 
     @extend_schema(
-        tags=['authors'],
+        tags=['Authors'],
     )
     def post(self, request, author_pk, format=None):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         author = get_object_or_404(Author, pk=author_pk)
         serializer = AuthorSerializer(author, data=request.data)
         if serializer.is_valid():

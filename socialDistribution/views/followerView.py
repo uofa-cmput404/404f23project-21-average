@@ -1,7 +1,7 @@
 from rest_framework.response import Response
-from socialDistribution.models import Author, ConnectedNode, Follow, FriendRequest
+from socialDistribution.models import Author, Follow
 from socialDistribution.pagination import Pagination
-from socialDistribution.serializers import AuthorSerializer, ConnectedNodeSerializer, FollowSerializer, FriendRequestSerializer
+from socialDistribution.serializers import AuthorSerializer, FollowSerializer
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
@@ -19,6 +19,16 @@ class FollowViewSet(generics.ListAPIView):
         description='[local, remote] get a list of authors who are AUTHOR_ID’s followers'
     )
     def get(self, request, author_pk, format=None):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         author = Author.objects.get(pk=author_pk)
         follows = Follow.objects.filter(to_author=author)
         followers = Author.objects.filter(pk__in=follows.values('from_author'))
@@ -38,6 +48,17 @@ class FollowDetailViewSet(generics.GenericAPIView):
         description='check if FOREIGN_AUTHOR_ID is a follower of AUTHOR_ID'
     )
     def get(self, request, author_pk, foreign_author_pk, format=None):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            foreign_author_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         # return true if foreign_author is a follower of author
         author = Author.objects.get(pk=author_pk)
         foreign_author = Author.objects.get(pk=foreign_author_pk)
@@ -51,7 +72,17 @@ class FollowDetailViewSet(generics.GenericAPIView):
         description='Remove FOREIGN_AUTHOR_ID as a follower of AUTHOR_ID'
     )
     def delete(self, request, author_pk, foreign_author_pk, format=None):
-        
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            foreign_author_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         author = Author.objects.get(pk=author_pk)
         foreign_author = Author.objects.get(pk=foreign_author_pk)
         # create follow object
@@ -69,7 +100,17 @@ class FollowDetailViewSet(generics.GenericAPIView):
         description='Add FOREIGN_AUTHOR_ID as a follower of AUTHOR_ID (must be authenticated)'
     )
     def put(self, request, author_pk, foreign_author_pk, format=None):
-        print(request, request.data)
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            foreign_author_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         author = Author.objects.get(pk=author_pk)
         foreign_author = Author.objects.get(pk=foreign_author_pk)
         
@@ -81,30 +122,3 @@ class FollowDetailViewSet(generics.GenericAPIView):
         
         Follow.objects.create(from_author=foreign_author, to_author=author)
         return Response({'message': 'Followed Successfully'}, status=status.HTTP_201_CREATED)
-
-
-class FriendRequestViewSet(generics.ListCreateAPIView):
-    queryset = FriendRequest.objects.all()
-    serializer_class = FriendRequestSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    
-    def get(self, request, author_pk, format=None):
-        friend_requests = FriendRequest.objects.filter(to_author=author_pk)
-        page = self.paginate_queryset(friend_requests)
-        return self.get_paginated_response(FriendRequestSerializer(page, many=True).data)
-    
-    def post(self, request, author_pk, format=None):
-        serializer = FriendRequestSerializer(data=request.data)
-        if serializer.is_valid():
-            friend_request = serializer.save(to_author=author_pk)
-            return Response(FriendRequestSerializer(friend_request).data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ConnectedNodeViewSet(generics.ListCreateAPIView):
-    queryset = ConnectedNode.objects.all()
-    serializer_class = ConnectedNodeSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    pagination_class = Pagination
-
-

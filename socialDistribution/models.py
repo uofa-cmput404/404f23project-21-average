@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 # Create your models here.
 
 
@@ -85,7 +86,12 @@ class FriendRequest(models.Model):
         Author, on_delete=models.CASCADE, related_name='from_author')
     to_author = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name='to_author')
+    status = models.CharField(max_length=255, default="pending")
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # After saving the friend request, trigger the notification
+        process_friend_request_notification(self)
 
 class PostLike(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -107,3 +113,50 @@ class ConnectedNode(models.Model):
     url = models.CharField(max_length=255)
     host = models.CharField(max_length=255)
     teamName = models.CharField(max_length=255)
+
+class Inbox(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    recipient = models.ForeignKey(
+        Author, on_delete=models.CASCADE, related_name='inbox_recipient')
+    sender = models.ForeignKey(
+        Author, on_delete=models.CASCADE, related_name='inbox_sender')
+    content = models.TextField()
+    type = models.CharField(max_length=255)  # post, like, comment, friend_request
+    timestamp = models.DateTimeField(default=datetime.now)
+    friend_request_status = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.sender} to {self.recipient}: {self.content}"
+    
+
+@receiver(post_save, sender=Inbox)
+def process_inbox_item(sender, instance, **kwargs):
+    """
+    Custom signal to process actions when an item is added to the inbox.
+    """
+    # Need to add more based on inbox item type
+    if instance.type == "friend_request":
+        process_friend_request_notification(instance)
+    
+def process_friend_request_notification(instance):
+    # To send friend request
+    sender = instance.from_author
+    recipient = instance.to_author
+    content = f"You have a new friend request from {sender.display_name}."
+
+    #Send the Friend Request
+    friend_request = FriendRequest.objects.create(
+        from_author=sender,
+        to_author=recipient,
+        status=instance.status,
+    )
+
+    #Inbox Entry: 
+    inbox_item = Inbox.objects.create(
+        recipient=recipient,
+        sender=sender,
+        content=content,
+        type="friend_request",
+        timestamp=timezone.now(),
+        friend_request_status=instance.status,
+    )
