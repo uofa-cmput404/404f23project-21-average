@@ -187,7 +187,7 @@ export default {
         categories: 'string', // Adjust as per your requirement
       };
       axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
-      const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID, payload);
+      const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/', payload);
       console.log(response)
     },
     async deletePost() {
