@@ -1,3 +1,4 @@
+import requests
 from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,6 +10,10 @@ from socialDistribution.models import Author, Post
 from socialDistribution.pagination import Pagination
 from socialDistribution.permissions import IsSharedWithFriends
 from socialDistribution.serializers import PostSerializer
+import base64
+from io import BytesIO
+from PIL import Image
+from django.http import HttpResponse
 
 
 class PostList(generics.ListCreateAPIView):
@@ -60,7 +65,7 @@ class PostDetail(APIView):
     )
     def post(self, request, author_pk, post_pk, format=None):
         author = Author.objects.get(pk=author_pk)
-        post = Post.objects.get(pk=post_pk)
+        post = Post.objects.get(pk=post_pk, owner=author)
         serializer = PostSerializer(post, data=request.data)
         if serializer.is_valid():
             serializer.save(owner=author, id=post_pk)
@@ -109,5 +114,14 @@ class ImageViewSet(APIView):
     def get(self, request, author_pk, post_pk, format=None):
         post = Post.objects.get(pk=post_pk)
         if post.imageOnlyPost:
-            serializer = PostSerializer(post)
-            return Response(serializer.data.get('image_link'))
+            # https://stackoverflow.com/questions/31826335/how-to-convert-pil-image-image-object-to-base64-string
+            if post.image_link:
+                im = Image.open(requests.get(post.image_link, stream=True).raw)
+                buffered = BytesIO()
+                im.save(buffered, format="JPEG")
+                base64_data = base64.b64encode(buffered.getvalue())
+            elif post.image:
+                with open( post.image.path, "rb") as img_file:
+                    base64_data = base64.b64encode(img_file.read())
+            return HttpResponse(base64_data)
+        return Response(status=status.HTTP_400_BAD_REQUEST)

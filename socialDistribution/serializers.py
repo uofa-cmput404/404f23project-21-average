@@ -58,6 +58,7 @@ class FriendRequestSerializer(ModelSerializer):
     class Meta:
         model = FriendRequest
         fields = [ 'from_author', 'to_author']
+        read_only_fields = ['from_author', 'to_author']
 
 
 class PostLikeSerializer(ModelSerializer):

@@ -81,30 +81,3 @@ class FollowDetailViewSet(generics.GenericAPIView):
         
         Follow.objects.create(from_author=foreign_author, to_author=author)
         return Response({'message': 'Followed Successfully'}, status=status.HTTP_201_CREATED)
-
-
-class FriendRequestViewSet(generics.ListCreateAPIView):
-    queryset = FriendRequest.objects.all()
-    serializer_class = FriendRequestSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    
-    def get(self, request, author_pk, format=None):
-        friend_requests = FriendRequest.objects.filter(to_author=author_pk)
-        page = self.paginate_queryset(friend_requests)
-        return self.get_paginated_response(FriendRequestSerializer(page, many=True).data)
-    
-    def post(self, request, author_pk, format=None):
-        serializer = FriendRequestSerializer(data=request.data)
-        if serializer.is_valid():
-            friend_request = serializer.save(to_author=author_pk)
-            return Response(FriendRequestSerializer(friend_request).data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ConnectedNodeViewSet(generics.ListCreateAPIView):
-    queryset = ConnectedNode.objects.all()
-    serializer_class = ConnectedNodeSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    pagination_class = Pagination
-
-
