@@ -1,5 +1,7 @@
 import { defineStore } from "pinia";
 import axios from "axios";
+import { useRuntimeConfig } from "nuxt/app";
+const config = useRuntimeConfig();
 
 export const useAuthorStore = defineStore({
   id: "author",
@@ -7,10 +9,11 @@ export const useAuthorStore = defineStore({
     authorId: "",
     author: null,
     authToken: "",
-    BASE_URL: process.env.BASE_URL,
+    BASE_URL: config.public.baseUrl,
   }),
   getters: {
     getAuthorId() {
+      console.log(process.env);
       return localStorage.getItem("authorId");
     },
     getAuthToken() {
