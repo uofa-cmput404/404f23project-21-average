@@ -28,6 +28,16 @@ class PostList(generics.ListCreateAPIView):
         description='[local, remote] get the recent posts from author AUTHOR_ID (paginated)'
     )
     def get(self, request, author_pk, format=None):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         posts = Post.objects.filter(owner=author_pk)
         page = self.paginate_queryset(posts)
         return self.get_paginated_response(PostSerializer(page, many=True).data)
@@ -37,6 +47,16 @@ class PostList(generics.ListCreateAPIView):
         description='Create a new post but generate a new id'
     )
     def post(self, request, author_pk, format=None):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         author = Author.objects.get(pk=author_pk)
         serializer = PostSerializer(data=request.data)
         print(request.data)
@@ -64,6 +84,18 @@ class PostDetail(APIView):
         description='Update the post whose id is POST_ID (must be authenticated)'
     )
     def post(self, request, author_pk, post_pk, format=None):
+        """
+        
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            post_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         author = Author.objects.get(pk=author_pk)
         post = Post.objects.get(pk=post_pk, owner=author)
         serializer = PostSerializer(post, data=request.data)
@@ -77,6 +109,18 @@ class PostDetail(APIView):
         description='create a post where its id is POST_ID'
     )
     def put(self, request, author_pk, post_pk, format=None):
+        """
+        
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            post_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         author = Author.objects.get(pk=author_pk)
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
@@ -88,6 +132,18 @@ class PostDetail(APIView):
         tags=['Posts'],
     )
     def get(self, request, author_pk, post_pk, format=None):
+        """
+        
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            post_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         post = self.get_object(post_pk)
         serializer = PostSerializer(post)
         return Response(serializer.data)
@@ -97,6 +153,18 @@ class PostDetail(APIView):
         description='Delete a post'
     )
     def delete(self, request, author_pk, post_pk, format=None):
+        """
+        
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            post_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         post = self.get_object(post_pk)
         post.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -112,6 +180,18 @@ class ImageViewSet(APIView):
         tags=['Posts'],
     )
     def get(self, request, author_pk, post_pk, format=None):
+        """
+        
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            post_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         post = Post.objects.get(pk=post_pk)
         if post.imageOnlyPost:
             # https://stackoverflow.com/questions/31826335/how-to-convert-pil-image-image-object-to-base64-string

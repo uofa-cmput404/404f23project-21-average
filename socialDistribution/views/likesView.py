@@ -18,6 +18,17 @@ class AddLikeToPostView(generics.ListCreateAPIView):
         tags=['Likes'],
     )
     def get(self, request, author_pk, post_pk, format=None):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            post_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         post = Post.objects.get(pk=post_pk)
         likes = PostLike.objects.filter(post=post)
         page = self.paginate_queryset(likes)
@@ -28,6 +39,17 @@ class AddLikeToPostView(generics.ListCreateAPIView):
         tags=['Likes'],
     )
     def post(self, request, author_pk, post_pk, format=None):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            post_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         author = Author.objects.get(pk=author_pk)
         post = Post.objects.get(pk=post_pk)
 
@@ -52,6 +74,18 @@ class AddLikeToCommentView(generics.ListCreateAPIView):
         tags=['Likes'],
     )
     def post(self, request, author_pk, post_pk, comment_pk, format=None):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            post_pk (_type_): _description_
+            comment_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         author = Author.objects.get(pk=author_pk)
         comment = Comment.objects.get(pk=comment_pk)
 
@@ -69,6 +103,18 @@ class AddLikeToCommentView(generics.ListCreateAPIView):
         tags=['Likes'],
     )
     def get(self, request, author_pk, post_pk, comment_pk, format=None):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            post_pk (_type_): _description_
+            comment_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         comment = Comment.objects.get(pk=comment_pk)
         likes = CommentLike.objects.filter(comment=comment)
         page = self.paginate_queryset(likes)
@@ -88,6 +134,16 @@ class GetAllAuthorLikes(generics.ListAPIView):
         tags=['Likes'],
     )
     def get(self, request, author_pk, format=None):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         author = Author.objects.get(pk=author_pk)
         posts = Post.objects.filter(owner=author)
         likes = PostLike.objects.filter(author=author)

@@ -17,6 +17,17 @@ class FriendRequestDetailViewSet(generics.GenericAPIView):
         tags=['Befriend'],
     )
     def get(self, request, author_pk, foreign_author_pk, format=None):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            foreign_author_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         friend_requests = FriendRequest.objects.filter(to_author=author_pk)
         page = self.paginate_queryset(friend_requests)
         return self.get_paginated_response(FriendRequestSerializer(page, many=True).data)
@@ -26,6 +37,17 @@ class FriendRequestDetailViewSet(generics.GenericAPIView):
         description='Send a friend request from FOREIGN_AUTHOR_ID'
     )
     def put(self, request, author_pk, foreign_author_pk, format=None):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            foreign_author_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         author = Author.objects.get(pk=author_pk)
         foreign_author = Author.objects.get(pk=foreign_author_pk)
         # create follow object
@@ -40,6 +62,17 @@ class FriendRequestDetailViewSet(generics.GenericAPIView):
         description='Accept a friend request from FOREIGN_AUTHOR_ID'
     )
     def post(self, request, author_pk, foreign_author_pk, format=None):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            foreign_author_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         author = Author.objects.get(pk=author_pk)
         foreign_author = Author.objects.get(pk=foreign_author_pk)
         # create follow object
@@ -60,6 +93,16 @@ class FriendRequestListViewSet(generics.ListAPIView):
         tags=['Befriend'],
     )
     def get(self, request, author_pk, format=None):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         friend_requests = FriendRequest.objects.filter(to_author=author_pk)
         friends = Author.objects.filter(pk__in=friend_requests.values('from_author'))
         page = self.paginate_queryset(friends)

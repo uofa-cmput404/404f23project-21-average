@@ -17,8 +17,15 @@ class GitHubView(APIView):
         description='[local] get a list of GitHub events for AUTHOR_ID (paginated)'
     )
     def get(self, request, author_pk, format=None):
-        """
-        Redirects the user to GitHub's OAuth2 login page.
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
         """
         author = Author.objects.get(pk=author_pk)
         githubData = requests.get('https://api.github.com/users/'+ author.github.split('/')[-1]+'/events')

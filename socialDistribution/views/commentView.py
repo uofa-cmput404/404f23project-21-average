@@ -18,6 +18,17 @@ class CommentViewSet(generics.ListCreateAPIView):
         tags=['Comments'],
     )
     def get(self, request, author_pk, post_pk, format=None):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            post_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         comments = Comment.objects.filter(parentPost=post_pk)
         page = self.paginate_queryset(comments)
         serializer = CommentSerializer(comments, many=True)
@@ -28,6 +39,17 @@ class CommentViewSet(generics.ListCreateAPIView):
         
     )
     def post(self, request, author_pk, post_pk, format=None):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            post_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         author = Author.objects.get(pk=author_pk)
         post = Post.objects.get(pk=post_pk)
         serializer = CommentSerializer(data=request.data)

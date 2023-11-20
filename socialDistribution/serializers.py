@@ -24,8 +24,6 @@ class AuthorSerializer(ModelSerializer):
 
 class PostSerializer(ModelSerializer):
     owner = AuthorSerializer(read_only=True)
-    # source = hyperlinked_identity_field(view_name='post-detail')
-
     class Meta:
         model = Post
         fields = ['id', 'title', 'source', 'origin', 'description', 'contentType', 'visibility', 'unlisted',
@@ -36,7 +34,6 @@ class PostSerializer(ModelSerializer):
 
 class CommentSerializer(ModelSerializer):
     author = AuthorSerializer(read_only=True)
-
     class Meta:
         model = Comment
         fields = ['id', 'author', 'parentPost',  'comment',

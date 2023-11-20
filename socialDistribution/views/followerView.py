@@ -19,6 +19,16 @@ class FollowViewSet(generics.ListAPIView):
         description='[local, remote] get a list of authors who are AUTHOR_ID’s followers'
     )
     def get(self, request, author_pk, format=None):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         author = Author.objects.get(pk=author_pk)
         follows = Follow.objects.filter(to_author=author)
         followers = Author.objects.filter(pk__in=follows.values('from_author'))
@@ -38,6 +48,17 @@ class FollowDetailViewSet(generics.GenericAPIView):
         description='check if FOREIGN_AUTHOR_ID is a follower of AUTHOR_ID'
     )
     def get(self, request, author_pk, foreign_author_pk, format=None):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            foreign_author_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         # return true if foreign_author is a follower of author
         author = Author.objects.get(pk=author_pk)
         foreign_author = Author.objects.get(pk=foreign_author_pk)
@@ -51,7 +72,17 @@ class FollowDetailViewSet(generics.GenericAPIView):
         description='Remove FOREIGN_AUTHOR_ID as a follower of AUTHOR_ID'
     )
     def delete(self, request, author_pk, foreign_author_pk, format=None):
-        
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            foreign_author_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         author = Author.objects.get(pk=author_pk)
         foreign_author = Author.objects.get(pk=foreign_author_pk)
         # create follow object
@@ -69,7 +100,17 @@ class FollowDetailViewSet(generics.GenericAPIView):
         description='Add FOREIGN_AUTHOR_ID as a follower of AUTHOR_ID (must be authenticated)'
     )
     def put(self, request, author_pk, foreign_author_pk, format=None):
-        print(request, request.data)
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+            author_pk (_type_): _description_
+            foreign_author_pk (_type_): _description_
+            format (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         author = Author.objects.get(pk=author_pk)
         foreign_author = Author.objects.get(pk=foreign_author_pk)
         
