@@ -41,9 +41,12 @@ class CommentSerializer(ModelSerializer):
 
 
 class FollowSerializer(ModelSerializer):
+    from_author = AuthorSerializer(read_only=True)
+    to_author = AuthorSerializer(read_only=True)
     class Meta:
         model = Follow
         fields = ['from_author', 'to_author']
+        read_only_fields = ['from_author', 'to_author']
 
 
 class FriendRequestSerializer(ModelSerializer):
