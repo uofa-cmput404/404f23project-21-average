@@ -10,22 +10,27 @@
         <img :src="profilePicture" alt="User Profile Picture" class="profile-pic" />
         <span class="user-id">{{ userId }}</span>
       </div>
-      <div>
-        <img v-if="postImage" :src="postImage" >
+      
+      <div class="post-content">
+        <div>
+          <img v-if="postImage" :src="postImage" >
 
-        <p style="margin-top: 25px;">{{ postContent }}</p>
-      </div>
+          <p style="margin-top: 25px;">{{ postContent }}</p>
+        </div>
 
-      <div class="post-actions">
-        <button @click="toggleLike">{{ liked ? 'Unlike' : 'Like' }}</button>
-        <span class="like-count">{{ likeCount }} like(s)</span>
-        <button @click="toggleCommentBox">Comment</button>
-        <button class='edit' @click="showEditPost = !showEditPost">Edit</button>
-      </div>
-      <div v-if="showCommentBox">
-        <comment-component v-if="showCommentBox" :postId="postID"></comment-component>
+        <div class="post-actions">
+          <button @click="toggleLike">{{ liked ? 'Unlike' : 'Like' }}</button>
+          <span class="like-count">{{ likeCount }} like(s)</span>
+          <button @click="toggleCommentBox">Comment</button>
+          <button class='edit' @click="showEditPost = !showEditPost">Edit</button>
+        </div>
+        <div v-if="showCommentBox">
+          <comment-component v-if="showCommentBox" :postId="postID"></comment-component>
+        </div>
       </div>
     </div>
+    
+
 
     <!-- Edit Post Component -->
     <div v-if="showEditPost" class="edit-post">
@@ -193,14 +198,23 @@ export default {
 /* Styles from PostComponent.vue */
 /* ... */
 .post {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Align children (including image) to the center */
   background-color: black;
   padding: 20px;
   width: 80%;
   margin: auto;
   color: white;
+
   margin-bottom: 20px;
   border-radius: 5px;
   position: relative;
+}
+
+.post-content {
+  margin-top: 30px; /* Space from the top elements */
+  /* other styles as needed */
 }
 
 .post-status-icon {
@@ -212,9 +226,13 @@ export default {
 }
 
 img {
-  width: 200px;
-  height: 300px;
+    max-width: 100%; /* Ensure the image doesn't overflow */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 5px; /* Optional: for rounded corners */
+    /* Align self if you are using flex in the container */
+    align-self: center; 
 }
+
 
 .bi {
   vertical-align: middle;
@@ -251,6 +269,7 @@ textarea {
   left: 10px;
   display: flex;
   align-items: center;
+  margin-bottom: 10px;
 }
 
 .profile-pic {
@@ -288,6 +307,7 @@ textarea {
   background-color: black;
   color: white;
   margin-bottom: 15px;
+  
 }
 
 .post-actions {
@@ -393,8 +413,11 @@ input:checked+.slider:before {
 }
 
 .post-image-container {
-  text-align: center; /* Center the image */
-  margin-top: 10px;
+    text-align: center; /* Center the image horizontally */
+    display: flex;
+    justify-content: center; /* Align horizontally */
+    align-items: center; /* Align vertically if necessary */
+    margin-top: 10px;
 }
 
 .post-image {
