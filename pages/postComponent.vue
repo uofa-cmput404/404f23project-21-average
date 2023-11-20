@@ -35,6 +35,8 @@
     <!-- Edit Post Component -->
     <div v-if="showEditPost" class="edit-post">
       <textarea v-model="editedPostContent" placeholder="Edit your post"></textarea>
+      <button @click="deletePost" class="delete-button">Delete Post</button>
+
       <div class="post-actions">
         <label class="upload-image">
           Change Image
@@ -187,9 +189,26 @@ export default {
       axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
       const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID, payload);
       console.log(response)
-    }
+    },
+    async deletePost() {
+    const authorStore = useAuthorStore();
+    const authorId = authorStore.getAuthorId; // Replace with actual way to get author_id
+    const postId = this.postID; // Assuming this is a prop or data property
 
+    try {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+      const response = await axios.delete(`${authorStore.BASE_URL}/authors/${authorId}/posts/${postId}`);
+
+      if (response.status === 200 || response.status === 204) {
+        console.log('Post deleted successfully');
+        // Handle successful deletion, like updating UI or redirecting
+      }
+    } catch (error) {
+      console.error('Error while deleting post:', error);
+      // Handle error
+    }
   }
+}
 };
 </script>
 
@@ -297,6 +316,24 @@ textarea {
   background-color: rgb(31, 32, 31);
   border-radius: 15px;
 }
+
+
+.delete-button {
+  width: 95%;
+  padding: 12px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 10px; /* Add some space above the delete button */
+}
+
+.delete-button:hover {
+  background-color: darkred;
+}
+
 
 textarea {
   width: 95%;
