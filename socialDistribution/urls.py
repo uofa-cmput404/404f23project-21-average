@@ -3,6 +3,7 @@ from socialDistribution.views.authorView import AuthorListViewSet, AuthorDetailV
 from socialDistribution.views.commentView import CommentViewSet
 from socialDistribution.views.followerView import FollowDetailViewSet, FollowViewSet
 from socialDistribution.views.friendsView import FriendRequestDetailViewSet, FriendRequestListViewSet
+from socialDistribution.views.githubView import GitHubView
 from socialDistribution.views.likesView import AddLikeToCommentView, AddLikeToPostView
 from socialDistribution.views.postView import ImageViewSet, PostList, PostDetail
 
@@ -38,7 +39,11 @@ urlpatterns = [
     path('authors/<slug:author_pk>/followers/<slug:foreign_author_pk>/', FollowDetailViewSet.as_view(), name='followers-detail'),
 
     path('authors/<slug:author_pk>/friends/', FriendRequestListViewSet.as_view(), name='friends'),
-    path('authors/<slug:author_pk>/friends/<slug:foreign_author_pk>/', FriendRequestDetailViewSet.as_view(), name='friends-detail')   
+    path('authors/<slug:author_pk>/friends/<slug:foreign_author_pk>/', FriendRequestDetailViewSet.as_view(), name='friends-detail'),
+    
+     # github 
+    path('authors/<slug:author_pk>/github/', GitHubView.as_view(), name='github'),
+    
      # inbox
 #     path('inbox/', InboxItemView.as_view(), name='inbox'),
 ]
