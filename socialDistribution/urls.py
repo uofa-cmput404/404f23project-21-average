@@ -1,4 +1,5 @@
 from django.urls import path
+from socialDistribution.views import InboxItemView
 
 from socialDistribution.views.authorView import AuthorListViewSet, AuthorDetailView
 from socialDistribution.views.commentView import CommentViewSet
@@ -35,5 +36,8 @@ urlpatterns = [
     
     # followers
     path('authors/<slug:author_pk>/followers/', FollowViewSet.as_view(), name='followers'),
-    path('authors/<slug:author_pk>/followers/<slug:foreign_author_pk>/', FollowDetailViewSet.as_view(), name='followers-detail')
+    path('authors/<slug:author_pk>/followers/<slug:foreign_author_pk>/', FollowDetailViewSet.as_view(), name='followers-detail'),
+
+     # inbox
+    path('inbox/', InboxItemView.as_view(), name='inbox'),
 ]
