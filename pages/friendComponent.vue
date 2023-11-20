@@ -1,6 +1,6 @@
 <template>
   <div class="friend-component">
-    <span class="author-name">{{ id }}</span>
+    <span class="author-name">{{ username }}</span>
     <div class="button-group">
       <button @click="toggleFollow">
         {{ isFollowing ? 'Unfollow' : 'Follow' }}
@@ -32,18 +32,49 @@ export default {
       isFriend: false, // Assuming default state is not a friend
     };
   },
+  async created() {
+    await this.checkFollowingStatus();
+  },
+
   methods: {
-    async toggleFollow() {
-      if (this.isFollowing) {
-        // Implement logic to unfollow
-        console.log(`Unfollowing ${this.username}`);
-      } else {
-        const authorStore = useAuthorStore();
-        const response = await axios.put(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id + '/');
-        console.log(`Following ${this.username}`);
+
+    async checkFollowingStatus() {
+      const authorStore = useAuthorStore();
+      axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+      try {
+        const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id + '/');
+        if (!(response.status === 400|| response.status === 401)) {
+          console.log(response.data);
+          this.isFollowing = response.data;
+
+        }
+      } catch (error) {
+        console.error('Error while checking following status:', error);
       }
-      this.isFollowing = !this.isFollowing;
     },
+
+    async toggleFollow() {
+      const authorStore = useAuthorStore();
+      axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+      try {
+        let response;
+        if (this.isFollowing) {
+          // Call the unfollow API
+          response = await axios.delete(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id + '/');
+          console.log('Unfollowing', this.username);
+        } else {
+          // Call the follow API
+          response = await axios.put(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id + '/');
+          console.log('Following', this.username);
+        }
+        if (!(response.status === 400|| response.status === 401)) {
+          this.isFollowing = !this.isFollowing;
+        }
+      } catch (error) {
+        console.error('Error while toggling follow:', error);
+      }
+    },
+
     toggleFriendship() {
       if (this.isFriend) {
         // Implement logic to remove friend

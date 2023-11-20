@@ -10,26 +10,33 @@
         <img :src="profilePicture" alt="User Profile Picture" class="profile-pic" />
         <span class="user-id">{{ userId }}</span>
       </div>
-      <div>
-        <img v-if="postImage" :src="postImage" >
+      
+      <div class="post-content">
+        <div>
+          <img v-if="postImage" :src="postImage" >
 
-        <p style="margin-top: 25px;">{{ postContent }}</p>
-      </div>
+          <p style="margin-top: 25px;">{{ postContent }}</p>
+        </div>
 
-      <div class="post-actions">
-        <button @click="toggleLike">{{ liked ? 'Unlike' : 'Like' }}</button>
-        <span class="like-count">{{ likeCount }} like(s)</span>
-        <button @click="toggleCommentBox">Comment</button>
-        <button class='edit' @click="showEditPost = !showEditPost">Edit</button>
-      </div>
-      <div v-if="showCommentBox">
-        <comment-component v-if="showCommentBox" :postId="postID"></comment-component>
+        <div class="post-actions">
+          <button @click="toggleLike">{{ liked ? 'Unlike' : 'Like' }}</button>
+          <span class="like-count">{{ likeCount }} like(s)</span>
+          <button @click="toggleCommentBox">Comment</button>
+          <button class='edit' @click="showEditPost = !showEditPost">Edit</button>
+        </div>
+        <div v-if="showCommentBox">
+          <comment-component v-if="showCommentBox" :postId="postID"></comment-component>
+        </div>
       </div>
     </div>
+    
+
 
     <!-- Edit Post Component -->
     <div v-if="showEditPost" class="edit-post">
       <textarea v-model="editedPostContent" placeholder="Edit your post"></textarea>
+      <button @click="deletePost" class="delete-button">Delete Post</button>
+
       <div class="post-actions">
         <label class="upload-image">
           Change Image
@@ -182,9 +189,26 @@ export default {
       axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
       const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID, payload);
       console.log(response)
-    }
+    },
+    async deletePost() {
+    const authorStore = useAuthorStore();
+    const authorId = authorStore.getAuthorId; // Replace with actual way to get author_id
+    const postId = this.postID; // Assuming this is a prop or data property
 
+    try {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+      const response = await axios.delete(`${authorStore.BASE_URL}/authors/${authorId}/posts/${postId}`);
+
+      if (response.status === 200 || response.status === 204) {
+        console.log('Post deleted successfully');
+        // Handle successful deletion, like updating UI or redirecting
+      }
+    } catch (error) {
+      console.error('Error while deleting post:', error);
+      // Handle error
+    }
   }
+}
 };
 </script>
 
@@ -193,14 +217,23 @@ export default {
 /* Styles from PostComponent.vue */
 /* ... */
 .post {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Align children (including image) to the center */
   background-color: black;
   padding: 20px;
   width: 80%;
   margin: auto;
   color: white;
+
   margin-bottom: 20px;
   border-radius: 5px;
   position: relative;
+}
+
+.post-content {
+  margin-top: 30px; /* Space from the top elements */
+  /* other styles as needed */
 }
 
 .post-status-icon {
@@ -212,9 +245,13 @@ export default {
 }
 
 img {
-  width: 200px;
-  height: 300px;
+    max-width: 100%; /* Ensure the image doesn't overflow */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 5px; /* Optional: for rounded corners */
+    /* Align self if you are using flex in the container */
+    align-self: center; 
 }
+
 
 .bi {
   vertical-align: middle;
@@ -251,6 +288,7 @@ textarea {
   left: 10px;
   display: flex;
   align-items: center;
+  margin-bottom: 10px;
 }
 
 .profile-pic {
@@ -279,6 +317,24 @@ textarea {
   border-radius: 15px;
 }
 
+
+.delete-button {
+  width: 95%;
+  padding: 12px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 10px; /* Add some space above the delete button */
+}
+
+.delete-button:hover {
+  background-color: darkred;
+}
+
+
 textarea {
   width: 95%;
   height: 200px;
@@ -288,6 +344,7 @@ textarea {
   background-color: black;
   color: white;
   margin-bottom: 15px;
+  
 }
 
 .post-actions {
@@ -393,8 +450,11 @@ input:checked+.slider:before {
 }
 
 .post-image-container {
-  text-align: center; /* Center the image */
-  margin-top: 10px;
+    text-align: center; /* Center the image horizontally */
+    display: flex;
+    justify-content: center; /* Align horizontally */
+    align-items: center; /* Align vertically if necessary */
+    margin-top: 10px;
 }
 
 .post-image {

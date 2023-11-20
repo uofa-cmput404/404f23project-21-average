@@ -1,6 +1,7 @@
 <!-- EditPostComponent.vue -->
 <template>
     <div class="edit-post">
+      
       <textarea v-model="editedPostContent" placeholder="Edit your post"></textarea>
   
       <div class="post-actions">
@@ -50,6 +51,7 @@
           privacy: this.isPublic ? 'public' : 'private'
         });
       }
+      
     }
   };
   </script>
