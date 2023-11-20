@@ -3,7 +3,7 @@ from socialDistribution.models import Inbox
 from socialDistribution.serializers import InboxSerializer
 from rest_framework.response import Response
 from socialDistribution.models import Author, ConnectedNode, Follow, FriendRequest
-from rest_framework import generics, APIView
+from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
