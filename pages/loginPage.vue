@@ -40,8 +40,10 @@ const login = async () => {
       username: userId.value,
       password: password.value
     };
+    console.log(authorStore.BASE_URL)
 
     const response = await axios.post(authorStore.BASE_URL + '/auth/login/', data)
+
     await authorStore.setAuthToken(response.data.access)
     await authorStore.setAuthorId(response.data.user.pk)
     console.log('set')
