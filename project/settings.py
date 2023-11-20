@@ -164,6 +164,9 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.FileUploadParser',
     ],
     "DEFAULT_PERMISSION_CLASSES": ['rest_framework.permissions.AllowAny'],
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+    ]
 }
 
 

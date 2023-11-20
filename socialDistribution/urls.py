@@ -2,7 +2,7 @@ from django.urls import path
 
 from socialDistribution.views.authorView import AuthorListViewSet, AuthorDetailView
 from socialDistribution.views.commentView import CommentViewSet
-from socialDistribution.views.followerView import FollowDeatilViewSet, FollowViewSet
+from socialDistribution.views.followerView import FollowDetailViewSet, FollowViewSet
 from socialDistribution.views.likesView import AddLikeToCommentView, AddLikeToPostView
 from socialDistribution.views.postView import ImageViewSet, PostList, PostDetail
 
@@ -35,5 +35,5 @@ urlpatterns = [
     
     # followers
     path('authors/<slug:author_pk>/followers/', FollowViewSet.as_view(), name='followers'),
-    path('authors/<slug:author_pk>/followers/<slug:foreign_author_pk>/', FollowDeatilViewSet.as_view(), name='followers-detail')
+    path('authors/<slug:author_pk>/followers/<slug:foreign_author_pk>/', FollowDetailViewSet.as_view(), name='followers-detail')
 ]
