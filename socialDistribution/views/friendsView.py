@@ -8,7 +8,7 @@ from rest_framework import status
 from drf_spectacular.utils import extend_schema
 
 
-class FriendRequestDetailViewSet(generics.RetrieveUpdateAPIView):
+class FriendRequestDetailViewSet(generics.GenericAPIView):
     queryset = FriendRequest.objects.all()
     serializer_class = FriendRequestSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
