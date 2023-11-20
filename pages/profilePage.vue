@@ -122,8 +122,10 @@ export default {
         reader.readAsDataURL(file);
       }
     },
-    fetchFollowers() {
+    async fetchFollowers() {
     // Fetch and populate followers
+    const authorStore = useAuthorStore();
+    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/');
     this.showFollowersPopup = true;
   },
   fetchFriends() {

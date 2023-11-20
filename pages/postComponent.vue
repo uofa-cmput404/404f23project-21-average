@@ -11,7 +11,7 @@
         <span class="user-id">{{ userId }}</span>
       </div>
       <div>
-        <img v-if="postImage" :src="postImage" alt="Post Image">
+        <img v-if="postImage" :src="postImage" >
 
         <p style="margin-top: 25px;">{{ postContent }}</p>
       </div>
