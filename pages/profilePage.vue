@@ -4,8 +4,11 @@
     <SidebarComponent />
     <main class="main-content">
       <div class="user-section">
-        <img class="profile-photo" :src="profileImage">
-        <!-- <h2>{{ author.username }}</h2> -->
+        <input type="file" id="profilePhotoInput" ref="profilePhotoInput" @change="changeProfilePhoto" style="display: none;">
+        <img :src="profilePhoto" class="profile-photo" @click="triggerProfilePhotoUpload">
+        <div class="username">
+          <h2>{{ username }}</h2>
+        </div>
         <div class="follow-info">
           
           <button @click="fetchFollowers">Followers</button>
