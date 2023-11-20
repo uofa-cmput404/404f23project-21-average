@@ -4,7 +4,7 @@
         <span class="close" @click="close">&times;</span>
         <h3>{{ title }}</h3>
         <ul>
-          <li v-for="user in users" :key="user.id">{{ user.name }}</li>
+          <li v-for="user in users" :key="user.id">{{ user.username }}</li>
         </ul>
       </div>
     </div>
