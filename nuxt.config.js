@@ -19,4 +19,12 @@ export default defineNuxtConfig({
       baseUrl: process.env.BASE_URL,
     },
   },
+  proxy: {
+    // Simple proxy
+    "/api": {
+      target: process.env.BASE_URL,
+      pathRewrite: { "^/api": "/api" },
+      changeOrigin: true
+    },
+  },
 });
