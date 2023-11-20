@@ -49,6 +49,13 @@ export default {
   try {
     const response = await axios.get(authorStore.BASE_URL + '/authors/');
     this.friends = response.data.results; // Save the data in friends
+    console.log("heyyyy")
+    // console.log(this.friends)
+    // for (friend in this.friends) {
+    //   if (friend.userId === authorStore.getAuthorId)
+    //   this.friends.push(friend)
+    // }
+
     this.filteredFriends = [...this.friends]; // Initialize filteredFriends
   } catch (error) {
     console.error('Error fetching friends:', error);
