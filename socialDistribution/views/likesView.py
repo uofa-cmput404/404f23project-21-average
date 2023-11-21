@@ -11,7 +11,7 @@ from socialDistribution.serializers import CommentLikeSerializer, PostLikeSerial
 class AddLikeToPostView(generics.ListCreateAPIView):
     queryset = PostLike.objects.all()
     serializer_class = PostLikeSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
     pagination_class = Pagination
 
     @extend_schema(
@@ -67,7 +67,7 @@ class AddLikeToPostView(generics.ListCreateAPIView):
 class AddLikeToCommentView(generics.ListCreateAPIView):
     queryset = CommentLike.objects.all()
     serializer_class = CommentLikeSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
     pagination_class = Pagination
 
     @extend_schema(
@@ -135,7 +135,6 @@ class GetAllAuthorLikes(generics.ListAPIView):
     )
     def get(self, request, author_pk, format=None):
         """_summary_
-
         Args:
             request (_type_): _description_
             author_pk (_type_): _description_

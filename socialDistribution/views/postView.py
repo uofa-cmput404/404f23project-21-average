@@ -20,7 +20,7 @@ class PostList(generics.ListCreateAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly, IsSharedWithFriends]
+        permissions.IsAuthenticated, IsSharedWithFriends]
     pagination_class = Pagination
 
     @extend_schema(
@@ -29,7 +29,6 @@ class PostList(generics.ListCreateAPIView):
     )
     def get(self, request, author_pk, format=None):
         """_summary_
-
         Args:
             request (_type_): _description_
             author_pk (_type_): _description_
@@ -39,6 +38,8 @@ class PostList(generics.ListCreateAPIView):
             _type_: _description_
         """
         posts = Post.objects.filter(owner=author_pk)
+        for post in posts:
+            post.source = request.headers['Host'] + '/authors/' + str(post.owner.id) + '/posts/' + str(post.id)
         page = self.paginate_queryset(posts)
         return self.get_paginated_response(PostSerializer(page, many=True).data)
 
@@ -48,7 +49,6 @@ class PostList(generics.ListCreateAPIView):
     )
     def post(self, request, author_pk, format=None):
         """_summary_
-
         Args:
             request (_type_): _description_
             author_pk (_type_): _description_
@@ -59,7 +59,6 @@ class PostList(generics.ListCreateAPIView):
         """
         author = Author.objects.get(pk=author_pk)
         serializer = PostSerializer(data=request.data)
-        print(request.data)
         
         if serializer.is_valid():
             post = serializer.save(owner=author, origin=request.headers['Origin'])
@@ -70,7 +69,7 @@ class PostList(generics.ListCreateAPIView):
 class PostDetail(APIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
     pagination_class = Pagination
 
     def get_object(self, pk):
@@ -85,8 +84,6 @@ class PostDetail(APIView):
     )
     def post(self, request, author_pk, post_pk, format=None):
         """
-        
-
         Args:
             request (_type_): _description_
             author_pk (_type_): _description_
@@ -110,8 +107,6 @@ class PostDetail(APIView):
     )
     def put(self, request, author_pk, post_pk, format=None):
         """
-        
-
         Args:
             request (_type_): _description_
             author_pk (_type_): _description_
@@ -133,8 +128,6 @@ class PostDetail(APIView):
     )
     def get(self, request, author_pk, post_pk, format=None):
         """
-        
-
         Args:
             request (_type_): _description_
             author_pk (_type_): _description_
@@ -154,8 +147,6 @@ class PostDetail(APIView):
     )
     def delete(self, request, author_pk, post_pk, format=None):
         """
-        
-
         Args:
             request (_type_): _description_
             author_pk (_type_): _description_
@@ -173,7 +164,7 @@ class PostDetail(APIView):
 class ImageViewSet(APIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
     pagination_class = Pagination
 
     @extend_schema(
@@ -181,8 +172,6 @@ class ImageViewSet(APIView):
     )
     def get(self, request, author_pk, post_pk, format=None):
         """
-        
-
         Args:
             request (_type_): _description_
             author_pk (_type_): _description_

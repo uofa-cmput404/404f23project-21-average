@@ -1,19 +1,45 @@
-from django.dispatch import receiver
 from socialDistribution.models import Inbox
 from socialDistribution.serializers import InboxSerializer
 from rest_framework.response import Response
-from socialDistribution.models import Author, ConnectedNode, Follow, FriendRequest
-from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
+from rest_framework.views import APIView
 from drf_spectacular.utils import extend_schema
 
 
 class InboxItemView(APIView):
     queryset = Inbox.objects.all()
     serializer_class = InboxSerializer
+    permission_classes = [permissions.IsAuthenticated]
     
+    @extend_schema(
+        tags=["Inbox"],
+        description="Get all inbox items for the current user.",
+    )
+    def get(self, request, author_id, *args, **kwargs):
+        inbox = Inbox.objects.filter(recipient=request.user.author)
+        serializer = InboxSerializer(inbox, many=True)
+        return Response(serializer.data)
     
+    @extend_schema(
+        tags=["Inbox"],
+        description="Create a new inbox item for the current user.(author_id is the recipient)",
+    )
+    def post(self, request, author_id, *args, **kwargs):
+        inbox = Inbox.objects.filter(recipient=author_id)
+        serializer = InboxSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    @extend_schema(
+        tags=["Inbox"],
+        description="Delete all inbox items for the current user.(author_id is the recipient)",
+    )
+    def delete(self, request, author_id, *args, **kwargs):
+        inbox = Inbox.objects.filter(recipient=request.user.author)
+        inbox.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     # def create(self, request, *args, **kwargs):
     #     serializer = self.get_serializer(data=request.data)
@@ -55,3 +81,4 @@ class InboxItemView(APIView):
     #     )
 
     #     print(f"Notification: {sender.display_name} sent a friend request to {recipient.display_name}")
+    

@@ -11,7 +11,7 @@ from drf_spectacular.utils import extend_schema
 class FollowViewSet(generics.ListAPIView):
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
     pagination_class = Pagination
     
     @extend_schema(
@@ -40,7 +40,7 @@ class FollowViewSet(generics.ListAPIView):
 class FollowDetailViewSet(generics.GenericAPIView):
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
     pagination_class = Pagination
     
     @extend_schema(

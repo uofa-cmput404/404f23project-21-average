@@ -5,8 +5,6 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.contrib.auth.models import AbstractUser
-from django.utils import timezone
-# Create your models here.
 
 
 class Author(AbstractUser):
@@ -18,9 +16,12 @@ class Author(AbstractUser):
         upload_to='profile_images/', blank=True, null=True)
 
     def __str__(self):
-        return self.displayName
+        return self.username
 
-
+@receiver(post_save, sender=User)
+def createEmptyInbox(sender, instance, created, **kwargs):
+    if created:
+        Inbox.objects.create(recipient=instance, sender=instance, content="")
 # @receiver(post_save, sender=User)
 # def create_user_profile(sender, instance, created, **kwargs):
 #     print('25: ', sender, instance, created, kwargs)
@@ -55,6 +56,15 @@ class Post(models.Model):
     image = models.ImageField(upload_to='post_images/',
                               blank=True, null=True)  # Posts can be images
 
+    def __str__(self):
+        return self.title
+
+@receiver(post_save, sender=Post)
+def updatePostCount(sender, instance, **kwargs):
+    print('sender:\n', sender.title, 'instance:\n', instance,'kwrgs: \n', kwargs)
+    # author = instance.owner
+    # author.post_count = author.post_count + 1
+    # author.save()
 
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -71,6 +81,11 @@ def updateCommentCount(sender, instance, **kwargs):
     post.count = post.count + 1
     post.save()
 
+@receiver(post_save, sender=Comment)
+def sendCommentToInbox(sender, instance, **kwargs):
+    post = instance.parentPost
+    post.count = post.count + 1
+    post.save()
 
 class Follow(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -79,19 +94,11 @@ class Follow(models.Model):
     to_author = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name='to_author_follow')
 
-
-class FriendRequest(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    from_author = models.ForeignKey(
-        Author, on_delete=models.CASCADE, related_name='from_author')
-    to_author = models.ForeignKey(
-        Author, on_delete=models.CASCADE, related_name='to_author')
-    status = models.CharField(max_length=255, default="pending")
-
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         # After saving the friend request, trigger the notification
         process_friend_request_notification(self)
+    
 
 class PostLike(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -99,6 +106,11 @@ class PostLike(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     published = models.DateTimeField(default=datetime.now)
 
+@receiver(post_save, sender=PostLike)
+def updatePostLikeToInbox(sender, instance, **kwargs):
+    post = instance.post
+    post.count = post.count + 1
+    post.save()
 
 class CommentLike(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -107,12 +119,18 @@ class CommentLike(models.Model):
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
     published = models.DateTimeField(default=datetime.now)
 
+@receiver(post_save, sender=CommentLike)
+def updateCommentLikeToInbox(sender, instance, **kwargs):
+    comment = instance.comment
+    comment.count = comment.count + 1
+    comment.save()
 
 class ConnectedNode(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     url = models.CharField(max_length=255)
-    host = models.CharField(max_length=255)
+    # host = models.CharField(max_length=255)
     teamName = models.CharField(max_length=255)
+
 
 class Inbox(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -120,43 +138,42 @@ class Inbox(models.Model):
         Author, on_delete=models.CASCADE, related_name='inbox_recipient')
     sender = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name='inbox_sender')
-    content = models.TextField()
+    content = models.TextField(null=True, blank=True)
     type = models.CharField(max_length=255)  # post, like, comment, friend_request
     timestamp = models.DateTimeField(default=datetime.now)
-    friend_request_status = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.sender} to {self.recipient}: {self.content}"
+        return f"{self.recipient.username}: {self.type}"
     
 
-@receiver(post_save, sender=Inbox)
-def process_inbox_item(sender, instance, **kwargs):
-    """
-    Custom signal to process actions when an item is added to the inbox.
-    """
-    # Need to add more based on inbox item type
-    if instance.type == "friend_request":
-        process_friend_request_notification(instance)
+# @receiver(post_save, sender=Inbox)
+# def process_inbox_item(sender, instance, **kwargs):
+#     """
+#     Custom signal to process actions when an item is added to the inbox.
+#     """
+#     # Need to add more based on inbox item type
+#     if instance.type == "friend_request":
+#         process_friend_request_notification(instance)
     
-def process_friend_request_notification(instance):
-    # To send friend request
-    sender = instance.from_author
-    recipient = instance.to_author
-    content = f"You have a new friend request from {sender.display_name}."
+# def process_friend_request_notification(instance):
+#     # To send friend request
+#     sender = instance.from_author
+#     recipient = instance.to_author
+#     content = f"You have a new friend request from {sender.display_name}."
 
     #Send the Friend Request
-    friend_request = FriendRequest.objects.create(
-        from_author=sender,
-        to_author=recipient,
-        status=instance.status,
-    )
+    # friend_request = FriendRequest.objects.create(
+    #     from_author=sender,
+    #     to_author=recipient,
+    #     status=instance.status,
+    # )
 
-    #Inbox Entry: 
-    inbox_item = Inbox.objects.create(
-        recipient=recipient,
-        sender=sender,
-        content=content,
-        type="friend_request",
-        timestamp=timezone.now(),
-        friend_request_status=instance.status,
-    )
+    # #Inbox Entry: 
+    # inbox_item = Inbox.objects.create(
+    #     recipient=recipient,
+    #     sender=sender,
+    #     content=content,
+    #     type="friend_request",
+    #     timestamp=timezone.now(),
+    #     friend_request_status=instance.status,
+    # )

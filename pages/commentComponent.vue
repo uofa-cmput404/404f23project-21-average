@@ -1,7 +1,7 @@
 <template>
   <div class="comment-section">
     <div v-for="comment in comments" :key="comment.id" class="comment">
-      <div class="comment-author">{{ comment.commenter.username }}</div>
+      <div class="comment-author">{{ comment.author.username }}</div>
       <div class="comment-content">{{ comment.comment }}</div>
     </div>
 
@@ -52,7 +52,6 @@ export default {
           const payload = {
             comment: this.newComment,
             contentType: 'string',
-            published: new Date().toISOString(),
           };
           axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
           await axios.post(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postId}/comments/`, payload);

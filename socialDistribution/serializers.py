@@ -1,11 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 from .models import *
 from .models import Author, Post
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from .models import Author, Post, Inbox
-from drf_spectacular.utils import extend_schema_field
 
 
 class CurrentUserSerializer(ModelSerializer):
@@ -28,17 +24,17 @@ class PostSerializer(ModelSerializer):
         model = Post
         fields = ['id', 'title', 'source', 'origin', 'description', 'contentType', 'visibility', 'unlisted',
                   'content', 'published', 'owner', 'categories', 'image_link', 'image', 'imageOnlyPost', 'count']
-        read_only_fields = ['owner', 'count', 'published', 'id']
+        read_only_fields = ['owner', 'count', 'published', 'id', 'origin', 'source']
         ordering = ['-id']
 
 
 class CommentSerializer(ModelSerializer):
-    author = AuthorSerializer()
+    author = AuthorSerializer(read_only=True)
     class Meta:
         model = Comment
         fields = ['id', 'author', 'parentPost',  'comment',
                   'contentType', 'published']
-        read_only_fields = ['parentPost', 'published', 'id']
+        read_only_fields = ['author', 'parentPost', 'published', 'id']
         ordering = ['-id']
 
 
@@ -49,13 +45,6 @@ class FollowSerializer(ModelSerializer):
         model = Follow
         fields = ['from_author', 'to_author']
         read_only_fields = ['from_author', 'to_author']
-
-
-class FriendRequestSerializer(ModelSerializer):
-    class Meta:
-        model = FriendRequest
-        fields = [ 'from_author', 'to_author', 'status']
-        read_only_fields = ['from_author', 'to_author', 'status']
 
 
 class PostLikeSerializer(ModelSerializer):
@@ -78,10 +67,11 @@ class CommentLikeSerializer(ModelSerializer):
 class ConnectedNodeSerializer(ModelSerializer):
     class Meta:
         model = ConnectedNode
-        fields = ['id', 'url', 'host', 'teamName']
+        fields = ['id', 'url', 'teamName']
 
 #Added Model Serializer of Inbox
 class InboxSerializer(ModelSerializer):
     class Meta:
         model = Inbox
-        fields = '__all__'
+        fields = ['id', 'type', 'sender', 'recipient', 'content', 'timestamp']
+        read_only_fields = ['id', 'timestamp', 'recipient']

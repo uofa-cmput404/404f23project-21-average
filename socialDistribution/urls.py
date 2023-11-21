@@ -2,9 +2,10 @@ from django.urls import path
 from socialDistribution.views.authorView import AuthorListViewSet, AuthorDetailView
 from socialDistribution.views.commentView import CommentViewSet
 from socialDistribution.views.followerView import FollowDetailViewSet, FollowViewSet
-from socialDistribution.views.friendsView import FriendRequestDetailViewSet, FriendRequestListViewSet
 from socialDistribution.views.githubView import GitHubView
+from socialDistribution.views.inboxView import InboxItemView
 from socialDistribution.views.likesView import AddLikeToCommentView, AddLikeToPostView
+from socialDistribution.views.nodeView import ConnectedNodeViewSet
 from socialDistribution.views.postView import ImageViewSet, PostList, PostDetail
 
 # The API URLs are now determined automatically by the router.
@@ -37,13 +38,14 @@ urlpatterns = [
     # followers
     path('authors/<slug:author_pk>/followers/', FollowViewSet.as_view(), name='followers'),
     path('authors/<slug:author_pk>/followers/<slug:foreign_author_pk>/', FollowDetailViewSet.as_view(), name='followers-detail'),
-
-    path('authors/<slug:author_pk>/friends/', FriendRequestListViewSet.as_view(), name='friends'),
-    path('authors/<slug:author_pk>/friends/<slug:foreign_author_pk>/', FriendRequestDetailViewSet.as_view(), name='friends-detail'),
     
-     # github 
+    # github 
     path('authors/<slug:author_pk>/github/', GitHubView.as_view(), name='github'),
     
+    # nodes
+    path('nodes', ConnectedNodeViewSet.as_view(), name='nodes'),
+    
+    
      # inbox
-#     path('inbox/', InboxItemView.as_view(), name='inbox'),
+    path('authors/<slug:author_pk>/inbox/', InboxItemView.as_view(), name='inbox'),
 ]

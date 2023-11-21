@@ -12,7 +12,7 @@ from drf_spectacular.utils import extend_schema
 class AuthorListViewSet(generics.ListAPIView):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
     pagination_class = Pagination
     paginate_by_param = 'page_size'
     
@@ -34,7 +34,7 @@ class AuthorListViewSet(generics.ListAPIView):
 class AuthorDetailView(APIView):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
     pagination_class = Pagination
 
     @extend_schema(

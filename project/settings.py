@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'socialDistribution',
     'rest_framework',
+    'django.contrib.admindocs',
     'drf_spectacular',
     "rest_framework.authtoken",
     'rest_framework_simplejwt',
