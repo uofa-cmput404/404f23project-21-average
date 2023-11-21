@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 import uuid
 from django.db import models
 from django.contrib.auth.models import User
@@ -9,6 +10,7 @@ from django.contrib.auth.models import AbstractUser
 
 class Author(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    type = models.CharField(max_length=255, default="author")
     host = models.CharField(max_length=255, blank=True, null=True)
     displayName = models.CharField(max_length=255, blank=True, null=True)
     github = models.TextField(blank=True, null=True)
@@ -21,7 +23,7 @@ class Author(AbstractUser):
 @receiver(post_save, sender=User)
 def createEmptyInbox(sender, instance, created, **kwargs):
     if created:
-        Inbox.objects.create(recipient=instance, sender=instance, content="")
+        Inbox.objects.create(recipient=instance, sender=instance, content=json.dumps([]))
 # @receiver(post_save, sender=User)
 # def create_user_profile(sender, instance, created, **kwargs):
 #     print('25: ', sender, instance, created, kwargs)
@@ -37,6 +39,7 @@ def createEmptyInbox(sender, instance, created, **kwargs):
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    type = models.CharField(max_length=255, default="post")
     title = models.TextField(blank=True, null=True)
     source = models.CharField(max_length=255, blank=True, null=True)
     origin = models.CharField(max_length=255, blank=True, null=True)
@@ -68,6 +71,7 @@ def updatePostCount(sender, instance, **kwargs):
 
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    type = models.CharField(max_length=255, default="comment")
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     parentPost = models.ForeignKey(Post, on_delete=models.CASCADE)
     comment = models.TextField()
@@ -89,6 +93,7 @@ def sendCommentToInbox(sender, instance, **kwargs):
 
 class Follow(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    type = models.CharField(max_length=255, default="follow")
     from_author = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name='from_author_follow')
     to_author = models.ForeignKey(
@@ -102,6 +107,7 @@ class Follow(models.Model):
 
 class PostLike(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    type = models.CharField(max_length=255, default="like")
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     published = models.DateTimeField(default=datetime.now)
@@ -114,6 +120,7 @@ def updatePostLikeToInbox(sender, instance, **kwargs):
 
 class CommentLike(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    type = models.CharField(max_length=255, default="like")
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     # post = models.ForeignKey(Post, on_delete=models.CASCADE) # maybe dont need it??
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
