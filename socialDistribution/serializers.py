@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from .models import Post, Comment, Follow, PostLike, CommentLike, ConnectedNode, Inbox, Author
+from .models import Post, Comment, Follow, PostLike, CommentLike, Inbox, Author
 
 
 class AuthorSerializer(ModelSerializer):
@@ -58,13 +58,6 @@ class CommentLikeSerializer(ModelSerializer):
         fields = ['published', 'author', 'comment', 'id', 'type']
         ordering = ['-id']
         read_only_fields = ['author', 'comment', 'id', 'published', 'type']
-
-
-class ConnectedNodeSerializer(ModelSerializer):
-
-    class Meta:
-        model = ConnectedNode
-        fields = ['id', 'url', 'teamName']
 
 
 class InboxSerializer(ModelSerializer):

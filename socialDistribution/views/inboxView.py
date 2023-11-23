@@ -33,7 +33,8 @@ class InboxItemView(generics.GenericAPIView):
     
     @extend_schema(
         tags=["Inbox"],
-        description="Create a new inbox item for the current user.(author_id is the recipient)",
+        description="Create a new inbox item for the current user.(author_id is the recipient). \
+            You must send a json.dumps(object) string in the `items` field. Just the object not a list or anything",
     )
     def post(self, request, author_id, *args, **kwargs):
         # TODO: TEST IF IT WORKSS

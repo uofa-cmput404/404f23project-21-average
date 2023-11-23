@@ -7,6 +7,9 @@ class RegistrationView(RegisterView):
 
 
 class CustomNodeRegistrationView(RegisterView):
+    """
+    Add team name and save the returned access token
+    """
     serializer_class = CustomNodeRegistrationSerializer
 
     def get_response_data(self, user):

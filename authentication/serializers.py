@@ -3,10 +3,7 @@ from dj_rest_auth.registration.serializers import RegisterSerializer
 from dj_rest_auth.serializers import JWTSerializer
 from rest_framework.serializers import ModelSerializer
 import base64
-from django.contrib.auth.models import User
-
 from socialDistribution.models import Author
-from asyncore import read
 
 
 class CustomRegisterSerializer(RegisterSerializer):
@@ -26,7 +23,6 @@ class CustomRegisterSerializer(RegisterSerializer):
 
 class CustomNodeRegistrationSerializer(RegisterSerializer, ModelSerializer):
     teamName = serializers.CharField(required=True)
-    # token = serializers.SerializerMethodField(method_name='get_token')
     
     class Meta:
         model = Author
@@ -39,15 +35,8 @@ class CustomNodeRegistrationSerializer(RegisterSerializer, ModelSerializer):
 
         token = user.username + ":" + self.validated_data.get('password1', '')
         user.github = base64.b64encode(token.encode('utf-8')).decode('utf-8')
-        # user.password = self.validated_data.get('password1', '')
         user.save()
         return user
-    
-    # def get_token(self, obj):
-    #     print(obj)
-    #     token = obj["teamName"] + ":" + obj["password1"]
-    #     print(base64.b64encode(token.encode('utf-8')).decode('utf-8'))
-    #     return base64.b64encode(token.encode('utf-8')).decode('utf-8')
 
 
 class CustomJWTSerializer(JWTSerializer):
@@ -60,9 +49,6 @@ class CustomJWTSerializer(JWTSerializer):
     user = serializers.CharField(read_only=True)
 
     def get_token(self, obj):
-        # print(obj)
-        # token = obj.username + ":" + obj.password
-        # print(base64.b64encode(token.encode('utf-8')).decode('utf-8'))
         return obj.github
 
     def get_user(self, obj):
