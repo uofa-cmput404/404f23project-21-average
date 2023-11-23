@@ -14,7 +14,7 @@ admin.site.register(Author, AuthorAdmin)
 
 class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'source', 'origin', 'description', 'contentType', 'visibility', 
-                    'unlisted', 'content', 'published', 'owner', 'categories', 'imageOnlyPost', 'count')
+                    'unlisted', 'content', 'published', 'author', 'categories', 'imageOnlyPost', 'count')
     search_fields = ('title', 'host', 'description',)
     class Meta:
         model = Post

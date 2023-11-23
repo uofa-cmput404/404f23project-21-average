@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.contrib.auth.models import AbstractUser
+# from django_postgres_extensions.models.fields import ArrayField
 
 
 class Author(AbstractUser):
@@ -37,7 +38,7 @@ class Post(models.Model):
     contentType = models.CharField(max_length=255, blank=True, null=True)
     content = models.TextField(blank=True, null=True)
     published = models.DateTimeField(default=datetime.now)
-    owner = models.ForeignKey(Author, on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='posts')
     categories = models.TextField(blank=True, null=True)
     count = models.IntegerField(default=0)
     visibility = models.CharField(max_length=255, default="PUBLIC")

@@ -55,6 +55,8 @@ INSTALLED_APPS = [
     "dj_rest_auth",
     "corsheaders",
     "dj_rest_auth.registration",
+    # 'django.contrib.postgres',
+    # 'django_postgres_extensions'
     # 'cloudinary_storage',
     # 'cloudinary',
 ]
@@ -194,7 +196,7 @@ CORS_ALLOW_HEADERS = ['*']
 DEBUG = True
 ALLOWED_HOSTS = ['cmput-average-21.herokuapp.com', '127.0.0.1', 'localhost:8000', 'frontend-21-average.herokuapp.com',
                  'frontend-21-average-f45e3b82895c.herokuapp.com', 'cmput-average-21-b54788720538.herokuapp.com',
-                 'vibely-23b7dc4c736d.herokuapp.com']
+                 'vibely-23b7dc4c736d.herokuapp.com', 'cmput404-project-backend-tian-aaf1fa9b20e8.herokuapp.com', '127.0.0.1:8000']
 # ALLOWED_HOSTS = ['*']
 CORS_ALLOWED_ORIGINS = [
     'https://frontend-21-average.herokuapp.com',
@@ -204,7 +206,10 @@ CORS_ALLOWED_ORIGINS = [
     'http://frontend-21-average.herokuapp.com',
     'https://frontend-21-average-f45e3b82895c.herokuapp.com',
     'https://cmput-average-21-b54788720538.herokuapp.com',
-    'https://vibely-23b7dc4c736d.herokuapp.com'
+    
+    # teams
+    'https://vibely-23b7dc4c736d.herokuapp.com',
+    'https://cmput404-project-backend-tian-aaf1fa9b20e8.herokuapp.com'
     
 ]
 

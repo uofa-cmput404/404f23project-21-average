@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework import generics
 from drf_spectacular.utils import extend_schema
 from socialDistribution.models import Author, Post
-from socialDistribution.pagination import Pagination
+from socialDistribution.pagination import Pagination, JsonObjectPaginator
 from socialDistribution.permissions import IsSharedWithFriends
 from socialDistribution.serializers import PostSerializer
 from socialDistribution.util import sendToFriendsInbox, isFriend
@@ -16,6 +16,9 @@ from io import BytesIO
 from PIL import Image
 from django.http import HttpResponse
 from socialDistribution.util import addToInbox
+from ..util import isFrontendRequest, team1, team2, serializeTeam1Post
+import json
+from rest_framework.renderers import JSONRenderer
 
 
 class PostList(generics.ListCreateAPIView):
@@ -23,7 +26,7 @@ class PostList(generics.ListCreateAPIView):
     serializer_class = PostSerializer
     permission_classes = [
         permissions.IsAuthenticated, IsSharedWithFriends]
-    pagination_class = Pagination
+    pagination_class = JsonObjectPaginator
 
     @extend_schema(
         tags=['Posts'],
@@ -31,11 +34,19 @@ class PostList(generics.ListCreateAPIView):
     )
     def get(self, request, author_pk, format=None):
         # TODO: check permissions fo requsting author and return only relevant posts to them
-        posts = Post.objects.filter(owner=author_pk)
-        for post in posts:
-            post.source = request.headers['Host'] + '/authors/' + str(post.owner.id) + '/posts/' + str(post.id)
-        page = self.paginate_queryset(posts)
-        return self.get_paginated_response(PostSerializer(page, many=True).data)
+        posts = Post.objects.filter(author=author_pk)
+        all_posts = json.loads(JSONRenderer().render(PostSerializer(posts, many=True).data).decode('utf-8'))
+        if isFrontendRequest(request):
+            team1_posts = team1.get(f"authors/{author_pk}/posts/")
+            if team1_posts.status_code == 200:
+                for post in team1_posts.json()["items"]:
+                    all_posts.append(serializeTeam1Post(post))
+            # team2_posts = team2.get("author/posts/" + author_pk)
+
+        for post in all_posts:
+            post["source"] = request.headers['Host'] + '/authors/' + post["author"]["id"] + '/posts/' + post["id"]
+        page = self.paginate_queryset(all_posts)
+        return self.get_paginated_response(page)
 
     @extend_schema(
         tags=['Posts'],
@@ -47,7 +58,7 @@ class PostList(generics.ListCreateAPIView):
         # TODO: if the post is image only post it must be unlisted
         
         if serializer.is_valid():
-            serializer.save(owner=author, origin=request.headers['Origin'])
+            serializer.save(author=author, origin=request.headers['Origin'])
             # TODO: Check if the post is sent to all friends inbox if its friends only
             sendToFriendsInbox(author, serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -72,11 +83,11 @@ class PostDetail(APIView):
     )
     def post(self, request, author_pk, post_pk, format=None):
         author = Author.objects.get(pk=author_pk)
-        post = Post.objects.get(pk=post_pk, owner=author)
+        post = Post.objects.get(pk=post_pk, author=author)
         if post:
             serializer = PostSerializer(post, data=request.data)
             if serializer.is_valid():
-                serializer.save(owner=author, id=post_pk)
+                serializer.save(author=author, id=post_pk)
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -88,7 +99,7 @@ class PostDetail(APIView):
         author = Author.objects.get(pk=author_pk)
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(owner=author, id=post_pk)
+            serializer.save(author=author, id=post_pk)
             sendToFriendsInbox(author, serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -98,12 +109,17 @@ class PostDetail(APIView):
     )
     def get(self, request, author_pk, post_pk, format=None):
         author = Author.objects.get(pk=author_pk)
+        if isFrontendRequest(request):
+            team1_post = team1.get(f"authors/{author_pk}/posts/{post_pk}/")
+            if team1_post.status_code == 200:
+                return Response(serializeTeam1Post(team1_post.json()))
+            # team2_post = team2.get("author/posts/" + post_pk)
+        
         post = self.get_object(post_pk)
         serializer = PostSerializer(post)
-        print(post.visibility)
-        if post.owner.id == author.id:
+        if post.author.id == author.id:
             return Response(serializer.data)
-        if post.visibility == 'FRIENDS' and isFriend(author, post.owner):
+        if post.visibility == 'FRIENDS' and isFriend(author, post.author):
             return Response(serializer.data)
         # TODO: CHECK IF PERMISSION IS CORRECT
         if post.visibility == 'PUBLIC':
@@ -131,6 +147,12 @@ class ImageViewSet(APIView):
         tags=['Posts'],
     )
     def get(self, request, author_pk, post_pk, format=None):
+        # if isFrontendRequest(request):
+        #     team1_post = team1.get("authors/" + author_pk + "/posts/" + post_pk + "/")
+        #     if team1_post.status_code == 200:
+        #         return Response(serializeTeam1Post(team1_post.json()))
+        #     # team2_post = team2.get("author/posts/" + post_pk)
+
         post = Post.objects.get(pk=post_pk)
         if post.imageOnlyPost:
             # https://stackoverflow.com/questions/31826335/how-to-convert-pil-image-image-object-to-base64-string

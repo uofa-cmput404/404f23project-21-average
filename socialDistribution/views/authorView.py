@@ -2,18 +2,23 @@ from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from socialDistribution.pagination import Pagination
+from socialDistribution.pagination import Pagination, JsonObjectPaginator
 from socialDistribution.serializers import AuthorSerializer
 from ..models import Author
 from rest_framework import generics
 from drf_spectacular.utils import extend_schema
+from django.conf import settings
+from socialDistribution.util import team1, team2
+import json
+from rest_framework.renderers import JSONRenderer
+from ..util import isFrontendRequest, serializeTeam1Author
 
 
 class AuthorListViewSet(generics.ListAPIView):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
     permission_classes = [permissions.IsAuthenticated]
-    pagination_class = Pagination
+    pagination_class = JsonObjectPaginator
     paginate_by_param = 'page_size'
     
     @extend_schema(
@@ -21,8 +26,16 @@ class AuthorListViewSet(generics.ListAPIView):
     )
     def get(self, request, *args, **kwargs):
         authors = Author.objects.filter(type="author").all()
-        page = self.paginate_queryset(authors)
-        return self.get_paginated_response(AuthorSerializer(page, many=True).data)
+        # check request origin
+        all_authors = json.loads(JSONRenderer().render(AuthorSerializer(authors, many=True).data).decode('utf-8'))
+        if isFrontendRequest(request):
+            remote_authors = team1.get("authors/")
+            for author in remote_authors.json()["items"]:
+                all_authors.append(serializeTeam1Author(author))
+            remote_authors1 = team2.get("authors")
+        
+        page = self.paginate_queryset(all_authors)
+        return self.get_paginated_response(page)
 
 
 class AuthorDetailView(APIView):
@@ -35,6 +48,15 @@ class AuthorDetailView(APIView):
         tags=['Authors'],
     )
     def get(self, request, author_pk, format=None):
+        if isFrontendRequest(request):
+            remote_author = team1.get("authors/" + author_pk)
+            if remote_author.status_code == 200:
+                    author = remote_author.json()
+                    return Response(author)
+            # remote_author = team2.get("authors/" + author_pk)
+            # if remote_author.status_code == 200:
+            #     author = remote_author.json()
+            #     return Response(author)
         author = get_object_or_404(Author, pk=author_pk)
         serializer_context = {
             'request': request,

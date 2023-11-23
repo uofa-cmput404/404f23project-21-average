@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from .models import Post, Comment, Follow, PostLike, CommentLike, Inbox, Author
-
+from rest_framework import serializers
 
 class AuthorSerializer(ModelSerializer):
 
@@ -11,15 +11,18 @@ class AuthorSerializer(ModelSerializer):
 
 
 class PostSerializer(ModelSerializer):
-    owner = AuthorSerializer(read_only=True)
+    author = AuthorSerializer(read_only=True)
+    categories = serializers.SerializerMethodField(method_name='get_categories')
 
     class Meta:
         model = Post
         fields = ['id', 'title', 'type', 'source', 'origin', 'description', 'contentType', 'visibility', 'unlisted',
-                  'content', 'published', 'owner', 'categories', 'image_link', 'image', 'imageOnlyPost', 'count']
-        read_only_fields = ['owner', 'count', 'published', 'id', 'origin', 'source', 'type']
+                  'content', 'published', 'author', 'categories', 'image_link', 'image', 'imageOnlyPost', 'count']
+        read_only_fields = ['author', 'count', 'published', 'id', 'origin', 'source', 'type']
         ordering = ['-id']
 
+    def get_categories(self, obj):
+        return obj.categories.split(",")
 
 class CommentSerializer(ModelSerializer):
     author = AuthorSerializer(read_only=True)
