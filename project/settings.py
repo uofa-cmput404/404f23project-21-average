@@ -19,7 +19,6 @@ import dj_database_url
 # import cloudinary.uploader 
 # import cloudinary.api
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -33,7 +32,6 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-
 
 # Application definition
 
@@ -132,7 +130,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
@@ -152,10 +149,10 @@ REST_FRAMEWORK = {
     'PAGINATE_BY_PARAM': 'size',
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.TokenAuthentication",
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         # 'rest_framework.authentication.SessionAuthentication',
-        "rest_framework.authentication.BasicAuthentication",
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     ],
     'DEFAULT_PARSER_CLASSES': [
@@ -167,9 +164,8 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ['rest_framework.permissions.AllowAny'],
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
-    ]
+    ],
 }
-
 
 JWT_AUTH = {
     "JWT_VERIFY": True,
@@ -179,7 +175,6 @@ JWT_AUTH = {
     "JWT_ALLOW_REFRESH": True,
     "JWT_REFRESH_EXPIRATION_DELTA": datetime.timedelta(days=7)
 }
-
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "none"
@@ -196,9 +191,8 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = ['*']
 
-
 DEBUG = True
-ALLOWED_HOSTS = ['cmput-average-21.herokuapp.com', '127.0.0.1', 'localhost:8000', 'frontend-21-average.herokuapp.com', 
+ALLOWED_HOSTS = ['cmput-average-21.herokuapp.com', '127.0.0.1', 'localhost:8000', 'frontend-21-average.herokuapp.com',
                  'frontend-21-average-f45e3b82895c.herokuapp.com', 'cmput-average-21-b54788720538.herokuapp.com',
                  'vibely-23b7dc4c736d.herokuapp.com']
 # ALLOWED_HOSTS = ['*']
@@ -227,7 +221,6 @@ SPECTACULAR_SETTINGS = {
 AUTH_USER_MODEL = 'socialDistribution.Author'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
-
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -237,6 +230,6 @@ STORAGES = {
     },
 }
 
-REST_AUTH_SERIALIZERS = {
-    'REGISTER_SERIALIZER': 'authentication.serializers.CustomRegisterSerializer'
-}
+# REST_AUTH_SERIALIZERS = {
+#     'REGISTER_SERIALIZER': 'authentication.serializers.CustomRegisterSerializer'
+# }

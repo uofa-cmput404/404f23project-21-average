@@ -6,6 +6,7 @@ from rest_framework import permissions
 from socialDistribution.models import Author, Comment, CommentLike, Post, PostLike
 from socialDistribution.pagination import Pagination
 from socialDistribution.serializers import CommentLikeSerializer, PostLikeSerializer
+from socialDistribution.util import addToInbox
 
 
 class AddLikeToPostView(generics.ListCreateAPIView):
@@ -18,17 +19,6 @@ class AddLikeToPostView(generics.ListCreateAPIView):
         tags=['Likes'],
     )
     def get(self, request, author_pk, post_pk, format=None):
-        """_summary_
-
-        Args:
-            request (_type_): _description_
-            author_pk (_type_): _description_
-            post_pk (_type_): _description_
-            format (_type_, optional): _description_. Defaults to None.
-
-        Returns:
-            _type_: _description_
-        """
         post = Post.objects.get(pk=post_pk)
         likes = PostLike.objects.filter(post=post)
         page = self.paginate_queryset(likes)
@@ -37,19 +27,9 @@ class AddLikeToPostView(generics.ListCreateAPIView):
 
     @extend_schema(
         tags=['Likes'],
+        description='add a like to comment from AUTHOR_ID on POST_ID'
     )
     def post(self, request, author_pk, post_pk, format=None):
-        """_summary_
-
-        Args:
-            request (_type_): _description_
-            author_pk (_type_): _description_
-            post_pk (_type_): _description_
-            format (_type_, optional): _description_. Defaults to None.
-
-        Returns:
-            _type_: _description_
-        """
         author = Author.objects.get(pk=author_pk)
         post = Post.objects.get(pk=post_pk)
 
@@ -59,8 +39,11 @@ class AddLikeToPostView(generics.ListCreateAPIView):
 
         serializer = PostLikeSerializer(data=request.data)
         if serializer.is_valid():
-            like = serializer.save(author=author, post=post)
-            return Response(PostLikeSerializer(like).data, status=status.HTTP_201_CREATED)
+            serializer.save(author=author, post=post)
+
+            # send like to post owners inbox
+            addToInbox(post.owner, serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -72,22 +55,12 @@ class AddLikeToCommentView(generics.ListCreateAPIView):
 
     @extend_schema(
         tags=['Likes'],
+        description='add a like to comment from AUTHOR_ID on COMMENT_ID'
     )
     def post(self, request, author_pk, post_pk, comment_pk, format=None):
-        """_summary_
-
-        Args:
-            request (_type_): _description_
-            author_pk (_type_): _description_
-            post_pk (_type_): _description_
-            comment_pk (_type_): _description_
-            format (_type_, optional): _description_. Defaults to None.
-
-        Returns:
-            _type_: _description_
-        """
         author = Author.objects.get(pk=author_pk)
-        comment = Comment.objects.get(pk=comment_pk)
+        post = Post.objects.get(pk=post_pk)
+        comment = Comment.objects.get(pk=comment_pk, parentPost=post)
 
         # check if author already liked the post
         if CommentLike.objects.filter(author=author, comment=comment).exists():
@@ -95,26 +68,17 @@ class AddLikeToCommentView(generics.ListCreateAPIView):
 
         serializer = CommentLikeSerializer(data=request.data)
         if serializer.is_valid():
-            like = serializer.save(author=author, comment=comment)
-            return Response(CommentLikeSerializer(like).data, status=status.HTTP_201_CREATED)
+            serializer.save(author=author, comment=comment)
+            
+            # send like to comment owners inbox
+            addToInbox(comment.author, serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @extend_schema(
         tags=['Likes'],
     )
     def get(self, request, author_pk, post_pk, comment_pk, format=None):
-        """_summary_
-
-        Args:
-            request (_type_): _description_
-            author_pk (_type_): _description_
-            post_pk (_type_): _description_
-            comment_pk (_type_): _description_
-            format (_type_, optional): _description_. Defaults to None.
-
-        Returns:
-            _type_: _description_
-        """
         comment = Comment.objects.get(pk=comment_pk)
         likes = CommentLike.objects.filter(comment=comment)
         page = self.paginate_queryset(likes)
@@ -132,21 +96,14 @@ class GetAllAuthorLikes(generics.ListAPIView):
 
     @extend_schema(
         tags=['Likes'],
+        description='get all posts and comments liked by AUTHOR_ID'
     )
     def get(self, request, author_pk, format=None):
-        """_summary_
-        Args:
-            request (_type_): _description_
-            author_pk (_type_): _description_
-            format (_type_, optional): _description_. Defaults to None.
-
-        Returns:
-            _type_: _description_
-        """
         author = Author.objects.get(pk=author_pk)
         posts = Post.objects.filter(owner=author)
-        likes = PostLike.objects.filter(author=author)
-        likes2 = CommentLike.objects.filter(author=author)
-        serializer = PostLikeSerializer(likes, many=True)
-        serializer2 = CommentLikeSerializer(likes2, many=True)
-        return Response(serializer.data+serializer2.data)
+
+        postLikes = PostLike.objects.filter(author=author)
+        commentLikes = CommentLike.objects.filter(author=author)
+        postSerializer = PostLikeSerializer(postLikes, many=True)
+        commentSerializer = CommentLikeSerializer(commentLikes, many=True)
+        return Response(postSerializer.data + commentSerializer.data)

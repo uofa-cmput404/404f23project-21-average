@@ -5,7 +5,7 @@ from socialDistribution.views.followerView import FollowDetailViewSet, FollowVie
 from socialDistribution.views.githubView import GitHubView
 from socialDistribution.views.inboxView import InboxItemView
 from socialDistribution.views.likesView import AddLikeToCommentView, AddLikeToPostView
-from socialDistribution.views.nodeView import ConnectedNodeViewSet
+from socialDistribution.views.nodeView import ConnectedNodeViewSet, ConnectedNodeTokenView
 from socialDistribution.views.postView import ImageViewSet, PostList, PostDetail
 
 # The API URLs are now determined automatically by the router.
@@ -44,8 +44,8 @@ urlpatterns = [
     
     # nodes
     path('nodes', ConnectedNodeViewSet.as_view(), name='nodes'),
+    path('nodes/obtain/', ConnectedNodeTokenView.as_view(), name='nodes-obtain'),
     
-    
-     # inbox
+    # inbox
     path('authors/<slug:author_pk>/inbox/', InboxItemView.as_view(), name='inbox'),
 ]

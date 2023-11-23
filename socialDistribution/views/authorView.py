@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from socialDistribution.pagination import Pagination
 from socialDistribution.serializers import AuthorSerializer
-from ..models import *
+from ..models import Author
 from rest_framework import generics
 from drf_spectacular.utils import extend_schema
 
@@ -20,15 +20,9 @@ class AuthorListViewSet(generics.ListAPIView):
         tags=['Authors'],
     )
     def get(self, request, *args, **kwargs):
-        """_summary_
-
-        Args:
-            request (_type_): _description_
-
-        Returns:
-            _type_: _description_
-        """
-        return super().get(request, *args, **kwargs)
+        authors = Author.objects.filter(type="author").all()
+        page = self.paginate_queryset(authors)
+        return self.get_paginated_response(AuthorSerializer(page, many=True).data)
 
 
 class AuthorDetailView(APIView):
@@ -41,17 +35,6 @@ class AuthorDetailView(APIView):
         tags=['Authors'],
     )
     def get(self, request, author_pk, format=None):
-        """
-        
-
-        Args:
-            request (_type_): _description_
-            author_pk (_type_): _description_
-            format (_type_, optional): _description_. Defaults to None.
-
-        Returns:
-            _type_: _description_
-        """
         author = get_object_or_404(Author, pk=author_pk)
         serializer_context = {
             'request': request,
@@ -63,16 +46,6 @@ class AuthorDetailView(APIView):
         tags=['Authors'],
     )
     def post(self, request, author_pk, format=None):
-        """_summary_
-
-        Args:
-            request (_type_): _description_
-            author_pk (_type_): _description_
-            format (_type_, optional): _description_. Defaults to None.
-
-        Returns:
-            _type_: _description_
-        """
         author = get_object_or_404(Author, pk=author_pk)
         serializer = AuthorSerializer(author, data=request.data)
         if serializer.is_valid():
