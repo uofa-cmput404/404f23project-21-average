@@ -33,8 +33,8 @@ class CommentSerializer(ModelSerializer):
 
 
 class FollowSerializer(ModelSerializer):
-    following = AuthorSerializer()
-    follower = AuthorSerializer()
+    following = AuthorSerializer(read_only=True)
+    follower = AuthorSerializer(read_only=True)
 
     class Meta:
         model = Follow

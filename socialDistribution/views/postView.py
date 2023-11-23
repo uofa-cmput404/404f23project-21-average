@@ -44,6 +44,7 @@ class PostList(generics.ListCreateAPIView):
     def post(self, request, author_pk, format=None):
         author = Author.objects.get(pk=author_pk)
         serializer = PostSerializer(data=request.data)
+        # TODO: if the post is image only post it must be unlisted
         
         if serializer.is_valid():
             serializer.save(owner=author, origin=request.headers['Origin'])
