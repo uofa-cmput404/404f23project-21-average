@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='post',
             name='author',
-            field=models.ForeignKey(default='e7bfa565-d3c8-46b8-b321-2ff4d43914ff', on_delete=django.db.models.deletion.CASCADE, related_name='posts', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(default='f4c86740-b0f4-4666-84be-8a9725b7eec3', on_delete=django.db.models.deletion.CASCADE, related_name='posts', to=settings.AUTH_USER_MODEL),
             preserve_default=False,
         ),
     ]
