@@ -145,8 +145,11 @@ class ImageViewSet(APIView):
 
     @extend_schema(
         tags=['Posts'],
+        description='As an author, I want to be able to make posts that are unlisted, that are publicly shareable by URI alone (or for embedding images)\
+            if the post is an image post will return base64 encoded image else return post if it is public or unlisted\
+                (unlisted implies pubic post)'
     )
-    def get(self, request, author_pk, post_pk, format=None):
+    def get(self, request, post_pk, format=None):
         # if isFrontendRequest(request):
         #     team1_post = team1.get("authors/" + author_pk + "/posts/" + post_pk + "/")
         #     if team1_post.status_code == 200:
@@ -165,4 +168,35 @@ class ImageViewSet(APIView):
                 with open(post.image.path, "rb") as img_file:
                     base64_data = base64.b64encode(img_file.read())
             return HttpResponse(base64_data)
+        elif post.visibility == 'PUBLIC' or post.unlisted == True:
+            serializer = PostSerializer(post)
+            return Response(serializer.data)
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class PublicPostList(generics.ListAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [
+        permissions.IsAuthenticated, IsSharedWithFriends]
+    pagination_class = JsonObjectPaginator
+
+    @extend_schema(
+        tags=['Posts'],
+        # TODO: check if 'everyone' implies posts fromo other servers
+        description='As an author I should be able to browse the public posts of everyone'
+    )
+    def get(self, request, format=None):
+        posts = Post.objects.filter(visibility="PUBLIC")
+        all_posts = json.loads(JSONRenderer().render(PostSerializer(posts, many=True).data).decode('utf-8'))
+        if isFrontendRequest(request):
+            team1_posts = team1.get(f"posts/")
+            if team1_posts.status_code == 200:
+                for post in team1_posts.json()["items"]:
+                    all_posts.append(serializeTeam1Post(post))
+            # team2_posts = team2.get("author/posts/" + author_pk)
+
+        for post in all_posts:
+            post["source"] = request.headers['Host'] + '/authors/' + post["author"]["id"] + '/posts/' + post["id"]
+        page = self.paginate_queryset(all_posts)
+        return self.get_paginated_response(page)
+

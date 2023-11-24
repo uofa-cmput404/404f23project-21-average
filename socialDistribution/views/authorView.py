@@ -27,12 +27,38 @@ class AuthorListViewSet(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
         authors = Author.objects.filter(type="author").all()
         # check request origin
+        print(request.user.id)
         all_authors = json.loads(JSONRenderer().render(AuthorSerializer(authors, many=True).data).decode('utf-8'))
         if isFrontendRequest(request):
             remote_authors = team1.get("authors/")
             for author in remote_authors.json()["items"]:
                 all_authors.append(serializeTeam1Author(author))
             remote_authors1 = team2.get("authors")
+        
+        page = self.paginate_queryset(all_authors)
+        return self.get_paginated_response(page)
+
+
+class NodeListViewSet(generics.ListAPIView):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = JsonObjectPaginator
+    paginate_by_param = 'page_size'
+    
+    @extend_schema(
+        tags=['Authors'],
+    )
+    def get(self, request, *args, **kwargs):
+        authors = Author.objects.filter(type="node").all()
+        # check request origin
+        print(request.user.id)
+        all_authors = json.loads(JSONRenderer().render(AuthorSerializer(authors, many=True).data).decode('utf-8'))
+        # if isFrontendRequest(request):
+        #     remote_authors = team1.get("authors/")
+        #     for author in remote_authors.json()["items"]:
+        #         all_authors.append(serializeTeam1Author(author))
+        #     remote_authors1 = team2.get("authors")
         
         page = self.paginate_queryset(all_authors)
         return self.get_paginated_response(page)

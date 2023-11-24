@@ -11,6 +11,9 @@ class CustomRegisterSerializer(RegisterSerializer):
     host = serializers.CharField(required=False, read_only=True)
     first_name = serializers.CharField(required=False)
     last_name = serializers.CharField(required=False)
+    # Add condition for OPTIONALLY require admin approval
+    # make is_active = False by default
+    is_active = serializers.BooleanField(required=False, default=True)
 
     def custom_signup(self, request, user):
         user.github = self.validated_data.get('github', '')
