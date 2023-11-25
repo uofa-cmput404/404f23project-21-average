@@ -5,6 +5,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import permissions
 from socialDistribution.models import Author, Comment, CommentLike, Post, PostLike
 from socialDistribution.pagination import Pagination
+from ..util import isFrontendRequest, team1, team2, serializeTeam1Post
 from socialDistribution.serializers import CommentLikeSerializer, PostLikeSerializer
 from socialDistribution.util import addToInbox
 
@@ -17,13 +18,37 @@ class AddLikeToPostView(generics.ListCreateAPIView):
 
     @extend_schema(
         tags=['Likes'],
+        description='GET [local, remote] a list of likes from other authors on AUTHOR_ID’s post POST_ID'
     )
     def get(self, request, author_pk, post_pk, format=None):
         post = Post.objects.get(pk=post_pk)
         likes = PostLike.objects.filter(post=post)
+        if isFrontendRequest(request):
+            if not likes:
+                team1_likes = team1.get(f"authors/{author_pk}/posts/{post_pk}/likes/")
+                if team1_likes.status_code == 200:
+                    for like in team1_likes.json()["likes"]:
+                        likes.append({
+                            "id": like["id"],
+                            "author": serializeTeam1Author(like["author"]),
+                            "post": serializeTeam1Post(like["post"]),
+                            "published": like["published"],
+                            "type": like["type"],
+                        })
+                team2_likes = team2.get(f"authors/{author_pk}/posts/{post_pk}/likes")
+                if team2_likes.status_code == 200:
+                    for like in team2_likes.json()["likes"]:
+                        likes.append({
+                            "id": like["id"],
+                            "author": serializeTeam1Author(like["author"]),
+                            "post": serializeTeam1Post(like["post"]),
+                            "published": like["published"],
+                            "type": like["type"],
+                        })
         page = self.paginate_queryset(likes)
         serializer = PostLikeSerializer(likes, many=True)
         return self.get_paginated_response(serializer.data)
+        
 
     @extend_schema(
         tags=['Likes'],
@@ -42,7 +67,7 @@ class AddLikeToPostView(generics.ListCreateAPIView):
             serializer.save(author=author, post=post)
 
             # send like to post owners inbox
-            addToInbox(post.owner, serializer.data)
+            addToInbox(post.author, serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -60,7 +85,7 @@ class AddLikeToCommentView(generics.ListCreateAPIView):
     def post(self, request, author_pk, post_pk, comment_pk, format=None):
         author = Author.objects.get(pk=author_pk)
         post = Post.objects.get(pk=post_pk)
-        comment = Comment.objects.get(pk=comment_pk, parentPost=post)
+        comment = Comment.objects.get(pk=comment_pk, post=post)
 
         # check if author already liked the post
         if CommentLike.objects.filter(author=author, comment=comment).exists():
@@ -77,10 +102,13 @@ class AddLikeToCommentView(generics.ListCreateAPIView):
 
     @extend_schema(
         tags=['Likes'],
+        description='GET [local, remote] a list of likes from other authors on AUTHOR_ID’s post POST_ID comment COMMENT_ID'
     )
     def get(self, request, author_pk, post_pk, comment_pk, format=None):
+        # TODO: check how it exactly works with remote authors
         comment = Comment.objects.get(pk=comment_pk)
         likes = CommentLike.objects.filter(comment=comment)
+
         page = self.paginate_queryset(likes)
         serializer = CommentLikeSerializer(likes, many=True)
         return self.get_paginated_response(serializer.data)
@@ -96,14 +124,18 @@ class GetAllAuthorLikes(generics.ListAPIView):
 
     @extend_schema(
         tags=['Likes'],
-        description='get all posts and comments liked by AUTHOR_ID'
+        description='GET [local, remote] list what public things AUTHOR_ID liked.'
     )
     def get(self, request, author_pk, format=None):
+        # TODO: check if authourID can be a remote author
+        # if i call that endpoint to ur server i should also check to see if theres any public likes from that author on my server
         author = Author.objects.get(pk=author_pk)
-        posts = Post.objects.filter(owner=author)
+        
+        posts = Post.objects.filter(visibility="PUBLIC")
 
-        postLikes = PostLike.objects.filter(author=author)
-        commentLikes = CommentLike.objects.filter(author=author)
+        postLikes = PostLike.objects.filter(author_id=author_pk, post__visibility='PUBLIC')
+        commentLikes = CommentLike.objects.filter(author=author, comment__post__visibility='PUBLIC')
+
         postSerializer = PostLikeSerializer(postLikes, many=True)
         commentSerializer = CommentLikeSerializer(commentLikes, many=True)
         return Response(postSerializer.data + commentSerializer.data)

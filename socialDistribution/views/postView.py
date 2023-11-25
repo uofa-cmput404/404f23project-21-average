@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from django.http import Http404
 from rest_framework import status
 from rest_framework import generics
+from django.conf import settings
 from drf_spectacular.utils import extend_schema
 from socialDistribution.models import Author, Post
 from socialDistribution.pagination import Pagination, JsonObjectPaginator
@@ -49,7 +50,7 @@ class PostList(generics.ListCreateAPIView):
                     all_posts.append(serializeTeam1Post(post))
 
         for post in all_posts:
-            post["source"] = request.headers['Host'] + '/authors/' + post["author"]["id"] + '/posts/' + post["id"]
+            post["source"] = f"{settings.BASEHOST}/authors/{post['author']['id']}/posts/{post['id']}"
         page = self.paginate_queryset(all_posts)
         return self.get_paginated_response(page)
 
@@ -63,10 +64,14 @@ class PostList(generics.ListCreateAPIView):
         # TODO: if the post is image only post it must be unlisted
         
         if serializer.is_valid():
-            serializer.save(author=author, origin=request.headers['Origin'])
+            # print(serializer.data)
+            serializer.save(author=author, origin=f"{settings.BASEHOST}/authors/{author.id}/posts/")
+            tempPost = Post.objects.get(pk=serializer.data["id"])
+            tempPost.origin = f"{settings.BASEHOST}/authors/{author.id}/posts/{tempPost.id}"
+            tempPost.save()
             # TODO: Check if the post is sent to all friends inbox if its friends only
             sendToFriendsInbox(author, serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(PostSerializer(tempPost).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

@@ -1,7 +1,6 @@
 from .models import Inbox, Author
 import json
 from requests_toolbelt import sessions
-from django.conf import settings
 
 # ORIGIN = ['https://frontend-21-average.herokuapp.com', 'http://localhost:8000', 'http://127.0.0.1:8000/api/']
 # TEAM1 = 'https://vibely-23b7dc4c736d.herokuapp.com/api'
@@ -50,9 +49,10 @@ def isFriend(author, foreign_author):
 
 
 def isFrontendRequest(request):
-    if request.user.username in CONNECTED:
-        return False
-    return True
+    return False
+    # if request.user.username in CONNECTED:
+    #     return False
+    # return True
     # try:
     #     # TODO: check prod swagger
     #     if request.headers['Host'] in settings.ALLOWED_HOSTS:

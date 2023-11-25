@@ -4,7 +4,7 @@ from socialDistribution.views.commentView import CommentViewSet
 from socialDistribution.views.followerView import FollowDetailViewSet, FollowViewSet
 from socialDistribution.views.githubView import GitHubView
 from socialDistribution.views.inboxView import InboxItemView
-from socialDistribution.views.likesView import AddLikeToCommentView, AddLikeToPostView
+from socialDistribution.views.likesView import AddLikeToCommentView, AddLikeToPostView, GetAllAuthorLikes
 from socialDistribution.views.postView import ImageViewSet, PostList, PostDetail, PublicPostList
 
 # The API URLs are now determined automatically by the router.
@@ -34,6 +34,8 @@ urlpatterns = [
          AddLikeToPostView.as_view(), name='post-likes'),
     path('authors/<slug:author_pk>/posts/<slug:post_pk>/comments/<slug:comment_pk>/likes/',
          AddLikeToCommentView.as_view(), name='comment-likes'),
+     path('posts/<slug:author_pk>/liked/',
+         GetAllAuthorLikes.as_view(), name='post-likes'),
     
     # followers
     path('authors/<slug:author_pk>/followers/', FollowViewSet.as_view(), name='followers'),

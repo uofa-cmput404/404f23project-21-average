@@ -9,6 +9,7 @@ from drf_spectacular.utils import extend_schema
 from ..util import addToInbox
 from socialDistribution.util import isFrontendRequest, team1, serializeTeam1Author, team2
 import json
+
 from rest_framework.renderers import JSONRenderer
 
 
@@ -23,7 +24,7 @@ class CommentViewSet(generics.ListCreateAPIView):
         description='GET [local, remote] get the list of comments of the post whose id is POST_ID (paginated)'
     )
     def get(self, request, author_pk, post_pk, format=None):
-        comments = Comment.objects.filter(parentPost=post_pk)
+        comments = Comment.objects.filter(post=post_pk)
         all_comments = json.loads(JSONRenderer().render(CommentSerializer(comments, many=True).data).decode('utf-8'))
         if isFrontendRequest(request):
             team1_comments = team1.get(f"authors/{author_pk}/posts/{post_pk}/comments")
@@ -35,7 +36,7 @@ class CommentViewSet(generics.ListCreateAPIView):
                         "comment": comment["comment"],
                         "contentType": comment["contentType"],
                         "published": comment["published"],
-                        # "parentPost": comment["parentPost"],
+                        # "post": comment["post"],
                     })
             # team2_comments = team2.get(f"authors/{author_pk}/posts/{post_pk}/comments")
             # if team2_comments.status_code == 200:
@@ -46,7 +47,7 @@ class CommentViewSet(generics.ListCreateAPIView):
             #             "comment": comment["comment"],
             #             "contentType": comment["contentType"],
             #             "published": comment["published"],
-            #             # "parentPost": comment["parentPost"],
+            #             # "post": comment["post"],
             #         })
         page = self.paginate_queryset(all_comments)
         return self.get_paginated_response(page)
@@ -59,7 +60,7 @@ class CommentViewSet(generics.ListCreateAPIView):
         post = Post.objects.get(pk=post_pk)
         serializer = CommentSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(author=author, parentPost=post)
+            serializer.save(author=author, post=post)
 
             # add the comment to post owners inbox
             addToInbox(post.author, serializer.data)

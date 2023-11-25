@@ -12,7 +12,7 @@ class Author(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.CharField(max_length=255, default="author")
     host = models.CharField(max_length=255, blank=True, null=True)
-    displayName = models.CharField(max_length=255, blank=True, null=True)
+    displayName = models.CharField(max_length=255, blank=True, null=True, default="User")
     github = models.TextField(blank=True, null=True)
     image = models.ImageField(
         upload_to='profile_images/', blank=True, null=True)
@@ -38,7 +38,7 @@ class Post(models.Model):
     content = models.TextField(blank=True, null=True)
     published = models.DateTimeField(default=datetime.now)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='posts')
-    categories = models.TextField(blank=True, null=True)
+    categories = models.TextField(blank=True, null=True, default="web")
     count = models.IntegerField(default=0)
     visibility = models.CharField(max_length=255, default="PUBLIC")
     unlisted = models.BooleanField(default=False)
@@ -56,8 +56,8 @@ class Post(models.Model):
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.CharField(max_length=255, default="comment")
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    parentPost = models.ForeignKey(Post, on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='comments')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     comment = models.TextField()
     contentType = models.CharField(max_length=255)
     published = models.DateTimeField(default=datetime.now)
@@ -68,7 +68,7 @@ class Comment(models.Model):
 
 @receiver(post_save, sender=Comment)
 def updateCommentCount(sender, instance, **kwargs):
-    post = instance.parentPost
+    post = instance.post
     post.count = post.count + 1
     post.save()
 
@@ -88,18 +88,32 @@ class Follow(models.Model):
 class PostLike(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.CharField(max_length=255, default="like")
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='post_likes')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
+    summary = models.TextField(blank=True, null=True)
+    context = models.TextField(blank=True, null=True)
+    object = models.TextField(blank=True, null=True)
     published = models.DateTimeField(default=datetime.now)
+
+    def save(self, *args, **kwargs):
+        self.summary = f"{self.author.username} likes your post"
+        super(PostLike, self).save(*args, **kwargs)
 
 
 class CommentLike(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.CharField(max_length=255, default="like")
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='comment_likes')
+    summary = models.TextField(blank=True, null=True)
+    context = models.TextField(blank=True, null=True)
+    object = models.TextField(blank=True, null=True)
     # post = models.ForeignKey(Post, on_delete=models.CASCADE) # maybe dont need it??
-    comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='likes')
     published = models.DateTimeField(default=datetime.now)
+
+    def save(self, *args, **kwargs):
+        self.summary = f"{self.author.username} likes your comment"
+        super(CommentLike, self).save(*args, **kwargs)
 
 
 class ConnectedNode(models.Model):

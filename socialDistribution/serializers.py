@@ -2,6 +2,7 @@ from rest_framework.serializers import ModelSerializer
 from .models import Post, Comment, Follow, PostLike, CommentLike, Inbox, Author
 from rest_framework import serializers
 
+
 class AuthorSerializer(ModelSerializer):
 
     class Meta:
@@ -22,16 +23,22 @@ class PostSerializer(ModelSerializer):
         ordering = ['-id']
 
     def get_categories(self, obj):
-        return obj.categories.split(",")
+        # if obj.categories is None:
+        #     return []
+        try:
+            return obj.categories.split(",")
+        except:
+            return []
+
 
 class CommentSerializer(ModelSerializer):
     author = AuthorSerializer(read_only=True)
 
     class Meta:
         model = Comment
-        fields = ['id', 'author', 'parentPost', 'comment', 'type',
+        fields = ['id', 'author', 'post', 'comment', 'type',
                   'contentType', 'published']
-        read_only_fields = ['author', 'parentPost', 'published', 'id', 'type']
+        read_only_fields = ['author', 'post', 'published', 'id', 'type']
         ordering = ['-id']
 
 
@@ -49,8 +56,8 @@ class PostLikeSerializer(ModelSerializer):
     
     class Meta:
         model = PostLike
-        fields = ['published', 'author', 'post', 'id', 'type']
-        read_only_fields = ['author', 'post', 'id', 'published', 'type']
+        fields = ['published', 'author', 'post', 'id', 'type', 'summary', 'context', 'object']
+        read_only_fields = ['author', 'post', 'id', 'published', 'type', 'summary', 'context', 'object']
         ordering = ['-id']
 
 
@@ -58,9 +65,9 @@ class CommentLikeSerializer(ModelSerializer):
 
     class Meta:
         model = CommentLike
-        fields = ['published', 'author', 'comment', 'id', 'type']
+        fields = ['published', 'author', 'comment', 'id', 'type', 'summary', 'context', 'object']
         ordering = ['-id']
-        read_only_fields = ['author', 'comment', 'id', 'published', 'type']
+        read_only_fields = ['author', 'comment', 'id', 'published', 'type', 'summary', 'context', 'object']
 
 
 class InboxSerializer(ModelSerializer):
