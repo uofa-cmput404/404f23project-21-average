@@ -41,7 +41,12 @@ class PostList(generics.ListCreateAPIView):
             if team1_posts.status_code == 200:
                 for post in team1_posts.json()["items"]:
                     all_posts.append(serializeTeam1Post(post))
-            # team2_posts = team2.get("author/posts/" + author_pk)
+            team2_posts = team2.get(f"authors/{author_pk}/posts/")
+            if team2_posts.status_code == 200:
+                for post in team2_posts.json()["items"]:
+                    post["author"]["github"] = ""
+                    post["categories"] = ""
+                    all_posts.append(serializeTeam1Post(post))
 
         for post in all_posts:
             post["source"] = request.headers['Host'] + '/authors/' + post["author"]["id"] + '/posts/' + post["id"]
@@ -106,6 +111,7 @@ class PostDetail(APIView):
 
     @extend_schema(
         tags=['Posts'],
+        description='GET [local, remote] get the recent posts from author AUTHOR_ID (paginated)'
     )
     def get(self, request, author_pk, post_pk, format=None):
         author = Author.objects.get(pk=author_pk)
@@ -114,6 +120,12 @@ class PostDetail(APIView):
             if team1_post.status_code == 200:
                 return Response(serializeTeam1Post(team1_post.json()))
             # team2_post = team2.get("author/posts/" + post_pk)
+            team2_post = team2.get(f"authors/{author_pk}/posts/{post_pk}")
+            if team2_post.status_code == 200:
+                post = team2_post.json()
+                post["author"]["github"] = ""
+                post["categories"] = ""
+                return Response(serializeTeam1Post(post))
         
         post = self.get_object(post_pk)
         serializer = PostSerializer(post)
@@ -150,6 +162,7 @@ class ImageViewSet(APIView):
                 (unlisted implies pubic post)'
     )
     def get(self, request, post_pk, format=None):
+        # TODO: check other groups image only posts
         # if isFrontendRequest(request):
         #     team1_post = team1.get("authors/" + author_pk + "/posts/" + post_pk + "/")
         #     if team1_post.status_code == 200:
@@ -172,6 +185,7 @@ class ImageViewSet(APIView):
             serializer = PostSerializer(post)
             return Response(serializer.data)
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 class PublicPostList(generics.ListAPIView):
     queryset = Post.objects.all()

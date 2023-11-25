@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework import generics
 from drf_spectacular.utils import extend_schema
 from ..util import addToInbox
-from socialDistribution.util import isFrontendRequest, team1, serializeTeam1Author
+from socialDistribution.util import isFrontendRequest, team1, serializeTeam1Author, team2
 import json
 from rest_framework.renderers import JSONRenderer
 
@@ -20,6 +20,7 @@ class CommentViewSet(generics.ListCreateAPIView):
 
     @extend_schema(
         tags=['Comments'],
+        description='GET [local, remote] get the list of comments of the post whose id is POST_ID (paginated)'
     )
     def get(self, request, author_pk, post_pk, format=None):
         comments = Comment.objects.filter(parentPost=post_pk)
@@ -36,6 +37,17 @@ class CommentViewSet(generics.ListCreateAPIView):
                         "published": comment["published"],
                         # "parentPost": comment["parentPost"],
                     })
+            # team2_comments = team2.get(f"authors/{author_pk}/posts/{post_pk}/comments")
+            # if team2_comments.status_code == 200:
+            #     for comment in team2_comments.json()["comments"]:
+            #         all_comments.append({
+            #             "id": comment["id"],
+            #             "author": serializeTeam1Author(comment["author"]),
+            #             "comment": comment["comment"],
+            #             "contentType": comment["contentType"],
+            #             "published": comment["published"],
+            #             # "parentPost": comment["parentPost"],
+            #         })
         page = self.paginate_queryset(all_comments)
         return self.get_paginated_response(page)
 

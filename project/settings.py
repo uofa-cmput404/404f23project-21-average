@@ -195,9 +195,11 @@ CORS_ALLOW_HEADERS = ['*']
 
 DEBUG = True
 ALLOWED_HOSTS = ['cmput-average-21.herokuapp.com', '127.0.0.1', 'localhost:8000', 'frontend-21-average.herokuapp.com',
-                 'frontend-21-average-f45e3b82895c.herokuapp.com', 'cmput-average-21-b54788720538.herokuapp.com', '127.0.0.1:8000']
-                #  'vibely-23b7dc4c736d.herokuapp.com', 'cmput404-project-backend-tian-aaf1fa9b20e8.herokuapp.com', ]
+                 'frontend-21-average-f45e3b82895c.herokuapp.com', 'cmput-average-21-b54788720538.herokuapp.com', '127.0.0.1:8000',
+                 'vibely-23b7dc4c736d.herokuapp.com', 'cmput404-project-backend-tian-aaf1fa9b20e8.herokuapp.com', ]
+
 # ALLOWED_HOSTS = ['*']
+
 CORS_ALLOWED_ORIGINS = [
     'https://frontend-21-average.herokuapp.com',
     "http://localhost:8000",
@@ -209,8 +211,8 @@ CORS_ALLOWED_ORIGINS = [
     
     # teams
     'https://vibely-23b7dc4c736d.herokuapp.com',
+    'https://cmput404-ctrl-alt-defeat-api-12dfa609f364.herokuapp.com',
     'https://cmput404-project-backend-tian-aaf1fa9b20e8.herokuapp.com'
-    
 ]
 
 SPECTACULAR_SETTINGS = {
