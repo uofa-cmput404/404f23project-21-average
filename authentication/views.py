@@ -1,5 +1,16 @@
-from authentication.serializers import CustomRegisterSerializer
+from authentication.serializers import CustomRegisterSerializer, CustomNodeRegistrationSerializer, CustomJWTSerializer
 from dj_rest_auth.registration.views import RegisterView
+
 
 class RegistrationView(RegisterView):
     serializer_class = CustomRegisterSerializer
+
+
+class CustomNodeRegistrationView(RegisterView):
+    """
+    Add team name and save the returned access token
+    """
+    serializer_class = CustomNodeRegistrationSerializer
+
+    def get_response_data(self, user):
+        return CustomJWTSerializer(user, context=self.get_serializer_context()).data

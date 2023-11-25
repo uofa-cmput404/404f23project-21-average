@@ -19,7 +19,6 @@ import dj_database_url
 # import cloudinary.uploader 
 # import cloudinary.api
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -34,7 +33,6 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -47,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'socialDistribution',
     'rest_framework',
+    'django.contrib.admindocs',
     'drf_spectacular',
     "rest_framework.authtoken",
     'rest_framework_simplejwt',
@@ -56,6 +55,8 @@ INSTALLED_APPS = [
     "dj_rest_auth",
     "corsheaders",
     "dj_rest_auth.registration",
+    # 'django.contrib.postgres',
+    # 'django_postgres_extensions'
     # 'cloudinary_storage',
     # 'cloudinary',
 ]
@@ -131,7 +132,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
@@ -151,10 +151,10 @@ REST_FRAMEWORK = {
     'PAGINATE_BY_PARAM': 'size',
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.TokenAuthentication",
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         # 'rest_framework.authentication.SessionAuthentication',
-        "rest_framework.authentication.BasicAuthentication",
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     ],
     'DEFAULT_PARSER_CLASSES': [
@@ -166,9 +166,8 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ['rest_framework.permissions.AllowAny'],
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
-    ]
+    ],
 }
-
 
 JWT_AUTH = {
     "JWT_VERIFY": True,
@@ -178,7 +177,6 @@ JWT_AUTH = {
     "JWT_ALLOW_REFRESH": True,
     "JWT_REFRESH_EXPIRATION_DELTA": datetime.timedelta(days=7)
 }
-
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "none"
@@ -195,12 +193,13 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = ['*']
 
-
 DEBUG = True
-ALLOWED_HOSTS = ['cmput-average-21.herokuapp.com', '127.0.0.1', 'localhost:8000', 'frontend-21-average.herokuapp.com', 
-                 'frontend-21-average-f45e3b82895c.herokuapp.com', 'cmput-average-21-b54788720538.herokuapp.com',
-                 'vibely-23b7dc4c736d.herokuapp.com']
+ALLOWED_HOSTS = ['cmput-average-21.herokuapp.com', '127.0.0.1', 'localhost:8000', 'frontend-21-average.herokuapp.com',
+                 'frontend-21-average-f45e3b82895c.herokuapp.com', 'cmput-average-21-b54788720538.herokuapp.com', '127.0.0.1:8000',
+                 'vibely-23b7dc4c736d.herokuapp.com', 'cmput404-project-backend-tian-aaf1fa9b20e8.herokuapp.com', ]
+
 # ALLOWED_HOSTS = ['*']
+
 CORS_ALLOWED_ORIGINS = [
     'https://frontend-21-average.herokuapp.com',
     "http://localhost:8000",
@@ -209,8 +208,11 @@ CORS_ALLOWED_ORIGINS = [
     'http://frontend-21-average.herokuapp.com',
     'https://frontend-21-average-f45e3b82895c.herokuapp.com',
     'https://cmput-average-21-b54788720538.herokuapp.com',
-    'https://vibely-23b7dc4c736d.herokuapp.com'
     
+    # teams
+    'https://vibely-23b7dc4c736d.herokuapp.com',
+    'https://cmput404-ctrl-alt-defeat-api-12dfa609f364.herokuapp.com',
+    'https://cmput404-project-backend-tian-aaf1fa9b20e8.herokuapp.com'
 ]
 
 SPECTACULAR_SETTINGS = {
@@ -226,7 +228,6 @@ SPECTACULAR_SETTINGS = {
 AUTH_USER_MODEL = 'socialDistribution.Author'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
-
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -236,6 +237,11 @@ STORAGES = {
     },
 }
 
-REST_AUTH_SERIALIZERS = {
-    'REGISTER_SERIALIZER': 'authentication.serializers.CustomRegisterSerializer'
-}
+# REST_AUTH_SERIALIZERS = {
+#     'REGISTER_SERIALIZER': 'authentication.serializers.CustomRegisterSerializer'
+# }
+
+CONNECTED = ["vibely", "CtrlAltDefeat"]
+DEFAULT_AUTHORS = ["string", "user1", "user2", "user3"]
+DEFAULT_AUTHORS_PASSWORD = "string"
+BASEHOST = os.environ.get("BASE_URL")

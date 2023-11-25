@@ -1,57 +1,64 @@
-from django.dispatch import receiver
-from socialDistribution.models import Inbox
+from socialDistribution.models import Inbox, Author
 from socialDistribution.serializers import InboxSerializer
 from rest_framework.response import Response
-from socialDistribution.models import Author, ConnectedNode, Follow, FriendRequest
-from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
+from rest_framework import generics
 from drf_spectacular.utils import extend_schema
+import json
 
 
-class InboxItemView(APIView):
+class InboxItemView(generics.GenericAPIView):
     queryset = Inbox.objects.all()
     serializer_class = InboxSerializer
+    permission_classes = [permissions.IsAuthenticated]
     
+    @extend_schema(
+        tags=["Inbox"],
+        description="Get all inbox items for the current user.",
+    )
+    def get(self, request, author_pk, *args, **kwargs):
+        author = Author.objects.get(pk=author_pk)
+        inbox = Inbox.objects.get(author=author)
+        serializer = InboxSerializer(inbox)
+
+        allItems = json.loads(inbox.items)
+        result = []
+        for item in allItems:
+            result.append(json.loads(item))
+
+        copy = serializer.data
+        copy["items"] = result
+        return Response(copy, status=status.HTTP_200_OK)
     
-
-    # def create(self, request, *args, **kwargs):
-    #     serializer = self.get_serializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_create(serializer)
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    # @receiver(post_save, sender=Inbox)
-    # def process_inbox_item(sender, instance, **kwargs):
-    #     """
-    #     Custom signal to process actions when an item is added to the inbox.
-    #     For example, send notifications, update counters, etc.
-    #     """
-    #     # Need to add more based on inbox item type
-    #     if instance.type == "friend_request":
-    #         process_friend_request_notification(instance)
-
-    # def process_friend_request_notification(instance):
-    #     # To send friend request
-    #     sender = instance.from_author
-    #     recipient = instance.to_author
-    #     content = f"You have a new friend request from {sender.display_name}."
-
-    #     # Send the Friend Request
-    #     friend_request = FriendRequest.objects.create(
-    #         from_author=sender,
-    #         to_author=recipient,
-    #         status=instance.status,
-    #     )
-
-    #     # Inbox Entry:
-    #     inbox_item = Inbox.objects.create(
-    #         recipient=recipient,
-    #         sender=sender,
-    #         content=content,
-    #         type="friend_request",
-    #         timestamp=timezone.now(),
-    #         friend_request_status=instance.status,
-    #     )
-
-    #     print(f"Notification: {sender.display_name} sent a friend request to {recipient.display_name}")
+    @extend_schema(
+        tags=["Inbox"],
+        description="Create a new inbox item for the current user.(author_id is the recipient). \
+            You must send a json.dumps(object) string in the `items` field. Just the object not a list or anything",
+    )
+    def post(self, request, author_pk, *args, **kwargs):
+        """
+        json_string = json.dumps(data)
+        escaped_json_string = json_string.replace('"', '\\"')
+        final_format_string = f'"{escaped_json_string}"'
+        """
+        # TODO: TEST IF IT WORKSS
+        author = Author.objects.get(pk=author_pk)
+        inbox = Inbox.objects.get(author=author)
+        items = json.loads(inbox.items)
+        newItems = json.loads(request.data['items'])
+        items.append(json.dumps(newItems, default=str))
+        inbox.items = json.dumps(items)
+        inbox.save()
+        return Response({"message": "Item Added to inbox!"}, status=status.HTTP_201_CREATED)
+    
+    @extend_schema(
+        tags=["Inbox"],
+        description="Delete all inbox items for the current user.(author_id is the recipient)",
+    )
+    def delete(self, request, author_id, *args, **kwargs):
+        # TODO: TEST IF IT WORKSS
+        author = Author.objects.get(pk=author_id)
+        inbox = Inbox.objects.filter(author=author)
+        inbox.items = json.dumps([])
+        return Response({'message': "Inbox Cleared!"}, status=status.HTTP_204_NO_CONTENT)
