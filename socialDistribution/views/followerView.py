@@ -5,7 +5,6 @@ from socialDistribution.serializers import AuthorSerializer, FollowSerializer
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
-from rest_framework.authtoken.models import Token
 from drf_spectacular.utils import extend_schema
 from socialDistribution.util import addToInbox
 

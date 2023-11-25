@@ -22,6 +22,7 @@ class AuthorListViewSet(generics.ListAPIView):
     
     @extend_schema(
         tags=['Authors'],
+        description='Get the list of authors'
     )
     def get(self, request, *args, **kwargs):
         authors = Author.objects.filter(type="author").all()
@@ -49,6 +50,7 @@ class NodeListViewSet(generics.ListAPIView):
     
     @extend_schema(
         tags=['Authors'],
+        description='Get the list of connected nodes'
     )
     def get(self, request, *args, **kwargs):
         authors = Author.objects.filter(type="node").all()

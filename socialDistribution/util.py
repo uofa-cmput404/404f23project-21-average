@@ -2,9 +2,6 @@ from .models import Inbox, Author
 import json
 from requests_toolbelt import sessions
 
-# ORIGIN = ['https://frontend-21-average.herokuapp.com', 'http://localhost:8000', 'http://127.0.0.1:8000/api/']
-# TEAM1 = 'https://vibely-23b7dc4c736d.herokuapp.com/api'
-# TEAM2 = 'https://cmput404-project-backend-tian-aaf1fa9b20e8.herokuapp.com/api'
 CONNECTED = ["vibely", "CtrlAltDefeat"]
 team1 = sessions.BaseUrlSession(base_url='https://vibely-23b7dc4c736d.herokuapp.com/api/')
 team1.headers['Authorization'] = 'Basic'
@@ -19,6 +16,13 @@ def addToInbox(author, data):
     items.append(json.dumps(data, default=str))
     inbox.items = json.dumps(items)
     inbox.save()
+
+
+def sendToEveryonesInbox(data):
+    # send to all authors
+    authors = Author.objects.all()
+    for author in authors:
+        addToInbox(author, data)
 
 
 def sendToFriendsInbox(author, data):
@@ -49,10 +53,10 @@ def isFriend(author, foreign_author):
 
 
 def isFrontendRequest(request):
-    return False
-    # if request.user.username in CONNECTED:
-    #     return False
-    # return True
+    # return False
+    if request.user.username in CONNECTED:
+        return False
+    return True
     # try:
     #     # TODO: check prod swagger
     #     if request.headers['Host'] in settings.ALLOWED_HOSTS:

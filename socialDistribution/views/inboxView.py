@@ -36,12 +36,18 @@ class InboxItemView(generics.GenericAPIView):
         description="Create a new inbox item for the current user.(author_id is the recipient). \
             You must send a json.dumps(object) string in the `items` field. Just the object not a list or anything",
     )
-    def post(self, request, author_id, *args, **kwargs):
+    def post(self, request, author_pk, *args, **kwargs):
+        """
+        json_string = json.dumps(data)
+        escaped_json_string = json_string.replace('"', '\\"')
+        final_format_string = f'"{escaped_json_string}"'
+        """
         # TODO: TEST IF IT WORKSS
-        author = Author.objects.get(pk=author_id)
+        author = Author.objects.get(pk=author_pk)
         inbox = Inbox.objects.get(author=author)
         items = json.loads(inbox.items)
-        items.append(json.dumps(request.data.items, default=str))
+        newItems = json.loads(request.data['items'])
+        items.append(json.dumps(newItems, default=str))
         inbox.items = json.dumps(items)
         inbox.save()
         return Response({"message": "Item Added to inbox!"}, status=status.HTTP_201_CREATED)

@@ -48,7 +48,6 @@ class AddLikeToPostView(generics.ListCreateAPIView):
         page = self.paginate_queryset(likes)
         serializer = PostLikeSerializer(likes, many=True)
         return self.get_paginated_response(serializer.data)
-        
 
     @extend_schema(
         tags=['Likes'],
@@ -129,13 +128,16 @@ class GetAllAuthorLikes(generics.ListAPIView):
     def get(self, request, author_pk, format=None):
         # TODO: check if authourID can be a remote author
         # if i call that endpoint to ur server i should also check to see if theres any public likes from that author on my server
-        author = Author.objects.get(pk=author_pk)
+        try:
+            author = Author.objects.get(pk=author_pk)
+        except:
+            return Response({"message": "author not found"}, status=status.HTTP_404_NOT_FOUND)
         
         posts = Post.objects.filter(visibility="PUBLIC")
 
         postLikes = PostLike.objects.filter(author_id=author_pk, post__visibility='PUBLIC')
         commentLikes = CommentLike.objects.filter(author=author, comment__post__visibility='PUBLIC')
+        if postLikes or commentLikes:
+            return Response(PostLikeSerializer(postLikes, many=True).data + CommentLikeSerializer(commentLikes, many=True).data)
 
-        postSerializer = PostLikeSerializer(postLikes, many=True)
-        commentSerializer = CommentLikeSerializer(commentLikes, many=True)
-        return Response(postSerializer.data + commentSerializer.data)
+        return Response({"message": "no likes found"}, status=status.HTTP_200_OK)
