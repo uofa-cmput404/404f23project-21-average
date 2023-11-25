@@ -174,20 +174,21 @@ export default {
       // this.postContent = this.editedPostContent;  // Update the main content
       this.showEditPost = false;
       this.postMainContent = this.editedPostContent;
-      const payload = {
-        visibility: this.isPublic ? 'PUBLIC' : 'FRIENDS', // Adjust as per your requirement
-        unlisted: false,
-        title: 'string', // You can add a title input field in your template
-        source: 'string', // Adjust as per your requirement
-        origin: 'string', // Adjust as per your requirement
-        description: 'string', // You can add a description input field in your template
-        contentType: 'string', // Adjust based on your content type
-        content: this.editedPostContent,
-        published: new Date().toISOString(),
-        categories: 'string', // Adjust as per your requirement
-      };
+      let formData = new FormData();
+        formData.append('visibility', this.isPublic ? 'PUBLIC' : 'FRIENDS');
+        formData.append('unlisted', false);
+        formData.append('title', 'Your Title Here'); // Adjust accordingly
+        formData.append('source', 'Your Source Here'); // Adjust accordingly
+        formData.append('origin', 'Your Origin Here'); // Adjust accordingly
+        formData.append('description', 'Your Description Here'); // Adjust accordingly
+        formData.append('content', this.editedPostContent);
+        formData.append('published', new Date().toISOString());
+        formData.append('categories', 'Your Categories Here'); // Adjust accordingly
+        if (this.postImage) {
+          formData.append('image', this.postImage);
+        }
       axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
-      const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/', payload);
+      const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID+ "/", formData);
       console.log(response)
     },
     async deletePost() {

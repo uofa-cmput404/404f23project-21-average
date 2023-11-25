@@ -54,6 +54,6 @@ class CommentViewSet(generics.ListCreateAPIView):
         post = Post.objects.get(pk=post_pk)
         serializer = CommentSerializer(data=request.data)
         if serializer.is_valid():
-            comment = serializer.save(commenter=author, parentPost=post)
+            comment = serializer.save(author=author, parentPost=post)
             return Response(CommentSerializer(comment).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

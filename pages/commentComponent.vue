@@ -1,7 +1,7 @@
 <template>
   <div class="comment-section">
     <div v-for="comment in comments" :key="comment.id" class="comment">
-      <div class="comment-author">{{ comment.commenter.username }}</div>
+      <div class="comment-author">{{ comment.author.username }}</div>
       <div class="comment-content">{{ comment.comment }}</div>
     </div>
 
@@ -40,7 +40,7 @@ export default {
         console.log('40', response.data)
         this.comments = response.data.results;
         console.log("jjkkkjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj")
-        console.log(this.comments.results)
+        console.log(response.data)
       } catch (error) {
         console.error('Error while fetching comments:', error);
       }
@@ -52,8 +52,8 @@ export default {
           const payload = {
             comment: this.newComment,
             contentType: 'string',
-            published: new Date().toISOString(),
           };
+          console.log(payload)
           axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
           await axios.post(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postId}/comments/`, payload);
           console.log(payload)

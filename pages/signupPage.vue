@@ -10,13 +10,13 @@
         <h2>REGISTER</h2>
         <form>
           <div class="input-group">
-            <label for="first_name">First Name</label>
-            <input type="text" id="first_name" v-model="firstName" placeholder="First Name" />
-          </div>
-          <div class="input-group">
-            <label for="last_name">Last Name</label>
-            <input type="text" id="last_name" v-model="lastName" placeholder="Last Name" />
-          </div>
+          <label for="first_name">First Name</label>
+          <input type="text" id="first_name" v-model="firstName" placeholder="First Name" />
+        </div>
+        <div class="input-group">
+          <label for="last_name">Last Name</label>
+          <input type="text" id="last_name" v-model="lastName" placeholder="Last Name" />
+        </div>
           <div class="input-group">
             <label for="email">Email</label>
             <input type="email" id="email" v-model="email" placeholder="Email" />
@@ -29,9 +29,9 @@
             <label for="password">Password</label>
             <input type="password" id="password" v-model="password" placeholder="Password" />
             <div class="input-group">
-              <label for="github_id">GitHub ID (Optional)</label>
-              <input type="text" id="github_id" v-model="githubId" placeholder="GitHub ID" />
-            </div>
+          <label for="github_id">GitHub ID (Optional)</label>
+          <input type="text" id="github_id" v-model="githubId" placeholder="GitHub ID" />
+        </div>
           </div>
           <button type="button" @click="register();">SIGN UP</button>
         </form>
@@ -61,7 +61,7 @@ const register = async () => {
       password1: password.value,
       password2: password.value,
     }
-    const registerData = {
+    const registerData ={
       host: "string",
       displayName: username.value,
       github: githubId.value,
@@ -75,15 +75,6 @@ const register = async () => {
       ]
     }
     try {
-      // axios.defaults.headers.common["Access-Control-Allow-Origin"] = `*`;
-      // axios.defaults.headers.common[
-      //   "Access-Control-Allow-Methods"
-      // ] = `GET, POST, PATCH, PUT, DELETE, OPTIONS`;
-      // axios.defaults.headers.common[
-      //   "Access-Control-Allow-Headers"
-      // ] = `Origin, Content-Type, X-Auth-Token, Access-Control-Allow-Origin, Authorization, X-Requested-With, Accept, Access-Control-Allow-Methods, Access-Control-Allow-Headers, Access-Control-Allow-Credentials`;
-      // const response = await axios.post(authorStore.BASE_URL + '/auth/register/', data)
-      // console.log(response)
       console.log(data)
       const response = await axios.post(authorStore.BASE_URL + '/auth/register/', data)
       // axios.defaults.headers.common['Authorization'] = 'Token ' + response.data.key;

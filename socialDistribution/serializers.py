@@ -33,12 +33,12 @@ class PostSerializer(ModelSerializer):
 
 
 class CommentSerializer(ModelSerializer):
-    author = AuthorSerializer()
+    author = AuthorSerializer(read_only = True)
     class Meta:
         model = Comment
         fields = ['id', 'author', 'parentPost',  'comment',
                   'contentType', 'published']
-        read_only_fields = ['parentPost', 'published', 'id']
+        read_only_fields = ['author','parentPost', 'published', 'id']
         ordering = ['-id']
 
 
