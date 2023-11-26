@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework import generics
 from drf_spectacular.utils import extend_schema
 from ..util import addToInbox
-from socialDistribution.util import isFrontendRequest, team1, serializeTeam1Author, team2
+from socialDistribution.util import isFrontendRequest, team1, serializeTeam1Author, team2, isFriend
 import json
 
 from rest_framework.renderers import JSONRenderer
@@ -24,31 +24,17 @@ class CommentViewSet(generics.ListCreateAPIView):
         description='GET [local, remote] get the list of comments of the post whose id is POST_ID (paginated)'
     )
     def get(self, request, author_pk, post_pk, format=None):
-        comments = Comment.objects.filter(post=post_pk)
-        all_comments = json.loads(JSONRenderer().render(CommentSerializer(comments, many=True).data).decode('utf-8'))
-        if isFrontendRequest(request):
-            team1_comments = team1.get(f"authors/{author_pk}/posts/{post_pk}/comments")
-            if team1_comments.status_code == 200:
-                for comment in team1_comments.json()["comments"]:
-                    all_comments.append({
-                        "id": comment["id"],
-                        "author": serializeTeam1Author(comment["author"]),
-                        "comment": comment["comment"],
-                        "contentType": comment["contentType"],
-                        "published": comment["published"],
-                        # "post": comment["post"],
-                    })
-            # team2_comments = team2.get(f"authors/{author_pk}/posts/{post_pk}/comments")
-            # if team2_comments.status_code == 200:
-            #     for comment in team2_comments.json()["comments"]:
-            #         all_comments.append({
-            #             "id": comment["id"],
-            #             "author": serializeTeam1Author(comment["author"]),
-            #             "comment": comment["comment"],
-            #             "contentType": comment["contentType"],
-            #             "published": comment["published"],
-            #             # "post": comment["post"],
-            #         })
+        # As an author, comments on friend posts are private only to me the original author.
+        author = Author.objects.get(pk=author_pk)
+        post = Post.objects.get(pk=post_pk)
+
+        if post.visibility == "PUBLIC":
+            comments = Comment.objects.filter(post=post_pk)
+        elif post.visibility == "FRIENDS" and isFriend(author, post.author):
+            comments = Comment.objects.filter(post=post_pk)
+
+        all_comments = CommentSerializer(comments, many=True).data
+        
         page = self.paginate_queryset(all_comments)
         return self.get_paginated_response(page)
 

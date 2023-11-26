@@ -29,36 +29,15 @@ class PostList(generics.ListCreateAPIView):
 
     @extend_schema(
         tags=['Posts'],
-        description='[local, remote] get the recent posts from author AUTHOR_ID (paginated)\
-            returns posts from author, their friends, and public posts'
+        description='[local, remote] get the recent posts from author AUTHOR_ID (paginated)'
     )
     def get(self, request, author_pk, format=None):
         author = Author.objects.get(pk=author_pk)
 
         # get posts from author, their friends, and public posts
         authorPosts = Post.objects.filter(author=author)
-        publicPosts = Post.objects.filter(visibility="PUBLIC")
-        
-        authorFriends = FollowSerializer(author.following.filter(status="Accepted"), many=True).data
-        authorFriends = [(Author.objects.get(pk=friend["following"]["id"])) for friend in authorFriends]
-        friendsPosts = Post.objects.filter(author__in=authorFriends, visibility="FRIENDS")
 
-        all_posts = json.loads(JSONRenderer().render(PostSerializer(authorPosts, many=True).data + 
-        PostSerializer(publicPosts, many=True).data + 
-        PostSerializer(friendsPosts, many=True).data).decode('utf-8'))
-
-        # get posts from other servers
-        if isFrontendRequest(request):
-            team1_posts = team1.get(f"authors/{author_pk}/posts/")
-            if team1_posts.status_code == 200:
-                for post in team1_posts.json()["items"]:
-                    all_posts.append(serializeTeam1Post(post))
-            team2_posts = team2.get(f"authors/{author_pk}/posts/")
-            if team2_posts.status_code == 200:
-                for post in team2_posts.json()["items"]:
-                    post["author"]["github"] = ""
-                    post["categories"] = ""
-                    all_posts.append(serializeTeam1Post(post))
+        all_posts = PostSerializer(authorPosts, many=True).data
 
         # add source to posts and return everything
         for post in all_posts:
@@ -139,23 +118,27 @@ class PostDetail(APIView):
         try:
             author = Author.objects.get(pk=author_pk)
         except Author.DoesNotExist:
-            if isFrontendRequest(request):
-                team1_post = team1.get(f"authors/{author_pk}/posts/{post_pk}/")
-                if team1_post.status_code == 200:
-                    return Response(serializeTeam1Post(team1_post.json()))
-                # team2_post = team2.get("author/posts/" + post_pk)
-                team2_post = team2.get(f"authors/{author_pk}/posts/{post_pk}")
-                if team2_post.status_code == 200:
-                    post = team2_post.json()
-                    post["author"]["github"] = ""
-                    post["categories"] = ""
-                    return Response(serializeTeam1Post(post))
+            # if isFrontendRequest(request):
+            #     team1_post = team1.get(f"authors/{author_pk}/posts/{post_pk}/")
+            #     if team1_post.status_code == 200:
+            #         return Response(serializeTeam1Post(team1_post.json()))
+            #     # team2_post = team2.get("author/posts/" + post_pk)
+            #     team2_post = team2.get(f"authors/{author_pk}/posts/{post_pk}")
+            #     if team2_post.status_code == 200:
+            #         post = team2_post.json()
+            #         post["author"]["github"] = ""
+            #         post["categories"] = ""
+            #         return Response(serializeTeam1Post(post))
             return Response({"message": "Author not found"}, status=status.HTTP_404_NOT_FOUND)
         
         post = self.get_object(post_pk)
 
         serializer = PostSerializer(post)
         if post.visibility == 'PUBLIC':
+            return Response(serializer.data)
+        elif post.visibility == 'FRIENDS' and isFriend(request.user, post.author):
+            return Response(serializer.data)
+        elif post.visibility == 'PRIVATE' and post.author.id == request.user.id:
             return Response(serializer.data)
 
         return Response(status=status.HTTP_403_FORBIDDEN)
@@ -206,32 +189,4 @@ class ImageViewSet(APIView):
             serializer = PostSerializer(post)
             return Response(serializer.data)
         return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-# class PublicPostList(generics.ListAPIView):
-#     queryset = Post.objects.all()
-#     serializer_class = PostSerializer
-#     permission_classes = [
-#         permissions.IsAuthenticated]
-#     pagination_class = JsonObjectPaginator
-
-#     # @extend_schema(
-#     #     tags=['Posts'],
-#     #     # TODO: check if 'everyone' implies posts fromo other servers
-#     #     description='As an author I should be able to browse the public posts of everyone'
-#     # )
-#     # def get(self, request, format=None):
-#     #     posts = Post.objects.filter(visibility="PUBLIC")
-#     #     all_posts = json.loads(JSONRenderer().render(PostSerializer(posts, many=True).data).decode('utf-8'))
-#     #     if isFrontendRequest(request):
-#     #         team1_posts = team1.get(f"posts/")
-#     #         if team1_posts.status_code == 200:
-#     #             for post in team1_posts.json()["items"]:
-#     #                 all_posts.append(serializeTeam1Post(post))
-#     #         # team2_posts = team2.get("author/posts/" + author_pk)
-
-#     #     for post in all_posts:
-#     #         post["source"] = request.headers['Host'] + '/authors/' + post["author"]["id"] + '/posts/' + post["id"]
-#     #     page = self.paginate_queryset(all_posts)
-#     #     return self.get_paginated_response(page)
 
