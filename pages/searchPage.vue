@@ -47,6 +47,7 @@ export default {
   async created() {
   const authorStore = useAuthorStore();
   try {
+    axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
     const response = await axios.get(authorStore.BASE_URL + '/authors/');
     this.friends = response.data.results; // Save the data in friends
     console.log("heyyyy")

@@ -42,6 +42,7 @@ export default {
       const authorStore = useAuthorStore();
       axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
       try {
+        axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
         const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id + '/');
         if (!(response.status === 400|| response.status === 401)) {
           console.log(response.data);
@@ -64,7 +65,7 @@ export default {
           console.log('Unfollowing', this.username);
         } else {
           // Call the follow API
-          response = await axios.put(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id + '/');
+          response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id + '/');
           console.log('Following', this.username);
         }
         if (!(response.status === 400|| response.status === 401)) {

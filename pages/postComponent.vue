@@ -20,7 +20,6 @@
 
         <div class="post-actions">
           <button @click="toggleLike">{{ liked ? 'Unlike' : 'Like' }}</button>
-          <span class="like-count">{{ likeCount }} like(s)</span>
           <button @click="toggleCommentBox">Comment</button>
           <button class='edit' @click="showEditPost = !showEditPost">Edit</button>
         </div>
@@ -97,16 +96,15 @@ export default {
   async created() {
     const authorStore = useAuthorStore();
     try {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
       const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
       console.log(response)
       this.postMainContent = response.data.results['content'] // Updat
       // Fetch post details
-      const response1 = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID);
       if (response.status === 200) {
         this.post = response.data;
         this.postImageUrl = this.post.image;
         // Fetch likes
-        this.getLikes();
       } else {
         console.error('Error fetching post:', response);
       }
@@ -118,36 +116,17 @@ export default {
 
 
   methods: {
-    async getLikes() {
-      const authorStore = useAuthorStore();
-      // Implement the logic to get likes
-      // Example:
-      try {
-        console.log("likessssss")
-        const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/likes/');
-        if (response.status === 200) {
-          console.log('109', response.data)
-          this.likeCount = response.data.count;
-          this.liked = response.data.userLiked; // Assuming the API returns if the current user liked the post
-        }
-        console.log(response.data)
-      } catch (error) {
-        console.error('Error while fetching likes:', error);
-      }
-    },
     async toggleLike() {
       const authorStore = useAuthorStore();
       try {
         axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
         if (this.liked) {
           // Logic to unlike the post
-          await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/likes/',
-            { published: new Date().toISOString() });
+          await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/likes/');
           this.likeCount -= 1;
         } else {
           // Logic to like the post
-          await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/likes/',
-            { published: new Date().toISOString() });
+          await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/likes/');
           this.likeCount += 1;
         }
         this.liked = !this.liked;

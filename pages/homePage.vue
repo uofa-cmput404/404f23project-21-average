@@ -11,7 +11,7 @@
       <!-- Posts rendering section -->
       <div class="posts-feed">
         <h2>Posts</h2>
-        <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :userId="post.owner.username"
+        <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :userId="post.author.username"
           :postImage="post.image" :postID="post.id" />
       </div>
       <SidebarComponent />
@@ -96,7 +96,9 @@ export default {
   async mounted() {
     // this.fetchPosts();
     const authorStore = useAuthorStore();
+    axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
     const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
+    console.log(response)
     this.posts = response.data.results;
   },
   methods: {
