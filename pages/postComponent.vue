@@ -96,12 +96,13 @@ export default {
 
   async created() {
     const authorStore = useAuthorStore();
+    axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
     try {
       const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
       console.log(response)
       this.postMainContent = response.data.results['content'] // Updat
       // Fetch post details
-      const response1 = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID);
+      // const response1 = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID);
       if (response.status === 200) {
         this.post = response.data;
         this.postImageUrl = this.post.image;
@@ -124,6 +125,7 @@ export default {
       // Example:
       try {
         console.log("likessssss")
+        axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
         const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/likes/');
         if (response.status === 200) {
           console.log('109', response.data)

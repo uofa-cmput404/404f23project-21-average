@@ -70,7 +70,7 @@ def isFrontendRequest(request):
 
 def serializeTeam1Author(author):
     return {
-        "id": author["id"],
+        "id": author["id"].split('/')[-1],
         "host": author["host"],
         "displayName": author["displayName"],
         "github": author["github"],
