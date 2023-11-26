@@ -25,6 +25,9 @@ export default {
     return {
       notifications: [
         { id: 1, title: "New Message", message: "You have a new message from User_1" },
+        { id: 2, title: "New Message", message: "You have a new message from User_2" },
+        { id: 3, title: "New Message", message: "You have a new message from User_3" }
+
         // ... other notifications
       ]
     };
