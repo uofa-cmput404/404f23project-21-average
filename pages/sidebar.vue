@@ -7,7 +7,7 @@
       </h1>
       
       <li><NuxtLink to="/homePage"><i class="bi bi-house" id="home-icon"></i></NuxtLink></li>
-      <li><NuxtLink to="/friendsPage"><i class="bi bi-people" id="friends"></i></NuxtLink></li>
+      <li><NuxtLink to="/InboxPage"><i class="bi bi-people" id="friends"></i></NuxtLink></li>
       <li><NuxtLink to="/searchPage"><i class="bi bi-search" id="search-icon"></i></NuxtLink></li>
       <li><NuxtLink to="/profilePage"><i class="bi bi-person" id="profile-icon"></i></NuxtLink></li>
     </aside>
