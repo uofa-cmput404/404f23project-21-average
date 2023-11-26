@@ -91,10 +91,11 @@ export default {
   async mounted() {
     const authorStore = useAuthorStore();
     this.postImage = authorStore.BASE_URL.split('/api')[0] + this.postImage;
-  },
+  }, 
 
   async created() {
     const authorStore = useAuthorStore();
+    this.checkLike()
     axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
     try {
       axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
@@ -117,22 +118,19 @@ export default {
 
 
   methods: {
-    async getLikes() {
+
+    async checkLike(){
       const authorStore = useAuthorStore();
-      // Implement the logic to get likes
-      // Example:
       try {
-        console.log("likessssss")
-        const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/likes/');
-        if (response.status === 200) {
-          console.log('109', response.data)
-          this.likeCount = response.data.count;
-          this.liked = response.data.userLiked; // Assuming the API returns if the current user liked the post
-        }
+        axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+        await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/liked/');
         console.log(response.data)
-      } catch (error) {
-        console.error('Error while fetching likes:', error);
+        }
+        catch (error) {
+        console.error('Error while checking likes:', error);
       }
+    }
+
     },
     async toggleLike() {
       const authorStore = useAuthorStore();
@@ -206,7 +204,6 @@ export default {
       // Handle error
     }
   }
-}
 };
 </script>
 
