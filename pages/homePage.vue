@@ -98,7 +98,6 @@ export default {
     const authorStore = useAuthorStore();
     axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
     const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
-    console.log(response)
     this.posts = response.data.results;
   },
   methods: {

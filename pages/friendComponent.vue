@@ -40,11 +40,10 @@ export default {
 
     async checkFollowingStatus() {
       const authorStore = useAuthorStore();
-      axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
       try {
         axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
         const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id + '/');
-        if (!(response.status === 400|| response.status === 401)) {
+        if (!(response.status === 400 || response.status === 401)) {
           console.log(response.data);
           this.isFollowing = response.data;
 
@@ -68,7 +67,7 @@ export default {
           response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id + '/');
           console.log('Following', this.username);
         }
-        if (!(response.status === 400|| response.status === 401)) {
+        if (!(response.status === 400 || response.status === 401)) {
           this.isFollowing = !this.isFollowing;
         }
       } catch (error) {
@@ -112,10 +111,12 @@ export default {
   cursor: pointer;
   background-color: #00C58E;
   color: black;
-  margin-right: 10px; /* Adds spacing between buttons */
+  margin-right: 10px;
+  /* Adds spacing between buttons */
 }
 
 .button-group button:last-child {
-  margin-right: 0; /* Removes margin from the last button */
+  margin-right: 0;
+  /* Removes margin from the last button */
 }
 </style>

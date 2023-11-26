@@ -56,7 +56,7 @@ export default {
           contentType: '', // Adjust based on your content type
           content: this.postContent,
           published: new Date().toISOString(),
-          owner: 'UserID', // Adjust with your actual owner id
+          author: 'UserID', // Adjust with your actual owner id
           categories: '', // Adjust as per your requirement
           count: 0 // Adjust as per your requirement
         };

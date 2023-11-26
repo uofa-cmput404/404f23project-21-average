@@ -95,6 +95,7 @@ export default {
 
   async created() {
     const authorStore = useAuthorStore();
+    axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
     try {
       axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
       const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
@@ -116,6 +117,23 @@ export default {
 
 
   methods: {
+    async getLikes() {
+      const authorStore = useAuthorStore();
+      // Implement the logic to get likes
+      // Example:
+      try {
+        console.log("likessssss")
+        const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/likes/');
+        if (response.status === 200) {
+          console.log('109', response.data)
+          this.likeCount = response.data.count;
+          this.liked = response.data.userLiked; // Assuming the API returns if the current user liked the post
+        }
+        console.log(response.data)
+      } catch (error) {
+        console.error('Error while fetching likes:', error);
+      }
+    },
     async toggleLike() {
       const authorStore = useAuthorStore();
       try {
