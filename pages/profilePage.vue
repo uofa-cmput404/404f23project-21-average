@@ -38,7 +38,7 @@
         
         <div class="posts-section">
           <h3>MY POSTS:</h3>
-          <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :userId="post.owner.username"
+          <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :userId="post.author.username"
           :postImage="post.image" :postID="post.id" />
         </div>
       </div>

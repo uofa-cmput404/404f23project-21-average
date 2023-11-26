@@ -26,6 +26,7 @@ class AuthorListViewSet(generics.ListAPIView):
     )
     def get(self, request, *args, **kwargs):
         authors = Author.objects.filter(type="author").all()
+        print(authors)
         # check request origin
         all_authors = json.loads(JSONRenderer().render(AuthorSerializer(authors, many=True).data).decode('utf-8'))
         if isFrontendRequest(request):
@@ -36,7 +37,6 @@ class AuthorListViewSet(generics.ListAPIView):
             for author in remote_authors1.json()["items"]:
                 author["github"] = ""
                 all_authors.append(serializeTeam1Author(author))
-        
         page = self.paginate_queryset(all_authors)
         return self.get_paginated_response(page)
 
