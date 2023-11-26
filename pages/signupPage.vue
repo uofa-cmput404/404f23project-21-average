@@ -75,21 +75,12 @@ const register = async () => {
       ]
     }
     try {
-      // axios.defaults.headers.common["Access-Control-Allow-Origin"] = `*`;
-      // axios.defaults.headers.common[
-      //   "Access-Control-Allow-Methods"
-      // ] = `GET, POST, PATCH, PUT, DELETE, OPTIONS`;
-      // axios.defaults.headers.common[
-      //   "Access-Control-Allow-Headers"
-      // ] = `Origin, Content-Type, X-Auth-Token, Access-Control-Allow-Origin, Authorization, X-Requested-With, Accept, Access-Control-Allow-Methods, Access-Control-Allow-Headers, Access-Control-Allow-Credentials`;
-      // const response = await axios.post(authorStore.BASE_URL + '/auth/register/', data)
-      // console.log(response)
       console.log(data)
       const response = await axios.post(authorStore.BASE_URL + '/auth/register/', data)
       // axios.defaults.headers.common['Authorization'] = 'Token ' + response.data.key;
       await authorStore.setAuthToken(response.data.access)
-      await authorStore.setAuthorId(response.data.user.pk)
-      axios.defaults.headers.common['Authorization'] = 'Bearer ' + authorStore.getAuthToken;
+      await authorStore.setAuthorId(btoa(`${data.username}:${data.password1}`))
+      axios.defaults.headers.common['Authorization'] = 'Basic ' + authorStore.getAuthToken;
       const registerResponse = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/', registerData)
       window.location.href = "/homePage";
     } catch (error) {
