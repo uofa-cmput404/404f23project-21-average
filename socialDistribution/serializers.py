@@ -15,7 +15,7 @@ class AuthorSerializer(ModelSerializer):
 class PostSerializer(ModelSerializer):
     author = AuthorSerializer(read_only=True)
     categories = serializers.SerializerMethodField(method_name='get_categories')
-    image = serializers.SerializerMethodField(method_name='get_image_link')
+    # image = serializers.SerializerMethodField(method_name='get_image_link')
 
     class Meta:
         model = Post
@@ -32,10 +32,10 @@ class PostSerializer(ModelSerializer):
         except:
             return []
     
-    def get_image_link(self, obj):
-        if obj.image:
-            return settings.BASEHOST[0:-4] + obj.image.url
-        return None
+    # def get_image_link(self, obj):
+    #     if obj.image:
+    #         return settings.BASEHOST[0:-4] + obj.image.url
+    #     return None
 
 
 class CommentSerializer(ModelSerializer):
