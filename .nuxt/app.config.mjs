@@ -1,10 +1,10 @@
 
-import { updateAppConfig } from '#app/config'
-import { defuFn } from 'defu'
+import { updateAppConfig } from '#app'
+import { defuFn } from '/Users/aryamanraina/404f23project-21-average-1/node_modules/defu/dist/defu.mjs'
 
 const inlineConfig = {
   "nuxt": {
-    "buildId": "dev"
+    "buildId": "test"
   }
 }
 
