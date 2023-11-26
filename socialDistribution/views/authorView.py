@@ -26,11 +26,12 @@ class AuthorListViewSet(generics.ListAPIView):
     )
     def get(self, request, *args, **kwargs):
         authors = Author.objects.filter(type="author").all()
-        print(authors)
+        
         # check request origin
         all_authors = json.loads(JSONRenderer().render(AuthorSerializer(authors, many=True).data).decode('utf-8'))
         if isFrontendRequest(request):
             remote_authors = team1.get("authors/")
+            print(remote_authors.json())
             for author in remote_authors.json()["items"]:
                 all_authors.append(serializeTeam1Author(author))
             remote_authors1 = team2.get("authors/")

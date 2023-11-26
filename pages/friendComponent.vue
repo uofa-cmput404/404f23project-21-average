@@ -41,7 +41,7 @@ export default {
     async checkFollowingStatus() {
       const authorStore = useAuthorStore();
       try {
-        axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+        axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
         const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id + '/');
         if (!(response.status === 400 || response.status === 401)) {
           console.log(response.data);
@@ -55,7 +55,7 @@ export default {
 
     async toggleFollow() {
       const authorStore = useAuthorStore();
-      axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+      axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
       try {
         let response;
         if (this.isFollowing) {

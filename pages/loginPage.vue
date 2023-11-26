@@ -29,7 +29,6 @@ import axios from "axios";
 import { ref } from "vue";
 import { useAuthorStore } from "../stores/authorStore";
 const csrfToken = 'your-csrf-token-here';
-import { storeToRefs } from 'pinia'
 
 const userId = ref('');
 const password = ref('');
@@ -44,7 +43,7 @@ const login = async () => {
 
     const response = await axios.post(authorStore.BASE_URL + '/auth/login/', data)
     console.log(response)
-    await authorStore.setAuthToken(response.data.access)
+    await authorStore.setAuthToken(btoa(`${data.username}:${data.password}`))
     await authorStore.setAuthorId(response.data.user.pk)
     window.location.href = "/homePage";
   } catch (error) {

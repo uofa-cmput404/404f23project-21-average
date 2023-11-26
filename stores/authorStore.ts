@@ -34,7 +34,6 @@ export const useAuthorStore = defineStore({
       localStorage.setItem("authorId", id);
     },
     async setAuthToken(token: string) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       this.authToken = token;
       localStorage.setItem("token", token);
     },
