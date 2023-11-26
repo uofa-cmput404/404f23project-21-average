@@ -53,6 +53,7 @@ class FollowSerializer(ModelSerializer):
 
 
 class PostLikeSerializer(ModelSerializer):
+    author = AuthorSerializer(read_only=True)
     
     class Meta:
         model = PostLike
@@ -62,6 +63,7 @@ class PostLikeSerializer(ModelSerializer):
 
 
 class CommentLikeSerializer(ModelSerializer):
+    author = AuthorSerializer(read_only=True)
 
     class Meta:
         model = CommentLike

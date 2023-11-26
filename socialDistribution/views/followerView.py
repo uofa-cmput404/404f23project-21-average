@@ -5,8 +5,9 @@ from socialDistribution.serializers import AuthorSerializer, FollowSerializer
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
+from ..util import isFrontendRequest, team1, team2, serializeTeam1Post, serializeTeam1Author
 from drf_spectacular.utils import extend_schema
-from socialDistribution.util import addToInbox
+from ..util import addToInbox
 
 
 class FollowViewSet(generics.ListAPIView):
@@ -20,7 +21,21 @@ class FollowViewSet(generics.ListAPIView):
         description='[local, remote] get a list of authors who are AUTHOR_ID’s followers'
     )
     def get(self, request, author_pk, format=None):
-        author = Author.objects.get(pk=author_pk)
+        try:
+            author = Author.objects.get(pk=author_pk)
+        except:
+            remote_author = team1.get(f"authors/{author_pk}")
+            if remote_author.status_code == 200:
+                likes = team1.get(f"authors/{author_pk}/followers/")
+                if likes.status_code == 200:
+                    return Response(likes.json())
+            # try to find the author on team2
+            remote_author = team2.get(f"authors/{author_pk}")
+            if remote_author.status_code == 200:
+                likes = team2.get(f"authors/{author_pk}/followers/")
+                if likes.status_code == 200:
+                    return Response(likes.json())
+            return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
         followers = author.followers.filter(status="Accepted").all()
         # turn followers queryset into a list of authors
         authors = []
@@ -39,7 +54,7 @@ class FollowDetailViewSet(generics.GenericAPIView):
     
     @extend_schema(
         tags=['Followers'],
-        description='check if FOREIGN_AUTHOR_ID is a follower of AUTHOR_ID'
+        description='GET [local, remote] check if FOREIGN_AUTHOR_ID is a follower of AUTHOR_ID'
     )
     def get(self, request, author_pk, foreign_author_pk, format=None):
         # return true if foreign_author is a follower of author
