@@ -87,7 +87,7 @@ def serializeTeam1Author(author):
 
 def serializeTeam1Post(post):
     return {
-        "id": post["id"],
+        "id": post["id"].split('/')[-1],
         "title": post["title"],
         "type": "post",
         "source": post["source"],

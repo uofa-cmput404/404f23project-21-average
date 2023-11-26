@@ -6,6 +6,7 @@ from socialDistribution.views.githubView import GitHubView
 from socialDistribution.views.inboxView import InboxItemView
 from socialDistribution.views.likesView import AddLikeToCommentView, AddLikeToPostView, GetAllAuthorLikes
 from socialDistribution.views.postView import ImageViewSet, PostList, PostDetail
+from socialDistribution.views.streamPostsView import StreamPostList
 
 # The API URLs are now determined automatically by the router.
 urlpatterns = [
@@ -23,7 +24,7 @@ urlpatterns = [
          PostDetail.as_view(), name='posts-detail'),
      path('posts/<slug:post_pk>/image/',
          ImageViewSet.as_view(), name='image'),
-     # path('posts', PublicPostList.as_view(), name='public-posts'),
+     path('uthors/<slug:author_pk>/posts/stream', StreamPostList.as_view(), name='public-posts'),
 
     # comments
     path('authors/<slug:author_pk>/posts/<slug:post_pk>/comments/',

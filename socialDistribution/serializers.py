@@ -74,9 +74,9 @@ class CommentLikeSerializer(ModelSerializer):
 
 class InboxSerializer(ModelSerializer):
     author = AuthorSerializer(read_only=True)
-
+    item = serializers.JSONField()
     class Meta:
         model = Inbox
-        fields = ['id', 'author', 'items', 'timestamp']
+        fields = ['id', 'author', 'item', 'timestamp']
         read_only_fields = ['id', 'timestamp', 'author']
 
