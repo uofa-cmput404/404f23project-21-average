@@ -24,7 +24,7 @@ urlpatterns = [
          PostDetail.as_view(), name='posts-detail'),
      path('posts/<slug:post_pk>/image/',
          ImageViewSet.as_view(), name='image'),
-     path('uthors/<slug:author_pk>/posts/stream', StreamPostList.as_view(), name='public-posts'),
+     path('authors/<slug:author_pk>/posts/stream', StreamPostList.as_view(), name='public-posts'),
 
     # comments
     path('authors/<slug:author_pk>/posts/<slug:post_pk>/comments/',
