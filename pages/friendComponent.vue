@@ -5,9 +5,6 @@
       <button @click="toggleFollow">
         {{ isFollowing ? 'Unfollow' : 'Follow' }}
       </button>
-      <button @click="toggleFriendship">
-        {{ isFriend ? 'Remove Friend' : 'Add Friend' }}
-      </button>
     </div>
   </div>
 </template>
@@ -43,7 +40,7 @@ export default {
       try {
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
         const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id + '/');
-        if (!(response.status === 400 || response.status === 401)) {
+        if (!(response.status === 400 || response.status === 401 || response.status===500)) {
           console.log(response.data);
           this.isFollowing = response.data;
 
