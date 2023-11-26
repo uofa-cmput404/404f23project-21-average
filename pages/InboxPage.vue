@@ -5,17 +5,19 @@
       <div class="header">INBOX</div>
       <div class="notification-list">
         <div v-for="notification in notifications" :key="notification.id" class="notification-item">
-          <h3>{{ notification.title }}</h3>
+          <h3>{{ notification.type }}</h3>
           <p>{{ notification.message }}</p>
-          
         </div>
       </div>
     </div>
   </div>
 </template>
 
+
 <script>
+import axios from 'axios';
 import SidebarComponent from './sidebar.vue';
+
 export default {
   name: "InboxApp",
   components: {
@@ -23,18 +25,31 @@ export default {
   },
   data() {
     return {
-      notifications: [
-        { id: 1, title: "New Message", message: "You have a new message from User_1" },
-        { id: 2, title: "New Message", message: "You have a new message from User_2" },
-        { id: 3, title: "New Message", message: "You have a new message from User_3" }
-
-        // ... other notifications
-      ]
+      notifications: [] // This will hold the fetched notifications
     };
   },
-  
+
+  async created() {
+    const authorStore = useAuthorStore();
+    try {
+      axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
+      const response = await axios.get(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/inbox/?page_size=100`);
+
+      // Assuming the response data is an array of notifications
+      this.notifications = response.data.map(notification => {
+        return {
+          id: notification.id,
+          type: notification.author.displayName, // or another relevant field
+          message: notification.items // or format the message as per your requirement
+        };
+      });
+    } catch (error) {
+      console.error('Error fetching inbox items:', error);
+    }
+  }
 };
 </script>
+
   
   <style scoped>
   .app-container {
