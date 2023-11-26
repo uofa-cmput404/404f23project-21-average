@@ -5,8 +5,14 @@
       <div class="header">INBOX</div>
       <div class="notification-list">
         <div v-for="notification in notifications" :key="notification.id" class="notification-item">
+          <div v-if="notification.type ==='post'">
           <h3>{{ notification.type }}</h3>
-          <p>{{ notification.message }}</p>
+          <h3>{{ notification.author.username }}</h3>
+          <p>{{ notification.content }}</p>
+        </div>
+          <div v-if="notification.type === 'like'">
+            <h3>{{ notification.author }} liked your post</h3>
+            </div>
         </div>
       </div>
     </div>
@@ -25,7 +31,8 @@ export default {
   },
   data() {
     return {
-      notifications: [] // This will hold the fetched notifications
+      notifications: [], // This will hold the fetched notifications
+      likes:[]
     };
   },
 
@@ -36,13 +43,8 @@ export default {
       const response = await axios.get(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/inbox/?page_size=100`);
 
       // Assuming the response data is an array of notifications
-      this.notifications = response.data.map(notification => {
-        return {
-          id: notification.id,
-          type: notification.author.displayName, // or another relevant field
-          message: notification.items // or format the message as per your requirement
-        };
-      });
+      this.notifications = response.data.items;
+      console.log(this.notifications)
     } catch (error) {
       console.error('Error fetching inbox items:', error);
     }
