@@ -41,6 +41,7 @@ class Post(models.Model):
     categories = models.TextField(blank=True, null=True, default="web")
     count = models.IntegerField(default=0)
     visibility = models.CharField(max_length=255, default="PUBLIC")
+    # unlisted post is a public post
     unlisted = models.BooleanField(default=False)
 
     # Posts can be links to images.

@@ -1,6 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 from .models import Post, Comment, Follow, PostLike, CommentLike, Inbox, Author
 from rest_framework import serializers
+from django.conf import settings
 
 
 class AuthorSerializer(ModelSerializer):
@@ -14,6 +15,7 @@ class AuthorSerializer(ModelSerializer):
 class PostSerializer(ModelSerializer):
     author = AuthorSerializer(read_only=True)
     categories = serializers.SerializerMethodField(method_name='get_categories')
+    # image = serializers.SerializerMethodField(method_name='get_image_link')
 
     class Meta:
         model = Post
@@ -29,6 +31,11 @@ class PostSerializer(ModelSerializer):
             return obj.categories.split(",")
         except:
             return []
+    
+    # def get_image_link(self, obj):
+    #     if obj.image:
+    #         return settings.BASEHOST[0:-4] + obj.image.url
+    #     return None
 
 
 class CommentSerializer(ModelSerializer):
@@ -74,9 +81,9 @@ class CommentLikeSerializer(ModelSerializer):
 
 class InboxSerializer(ModelSerializer):
     author = AuthorSerializer(read_only=True)
-
+    item = serializers.JSONField()
     class Meta:
         model = Inbox
-        fields = ['id', 'author', 'items', 'timestamp']
+        fields = ['id', 'author', 'item', 'timestamp']
         read_only_fields = ['id', 'timestamp', 'author']
 
