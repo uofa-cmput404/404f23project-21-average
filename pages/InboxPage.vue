@@ -16,10 +16,13 @@
             <div v-if="notification.type === 'follow'">
               <h3>{{ notification.summary }}</h3>
               <div class="button-group">
-              <button @click="toggleAccept(index)">
+                <button @click="toggleAccept(index)">
                   {{ isAccepted ? 'Remove Follower' : 'Accept' }}
-              </button>
+                </button>
+              </div>
             </div>
+            <div v-if="notification.type === 'comment'">
+              <h3>{{ notification.author.username }} commented "{{ notification.comment }}" on your post</h3>
             </div>
           </div>
           <h4 v-if="notification.type === 'post'" class="notification-type">{{ notification.type.toUpperCase() }}</h4>
