@@ -90,10 +90,6 @@ class AuthorDetailView(APIView):
             #     author["github"] = ""
             #     return Response(serializeTeam1Author(author))
             return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
-        # author = get_object_or_404(Author, pk=author_pk)
-        # serializer_context = {
-        #     'request': request,
-        # }
         serializer = AuthorSerializer(author)
         return Response(serializer.data)
 

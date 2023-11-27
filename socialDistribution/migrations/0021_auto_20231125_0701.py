@@ -32,7 +32,7 @@ def generate_nodes(apps, schema_editor):
         if not user.objects.filter(username=connectedNode).exists():
             logger.info("Creating new node user")
             node = user.objects.create_user(
-            username=connectedNode, password=settings.DEFAULT_AUTHORS_PASSWORD, type="node"
+            username=connectedNode, password=settings.DEFAULT_AUTHORS_PASSWORD, type="node", 
             )
 
             node.save()
@@ -47,7 +47,7 @@ def generate_default_user(apps, schema_editor):
         if not user.objects.filter(username=default_username).exists():
             logger.info("Creating new default user")
             default_user = user.objects.create_user(
-                username=default_username, password=settings.DEFAULT_AUTHORS_PASSWORD
+                username=default_username, password=settings.DEFAULT_AUTHORS_PASSWORD, host=settings.BASEHOST, type="author"
             )
             default_user.save()
         else:
