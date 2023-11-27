@@ -13,12 +13,12 @@ from rest_framework.renderers import JSONRenderer
 from ..util import isFrontendRequest, serializeTeam1Author
 
 
-class AuthorListViewSet(generics.GenericAPIView):
+class AuthorListViewSet(generics.ListAPIView):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = JsonObjectPaginator
-    paginate_by_param = 'page_size'
+    # paginate_by_param = 'page_size'
     
     @extend_schema(
         tags=['Authors'],
