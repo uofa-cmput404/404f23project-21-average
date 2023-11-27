@@ -73,7 +73,6 @@ class FollowingViewSet(generics.ListAPIView):
             #         return Response(likes.json())
             return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
         following = author.following.filter(status="Accepted").all()
-        print(following)
         # turn followers queryset into a list of authors
         authors = []
         for follower in following:
