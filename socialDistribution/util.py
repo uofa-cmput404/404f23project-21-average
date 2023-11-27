@@ -58,10 +58,10 @@ def isFriend(author, foreign_author):
 
 
 def isFrontendRequest(request):
-    # return False
-    if request.user.username in CONNECTED:
-        return False
-    return True
+    return False
+    # if request.user.username in CONNECTED:
+    #     return False
+    # return True
     # try:
     #     # TODO: check prod swagger
     #     if request.headers['Host'] in settings.ALLOWED_HOSTS:

@@ -18,7 +18,6 @@ class AuthorListViewSet(generics.ListAPIView):
     serializer_class = AuthorSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = JsonObjectPaginator
-    # paginate_by_param = 'page_size'
     
     @extend_schema(
         tags=['Authors'],
@@ -33,13 +32,12 @@ class AuthorListViewSet(generics.ListAPIView):
             remote_authors = team1.get("authors/")
             for author in remote_authors.json()["items"]:
                 all_authors.append(serializeTeam1Author(author))
-            remote_authors1 = team2.get("authors/")
-            for author in remote_authors1.json()["items"]:
-                author["github"] = ""
-                all_authors.append(serializeTeam1Author(author))
+            # remote_authors1 = team2.get("authors/")
+            # for author in remote_authors1.json()["items"]:
+            #     author["github"] = ""
+            #     all_authors.append(serializeTeam1Author(author))
         page = self.paginate_queryset(all_authors)
         return self.get_paginated_response(page)
-
 
 
 class NodeListViewSet(generics.ListAPIView):

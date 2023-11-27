@@ -136,7 +136,7 @@
       async toggleLike() {
         const authorStore = useAuthorStore();
         try {
-          axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+          axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
           if (this.liked) {
             // Logic to unlike the post
             await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/likes/');
