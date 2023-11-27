@@ -12,7 +12,7 @@
       <div class="posts-feed">
         <h2>Posts</h2>
         <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :userId="post.author.username"
-          :postImage="post.image" :postID="post.id" :isPublic = "post.visibility" />
+          :postImage="post.image" :postID="post.id" :isPublic = "post.visibility" :contentType="post.contentType" />
       </div>
       <SidebarComponent />
     </div>
@@ -60,7 +60,7 @@
 </template>
 
 
-<script lang="ts">
+<script>
 import { useAuthorStore } from '../stores/authorStore';
 import PostComponent from './postComponent.vue';
 import SidebarComponent from './sidebar.vue';
@@ -75,12 +75,12 @@ export default {
   },
 
   computed: {
-    renderedContent() {
-      if (this.contentType === 'text/markdown') {
-        return marked(this.postContent);
-      }
-      return this.postContent; // For plain text, return as-is
-    },
+    // renderedContent() {
+    //   if (this.contentType === 'text/markdown') {
+    //     return marked(this.postContent);
+    //   }
+    //   return this.postContent; // For plain text, return as-is
+    // },
   },
 
   data() {
@@ -98,7 +98,6 @@ export default {
     const authorStore = useAuthorStore();
     axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
     const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/allposts/stream/?page_size=100');
-    console.log(response.data.results)
     this.posts = response.data.results;
   },
   methods: {

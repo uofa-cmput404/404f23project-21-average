@@ -12,6 +12,7 @@
         </div>
         
         <div class="post-content">
+          <div v-html="renderedContent"></div>
           <div>
             <img v-if="postImage" :src="postImage" >
   
@@ -57,6 +58,7 @@
   import commentComponent from './commentComponent.vue';
   import axios from 'axios'
   import { useAuthorStore } from '../stores/authorStore';
+  import * as marked from 'marked'
   export default {
     components: {
       commentComponent,
@@ -75,6 +77,7 @@
       postContent: String,
       postImage: String,
       isPublic: String,
+      contentType: String,
     },
   
     data() {
@@ -88,9 +91,25 @@
         isPublic:this.isPublic,
       };
     },
+
+    computed: {
+    // renderedContent() {
+    //   if (this.contentType === 'text/markdown') {
+    //     return marked(this.postContent);
+    //   }
+    //   return this.postContent; // For plain text, return as-is
+    // },
+  },
     async mounted() {
       const authorStore = useAuthorStore();
       this.postImage = authorStore.BASE_URL.split('/api')[0] + this.postImage;
+      const response = await axios.get(authorStore.BASE_URL + '/posts/' + authorStore.getAuthorId + '/liked/')
+      console.log(response.data)
+      for(let i = 0; i<response.length; i++){
+        if (response.data[i] === postID){
+          liked=true
+        }
+      }
     },
   
     async created() {
@@ -98,7 +117,6 @@
       try {
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
         const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
-        console.log(this.isPublic)
         this.postMainContent = response.data.results['content'] // Updat
         // Fetch post details
         if (response.status === 200) {
@@ -128,7 +146,6 @@
             this.likeCount = response.data.count;
             this.liked = response.data.userLiked; // Assuming the API returns if the current user liked the post
           }
-          console.log(response.data)
         } catch (error) {
           console.error('Error while fetching likes:', error);
         }
@@ -196,7 +213,6 @@
         const response = await axios.delete(`${authorStore.BASE_URL}/authors/${authorId}/posts/${postId}`);
   
         if (response.status === 200 || response.status === 204) {
-          console.log('Post deleted successfully');
           // Handle successful deletion, like updating UI or redirecting
         }
       } catch (error) {
