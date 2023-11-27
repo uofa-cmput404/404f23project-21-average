@@ -52,6 +52,7 @@ class StreamPostList(generics.ListAPIView):
         # get posts from other servers
         if isFrontendRequest(request):
             team1_posts = team1.get(f"authors/{author_pk}/posts/")
+            print(team1_posts.json())
             if team1_posts.status_code == 200:
                 for post in team1_posts.json()["items"]:
                     all_posts.append(serializeTeam1Post(post))
