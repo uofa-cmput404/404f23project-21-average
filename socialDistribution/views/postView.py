@@ -35,7 +35,7 @@ class PostList(generics.ListCreateAPIView):
         author = Author.objects.get(pk=author_pk)
 
         # get posts from author, their friends, and public posts
-        authorPosts = Post.objects.filter(author=author)
+        authorPosts = Post.objects.filter(author=author, type="post")
 
         all_posts = PostSerializer(authorPosts, many=True).data
 
