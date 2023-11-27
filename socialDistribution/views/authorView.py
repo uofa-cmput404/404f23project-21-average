@@ -18,7 +18,7 @@ class AuthorListViewSet(generics.ListAPIView):
     serializer_class = AuthorSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = JsonObjectPaginator
-    paginate_by_param = 'page_size'
+    # paginate_by_param = 'page_size'
     
     @extend_schema(
         tags=['Authors'],
@@ -39,6 +39,7 @@ class AuthorListViewSet(generics.ListAPIView):
                 all_authors.append(serializeTeam1Author(author))
         page = self.paginate_queryset(all_authors)
         return self.get_paginated_response(page)
+
 
 
 class NodeListViewSet(generics.ListAPIView):
@@ -98,3 +99,14 @@ class AuthorDetailView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
+
+    @extend_schema(
+        tags=['Authors'],
+        description='Delete author'
+    )
+    def delete(self, request, author_pk, *args, **kwargs):
+        author = Author.objects.get(pk=author_pk)
+        print(author.id)
+        # delete the author from the database
+        author.delete()
+        return Response(status=204)

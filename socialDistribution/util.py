@@ -3,6 +3,7 @@ import json
 from requests_toolbelt import sessions
 from requests.auth import HTTPBasicAuth
 import base64
+import uuid
 
 CONNECTED = ["vibely", "CtrlAltDefeat"]
 team1 = sessions.BaseUrlSession(base_url='https://vibely-23b7dc4c736d.herokuapp.com/api/')
@@ -49,16 +50,18 @@ def sendToFriendsInbox(author, data):
 
 
 def isFriend(author, foreign_author):
+    if author.id == foreign_author.id:
+        return True
     if author.followers.filter(follower=foreign_author).exists():
         return True
     return False
 
 
 def isFrontendRequest(request):
-    # return False
-    if request.user.username in CONNECTED:
-        return False
-    return True
+    return False
+    # if request.user.username in CONNECTED:
+    #     return False
+    # return True
     # try:
     #     # TODO: check prod swagger
     #     if request.headers['Host'] in settings.ALLOWED_HOSTS:
@@ -72,7 +75,7 @@ def isFrontendRequest(request):
 
 def serializeTeam1Author(author):
     return {
-        "id": author["id"].split('/')[-1],
+        "id": uuid.UUID(hex=author["id"].split('/')[-1]),
         "host": author["host"],
         "displayName": author["displayName"],
         "github": author["github"],

@@ -52,25 +52,39 @@ class CommentSerializer(ModelSerializer):
 class FollowSerializer(ModelSerializer):
     following = AuthorSerializer(read_only=True)
     follower = AuthorSerializer(read_only=True)
+    summary = serializers.SerializerMethodField(method_name='get_summary')
 
     class Meta:
         model = Follow
-        fields = ['following', 'follower', 'status', 'id']
-        read_only_fields = ['following', 'follower', 'id', 'status']
+        fields = ['following', 'follower', 'status', 'id', 'summary']
+        read_only_fields = ['following', 'follower', 'id', 'status', 'summary']
+    
+    def get_summary(self, obj):
+        if obj.summary:
+            return obj.summary
+        return f"{obj.follower.displayName} wants to follow {obj.following.displayName}"
 
 
 class PostLikeSerializer(ModelSerializer):
     author = AuthorSerializer(read_only=True)
+    object = serializers.SerializerMethodField(method_name='get_object')
     
     class Meta:
         model = PostLike
         fields = ['published', 'author', 'post', 'id', 'type', 'summary', 'context', 'object']
         read_only_fields = ['author', 'post', 'id', 'published', 'type', 'summary', 'context', 'object']
         ordering = ['-id']
+    
+    def get_object(self, obj):
+        if obj.post:
+            return f"{settings.BASEHOST}/authors/{obj.author.id}/posts/{obj.post.id}"
+        else:
+            return obj.object
 
 
 class CommentLikeSerializer(ModelSerializer):
     author = AuthorSerializer(read_only=True)
+    object = serializers.SerializerMethodField(method_name='get_object')
 
     class Meta:
         model = CommentLike
@@ -78,12 +92,19 @@ class CommentLikeSerializer(ModelSerializer):
         ordering = ['-id']
         read_only_fields = ['author', 'comment', 'id', 'published', 'type', 'summary', 'context', 'object']
 
+    def get_object(self, obj):
+        if obj.comment:
+            return f"{settings.BASEHOST}/authors/{obj.author.id}/posts/{obj.comment.post.id}/comments/{obj.comment.id}"
+        else:
+            return obj.object
+
 
 class InboxSerializer(ModelSerializer):
     author = AuthorSerializer(read_only=True)
-    item = serializers.JSONField()
+    items = serializers.JSONField()
+
     class Meta:
         model = Inbox
-        fields = ['id', 'author', 'item', 'timestamp']
+        fields = ['id', 'author', 'items', 'timestamp']
         read_only_fields = ['id', 'timestamp', 'author']
 

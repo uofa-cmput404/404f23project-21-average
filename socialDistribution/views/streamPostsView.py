@@ -37,8 +37,9 @@ class StreamPostList(generics.ListAPIView):
         author = Author.objects.get(pk=author_pk)
 
         # get posts from author, their friends, and public posts
+        # TODO: check unlisted posts
         authorPosts = Post.objects.filter(author=author)
-        publicPosts = Post.objects.filter(visibility="PUBLIC")
+        publicPosts = Post.objects.filter(visibility="PUBLIC", unlisted=False)
         
         authorFriends = FollowSerializer(author.following.filter(status="Accepted"), many=True).data
         authorFriends = [(Author.objects.get(pk=friend["following"]["id"])) for friend in authorFriends]
@@ -86,9 +87,10 @@ class StreamComments(generics.ListAPIView):
         if post.visibility == "PUBLIC":
             comments = Comment.objects.filter(post=post_pk)
         elif post.visibility == "FRIENDS" and isFriend(author, post.author):
-            comments = Comment.objects.filter(post=post_pk)
+            comments = Comment.objects.filter(post=post_pk, type="comment")
 
         # if isFrontendRequest(request):
+        # TODO: check duplicate comment returns 
         all_comments = json.loads(JSONRenderer().render(CommentSerializer(comments, many=True).data).decode('utf-8'))
         team1_comments = team1.get(f"authors/{author_pk}/posts/{post_pk}/comments")
         if team1_comments.status_code == 200:
@@ -99,6 +101,7 @@ class StreamComments(generics.ListAPIView):
                     "comment": comment["comment"],
                     "contentType": comment["contentType"],
                     "published": comment["published"],
+                    "type": "NodeComment",
                     # "post": comment["post"],
                 })
         # team2_comments = team2.get(f"authors/{author_pk}/posts/{post_pk}/comments")

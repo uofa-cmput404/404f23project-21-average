@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "allauth.account",
     "dj_rest_auth",
     "corsheaders",
+    'allauth.socialaccount',
     "dj_rest_auth.registration",
     # 'django.contrib.postgres',
     # 'django_postgres_extensions'

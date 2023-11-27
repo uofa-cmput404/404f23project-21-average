@@ -60,28 +60,29 @@ const register = async () => {
       username: username.value,
       password1: password.value,
       password2: password.value,
+
     }
-    const registerData ={
-      host: "string",
+    const registerData = {
       displayName: username.value,
       github: githubId.value,
-      image: "string",
       first_name: firstName.value,
       last_name: lastName.value,
+      password1: password.value,
+      password2: password.value,
       email: email.value,
       username: username.value,
-      groups: [
-        0
-      ]
+      is_active: true
     }
     try {
       console.log(data)
       const response = await axios.post(authorStore.BASE_URL + '/auth/register/', registerData)
       // axios.defaults.headers.common['Authorization'] = 'Token ' + response.data.key;
-      await authorStore.setAuthToken(response.data.access)
-      await authorStore.setAuthorId(btoa(`${data.username}:${data.password1}`))
-      axios.defaults.headers.common['Authorization'] = 'Basic ' + authorStore.getAuthToken;
-      // const registerResponse = await axios.post(authorStore.BASE_URL + '/auth/' + authorStore.getAuthorId + '/', registerData)
+      authorStore.setAuthToken(btoa(`${data.username}:${data.password1}`))
+      console.log(response.data)
+      authorStore.setAuthorId(response.data.user.pk)
+      console.log(authorStore.getAuthorId)
+      // axios.defaults.headers.common['Authorization'] = 'Basic ' + authorStore.getAuthToken;
+      // const registerResponse = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/', registerData)
       window.location.href = "/homePage";
     } catch (error) {
       console.log(error)
