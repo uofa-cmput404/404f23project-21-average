@@ -46,6 +46,42 @@ class FollowViewSet(generics.ListAPIView):
         return self.get_paginated_response(AuthorSerializer(page, many=True).data)
 
 
+class FollowingViewSet(generics.ListAPIView):
+    queryset = Follow.objects.all()
+    serializer_class = FollowSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = Pagination
+    
+    @extend_schema(
+        tags=['Followers'],
+        description='[local, remote] get a list of authors who are AUTHOR_ID’s followers'
+    )
+    def get(self, request, author_pk, format=None):
+        try:
+            author = Author.objects.get(pk=author_pk)
+        except:
+            remote_author = team1.get(f"authors/{author_pk}")
+            if remote_author.status_code == 200:
+                likes = team1.get(f"authors/{author_pk}/followers/")
+                if likes.status_code == 200:
+                    return Response(likes.json())
+            # try to find the author on team2
+            remote_author = team2.get(f"authors/{author_pk}")
+            if remote_author.status_code == 200:
+                likes = team2.get(f"authors/{author_pk}/followers/")
+                if likes.status_code == 200:
+                    return Response(likes.json())
+            return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+        following = author.following.filter(status="Accepted").all()
+        # turn followers queryset into a list of authors
+        authors = []
+        for follower in following:
+            authors.append(Author.objects.get(pk=follower.follower.id))
+        
+        page = self.paginate_queryset(authors)
+        return self.get_paginated_response(AuthorSerializer(page, many=True).data)
+
+
 class FollowDetailViewSet(generics.GenericAPIView):
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
