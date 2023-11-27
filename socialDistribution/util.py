@@ -17,11 +17,14 @@ team2.headers['Authorization'] = 'Basic Y3Jvc3Mtc2VydmVyOnBhc3N3b3Jk'
 
 
 def addToInbox(author, data):
-    inbox = Inbox.objects.get(author=author)
-    items = json.loads(inbox.items)
-    items.append(json.dumps(data, default=str))
-    inbox.items = json.dumps(items)
-    inbox.save()
+    if author.type == "NodeAuthor":
+        secondInstance.post(f"authors/{author.id}/inbox/", json={"items":data})
+    else:
+        inbox = Inbox.objects.get(author=author)
+        items = json.loads(inbox.items)
+        items.append(json.dumps(data, default=str))
+        inbox.items = json.dumps(items)
+        inbox.save()
 
 
 def sendToEveryonesInbox(data):
