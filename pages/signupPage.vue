@@ -76,12 +76,12 @@ const register = async () => {
     }
     try {
       console.log(data)
-      const response = await axios.post(authorStore.BASE_URL + '/auth/register/', data)
+      const response = await axios.post(authorStore.BASE_URL + '/auth/register/', registerData)
       // axios.defaults.headers.common['Authorization'] = 'Token ' + response.data.key;
       await authorStore.setAuthToken(response.data.access)
       await authorStore.setAuthorId(btoa(`${data.username}:${data.password1}`))
       axios.defaults.headers.common['Authorization'] = 'Basic ' + authorStore.getAuthToken;
-      const registerResponse = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/', registerData)
+      // const registerResponse = await axios.post(authorStore.BASE_URL + '/auth/' + authorStore.getAuthorId + '/', registerData)
       window.location.href = "/homePage";
     } catch (error) {
       console.log(error)
