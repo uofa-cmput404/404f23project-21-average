@@ -3,7 +3,7 @@
       <!-- Post Component -->
       <div class="post">
         <div class="post-status-icon">
-          <i v-if="isPublic" class="bi bi-globe"></i> <!-- Public Icon -->
+          <i v-if="isPublic === 'PUBLIC' " class="bi bi-globe"></i> <!-- Public Icon -->
           <i v-else class="bi bi-lock-fill"></i> <!-- Private Icon -->
         </div>
         <div class="user-info">
@@ -74,6 +74,7 @@
       postID: String,
       postContent: String,
       postImage: String,
+      isPublic: String,
     },
   
     data() {
@@ -84,7 +85,7 @@
         postMainContent: this.postContent,
         editedPostContent: '',  // initialized from the prop
         postImage: this.postImage,
-        isPublic: false  // You can set the initial value as needed
+        isPublic:this.isPublic,
       };
     },
     async mounted() {
@@ -97,7 +98,7 @@
       try {
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
         const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
-        console.log(response)
+        console.log(this.isPublic)
         this.postMainContent = response.data.results['content'] // Updat
         // Fetch post details
         if (response.status === 200) {
@@ -124,7 +125,6 @@
           axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
           const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/likes/');
           if (response.status === 200) {
-            console.log('109', response.data)
             this.likeCount = response.data.count;
             this.liked = response.data.userLiked; // Assuming the API returns if the current user liked the post
           }
@@ -185,7 +185,6 @@
           }
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
         const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID+ "/", formData);
-        console.log(response)
       },
       async deletePost() {
       const authorStore = useAuthorStore();

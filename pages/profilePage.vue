@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import PostComponent from './postComponent.vue';
+import PostComponent from './userPost.vue';
 import SidebarComponent from './sidebar.vue';
 import commentComponent from './commentComponent.vue';
 import axios from 'axios';
@@ -149,7 +149,9 @@ export default {
   },
   async fetchFollowing() {
     const authorStore = useAuthorStore();
-    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/');
+    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/following/');
+    this.following = response.data.results;
+    console.log(this.following)
     this.showFollowingPopup = true;
   },
 

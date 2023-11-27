@@ -19,7 +19,7 @@
           </div>
   
           <div class="post-actions">
-            <button @click="toggleLike">{{ liked ? 'Unlike' : 'Like' }}</button>
+            <span>likes:{{ likeCount }}</span>
             <button @click="toggleCommentBox">Comment</button>
             <button class='edit' @click="showEditPost = !showEditPost">Edit</button>
           </div>
