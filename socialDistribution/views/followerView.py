@@ -97,7 +97,7 @@ class FollowDetailViewSet(generics.GenericAPIView):
         author = Author.objects.get(pk=author_pk)
         foreign_author = Author.objects.get(pk=foreign_author_pk)
         follow = Follow.objects.filter(following=foreign_author, follower=author)
-        if follow.status == "Accepted":
+        if author and foreign_author and follow and follow[0].status == "Accepted":
             return Response(True)
         return Response(False)
     
@@ -122,8 +122,22 @@ class FollowDetailViewSet(generics.GenericAPIView):
         description='Send FOREIGN_AUTHOR_ID a follow request from AUTHOR_ID (must be authenticated)'
     )
     def put(self, request, author_pk, foreign_author_pk, format=None):
+        # PUT http://127.0.0.1:8000/api/authors/2c4733b5-235a-410a-975e-d8422aa19609/followers/87aac38e-48d4-489e-9da9-9f1364baa812/ 
         author = Author.objects.get(pk=author_pk)
         foreign_author = Author.objects.get(pk=foreign_author_pk)
+        if not foreign_author:
+            remote_author = team1.get(f"authors/{foreign_author_pk}")
+            if remote_author.status_code == 200:
+                remoteAuthor = remote_author.json()
+            # send follow request to remote inbox
+            payload = {
+                "type": "follow",
+                "summary": f"{author.username} wants to follow {remoteAuthor['username']}",
+                "actor": serializeTeam1Author(remoteAuthor),
+                "object": AuthorSerializer(author).data,
+            }
+            team1.post(f"author/{foreign_author_pk}/inbox/", payload)
+            return Response({'message': 'Follow Request Sent Successfully'}, status=status.HTTP_201_CREATED)
         
         if author == foreign_author:
             return Response({'message': 'cannot follow yourself'}, status=status.HTTP_400_BAD_REQUEST)
@@ -134,13 +148,12 @@ class FollowDetailViewSet(generics.GenericAPIView):
         # author is requesting to follow foreign_author
         Follow.objects.create(following=foreign_author, follower=author)
 
-        # add follow request to Inbox
         addToInbox(foreign_author, {
-            "type": "follow",
-            "summary": f"{author.username} wants to follow {foreign_author.username}",
-            "actor": AuthorSerializer(foreign_author).data,
-            "object": AuthorSerializer(author).data,
-        })
+                "type": "follow",
+                "summary": f"{author.username} wants to follow {foreign_author.username}",
+                "actor": AuthorSerializer(foreign_author).data,
+                "object": AuthorSerializer(author).data,
+            })
 
         return Response({'message': 'Follow Request Sent Successfully'}, status=status.HTTP_201_CREATED)
     
@@ -151,7 +164,8 @@ class FollowDetailViewSet(generics.GenericAPIView):
     def post(self, request, author_pk, foreign_author_pk, format=None):
         author = Author.objects.get(pk=author_pk)
         foreign_author = Author.objects.get(pk=foreign_author_pk)
-        follow = Follow.objects.get(following=foreign_author, follower=author)
+        
+        follow = Follow.objects.get(following=author, follower=foreign_author, status="Pending")
         if follow:
             follow.status = "Accepted"
             follow.save()

@@ -12,7 +12,8 @@
       <div class="posts-feed">
         <h2>Posts</h2>
         <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :userId="post.author.username"
-          :postImage="post.image" :postID="post.id" :isPublic = "post.visibility" :contentType="post.contentType" />
+          :postImage="post.image" :postID="post.id" :isPublic="post.visibility" :contentType="post.contentType"
+          :remotePost="checkRemote()" />
       </div>
       <SidebarComponent />
     </div>
@@ -98,6 +99,7 @@ export default {
     const authorStore = useAuthorStore();
     axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
     const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/allposts/stream/?page_size=100');
+    console.log(response.data.results)
     this.posts = response.data.results;
   },
   methods: {
@@ -137,6 +139,11 @@ export default {
         console.error('Error while creating post:', error);
       }
       this.showPostPopup = false; // Close the popup after submitting the post
+    },
+
+    async checkRemote(post) {
+      const authorStore = useAuthorStore();
+      return post.origin.split('/')[2] !== authorStore.BASE_URL.split('/')[2];
     },
     async created() {
       const authorStore = useAuthorStore();

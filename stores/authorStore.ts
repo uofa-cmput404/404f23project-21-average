@@ -41,7 +41,7 @@ export const useAuthorStore = defineStore({
       // this.authorId = localStorage.getItem("authorId");
       axios.defaults.headers.common[
         "Authorization"
-      ] = `Bearer ${localStorage.getItem("token")}`;
+      ] = `Basic ${localStorage.getItem("token")}`;
       try {
         const response = await axios.get(`http://127.0.0.1:8000/authors`);
         console.log(response.data);

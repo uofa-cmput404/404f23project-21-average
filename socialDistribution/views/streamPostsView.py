@@ -21,6 +21,26 @@ import json
 from rest_framework.renderers import JSONRenderer
 
 
+def getPostsFromAuthors():
+    res = []
+    team1_authors = team1.get("authors/")
+    print(team1_authors.json())
+    if team1_authors.status_code == 200:
+        for author in team1_authors.json()["items"]:
+            author1 = serializeTeam1Author(author)
+            team1_posts = team1.get(f"authors/{author1['id']}/posts/")
+            if team1_posts.status_code == 200:
+                for post in team1_posts.json()["items"]:
+                    res.append(serializeTeam1Post(post))
+    # team2_posts = team2.get(f"authors/{author_pk}/posts/")
+            # if team2_posts.status_code == 200:
+            #     for post in team2_posts.json()["items"]:
+            #         post["author"]["github"] = ""
+            #         post["categories"] = ""
+            #         all_posts.append(serializeTeam1Post(post))
+    return res
+
+
 class StreamPostList(generics.ListAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
@@ -51,17 +71,7 @@ class StreamPostList(generics.ListAPIView):
 
         # get posts from other servers
         if isFrontendRequest(request):
-            team1_posts = team1.get(f"authors/{author_pk}/posts/")
-            print(team1_posts.json())
-            if team1_posts.status_code == 200:
-                for post in team1_posts.json()["items"]:
-                    all_posts.append(serializeTeam1Post(post))
-            # team2_posts = team2.get(f"authors/{author_pk}/posts/")
-            # if team2_posts.status_code == 200:
-            #     for post in team2_posts.json()["items"]:
-            #         post["author"]["github"] = ""
-            #         post["categories"] = ""
-            #         all_posts.append(serializeTeam1Post(post))
+            all_posts += getPostsFromAuthors()
 
         # add source to posts and return everything
         for post in all_posts:
