@@ -9,7 +9,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 class Author(AbstractUser):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     type = models.CharField(max_length=255, default="author")
     host = models.CharField(max_length=255, blank=True, null=True)
     displayName = models.CharField(max_length=255, blank=True, null=True, default="User")
@@ -28,7 +28,7 @@ def save_user_profile(sender, instance, created, **kwargs):
 
 
 class Post(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     type = models.CharField(max_length=255, default="post")
     title = models.TextField(blank=True, null=True)
     source = models.CharField(max_length=255, blank=True, null=True)
@@ -55,10 +55,10 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     type = models.CharField(max_length=255, default="comment")
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='comments')
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments', null=True)
     comment = models.TextField()
     contentType = models.CharField(max_length=255)
     published = models.DateTimeField(default=datetime.now)
@@ -70,12 +70,14 @@ class Comment(models.Model):
 @receiver(post_save, sender=Comment)
 def updateCommentCount(sender, instance, **kwargs):
     post = instance.post
-    post.count = post.count + 1
-    post.save()
+    if post:
+        post.count = post.count + 1
+        post.save()
 
 
 class Follow(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    summary = models.TextField(blank=True, null=True, default="Follow Request")
     type = models.CharField(max_length=255, default="follow")
     following = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name='followers')
@@ -87,10 +89,10 @@ class Follow(models.Model):
     
 
 class PostLike(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     type = models.CharField(max_length=255, default="like")
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='post_likes')
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes', null=True)
     summary = models.TextField(blank=True, null=True)
     context = models.TextField(blank=True, null=True)
     object = models.TextField(blank=True, null=True)
@@ -102,14 +104,14 @@ class PostLike(models.Model):
 
 
 class CommentLike(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     type = models.CharField(max_length=255, default="like")
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='comment_likes')
     summary = models.TextField(blank=True, null=True)
     context = models.TextField(blank=True, null=True)
     object = models.TextField(blank=True, null=True)
     # post = models.ForeignKey(Post, on_delete=models.CASCADE) # maybe dont need it??
-    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='likes')
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='likes', null=True)
     published = models.DateTimeField(default=datetime.now)
 
     def save(self, *args, **kwargs):
@@ -118,14 +120,14 @@ class CommentLike(models.Model):
 
 
 class ConnectedNode(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     url = models.CharField(max_length=255)
     teamName = models.CharField(max_length=255)
     api_user = models.ForeignKey(Author, on_delete=models.CASCADE)
 
 
 class Inbox(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='inbox')
     items = models.TextField(null=True, blank=True, default=json.dumps(obj=[]))
     timestamp = models.DateTimeField(default=datetime.now)

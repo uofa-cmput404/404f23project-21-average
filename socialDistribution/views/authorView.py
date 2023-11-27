@@ -13,7 +13,7 @@ from rest_framework.renderers import JSONRenderer
 from ..util import isFrontendRequest, serializeTeam1Author
 
 
-class AuthorListViewSet(generics.ListAPIView):
+class AuthorListViewSet(generics.GenericAPIView):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -39,6 +39,7 @@ class AuthorListViewSet(generics.ListAPIView):
                 all_authors.append(serializeTeam1Author(author))
         page = self.paginate_queryset(all_authors)
         return self.get_paginated_response(page)
+
 
 
 class NodeListViewSet(generics.ListAPIView):
@@ -98,3 +99,14 @@ class AuthorDetailView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
+
+    @extend_schema(
+        tags=['Authors'],
+        description='Delete author'
+    )
+    def delete(self, request, author_pk, *args, **kwargs):
+        author = Author.objects.get(pk=author_pk)
+        print(author.id)
+        # delete the author from the database
+        author.delete()
+        return Response(status=204)

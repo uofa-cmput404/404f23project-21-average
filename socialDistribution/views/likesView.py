@@ -25,6 +25,7 @@ class AddLikeToPostView(generics.ListCreateAPIView):
         likes = PostLike.objects.filter(post=post)
         if isFrontendRequest(request):
             if not likes:
+                # TODO: check that this works
                 team1_likes = team1.get(f"authors/{author_pk}/posts/{post_pk}/likes/")
                 if team1_likes.status_code == 200:
                     for like in team1_likes.json()["likes"]:
@@ -35,16 +36,16 @@ class AddLikeToPostView(generics.ListCreateAPIView):
                             "published": like["published"],
                             "type": like["type"],
                         })
-                team2_likes = team2.get(f"authors/{author_pk}/posts/{post_pk}/likes")
-                if team2_likes.status_code == 200:
-                    for like in team2_likes.json()["likes"]:
-                        likes.append({
-                            "id": like["id"],
-                            "author": serializeTeam1Author(like["author"]),
-                            "post": serializeTeam1Post(like["post"]),
-                            "published": like["published"],
-                            "type": like["type"],
-                        })
+                # team2_likes = team2.get(f"authors/{author_pk}/posts/{post_pk}/likes")
+                # if team2_likes.status_code == 200:
+                #     for like in team2_likes.json()["likes"]:
+                #         likes.append({
+                #             "id": like["id"],
+                #             "author": serializeTeam1Author(like["author"]),
+                #             "post": serializeTeam1Post(like["post"]),
+                #             "published": like["published"],
+                #             "type": like["type"],
+                #         })
         page = self.paginate_queryset(likes)
         serializer = PostLikeSerializer(likes, many=True)
         return self.get_paginated_response(serializer.data)
