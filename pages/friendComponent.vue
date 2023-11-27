@@ -61,7 +61,7 @@ export default {
           console.log('Unfollowing', this.username);
         } else {
           // Call the follow API
-          response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id + '/');
+          response = await axios.put(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id + '/');
           console.log('Following', this.username);
         }
         if (!(response.status === 400 || response.status === 401)) {
