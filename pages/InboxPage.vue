@@ -13,6 +13,9 @@
             <div v-if="notification.type === 'like'">
               <h3>{{ notification.summary }}</h3>
             </div>
+            <div v-if="notification.type === 'follow'">
+              <h3>{{ notification.summary }}</h3>
+            </div>
           </div>
           <h4 v-if="notification.type === 'post'" class="notification-type">{{ notification.type.toUpperCase() }}</h4>
         </div>
