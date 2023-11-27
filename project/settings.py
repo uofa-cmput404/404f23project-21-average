@@ -213,7 +213,7 @@ CORS_ALLOWED_ORIGINS = [
     
     # teams
     'https://vibely-23b7dc4c736d.herokuapp.com',
-    'https://second-instance-a06a2b03061a.herokuapp.com'
+    'https://second-instance-a06a2b03061a.herokuapp.com',
     'https://cmput404-ctrl-alt-defeat-api-12dfa609f364.herokuapp.com',
     'https://cmput404-project-backend-tian-aaf1fa9b20e8.herokuapp.com'
 ]
