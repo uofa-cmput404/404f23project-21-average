@@ -73,8 +73,8 @@ export default {
   async mounted() {
     // this.fetchPosts();
     const authorStore = useAuthorStore();
-    axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
-    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
+    axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
+    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/allposts/stream/');
     console.log(response.data.results)
     this.posts = response.data.results;
   },
@@ -105,7 +105,7 @@ export default {
           formData.append('image', this.postImage);
         }
 
-        axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+        axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
         const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'

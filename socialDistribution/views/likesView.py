@@ -5,7 +5,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import permissions
 from socialDistribution.models import Author, Comment, CommentLike, Post, PostLike
 from socialDistribution.pagination import Pagination
-from ..util import isFrontendRequest, team1, team2, serializeTeam1Post
+from ..util import isFrontendRequest, team1, team2, serializeTeam1Post, serializeTeam1Author
 from socialDistribution.serializers import CommentLikeSerializer, PostLikeSerializer
 from socialDistribution.util import addToInbox
 
@@ -131,9 +131,19 @@ class GetAllAuthorLikes(generics.ListAPIView):
         try:
             author = Author.objects.get(pk=author_pk)
         except:
+            # try to find the author on team1
+            remote_author = team1.get(f"authors/{author_pk}")
+            if remote_author.status_code == 200:
+                likes = team1.get(f"authors/{author_pk}/liked/")
+                if likes.status_code == 200:
+                    return Response(likes.json())
+            # try to find the author on team2
+            remote_author = team2.get(f"authors/{author_pk}")
+            if remote_author.status_code == 200:
+                likes = team2.get(f"authors/{author_pk}/liked/")
+                if likes.status_code == 200:
+                    return Response(likes.json())
             return Response({"message": "author not found"}, status=status.HTTP_404_NOT_FOUND)
-        
-        posts = Post.objects.filter(visibility="PUBLIC")
 
         postLikes = PostLike.objects.filter(author_id=author_pk, post__visibility='PUBLIC')
         commentLikes = CommentLike.objects.filter(author=author, comment__post__visibility='PUBLIC')

@@ -26,7 +26,7 @@ class AuthorListViewSet(generics.ListAPIView):
     )
     def get(self, request, *args, **kwargs):
         authors = Author.objects.filter(type="author").all()
-        print(authors)
+
         # check request origin
         all_authors = json.loads(JSONRenderer().render(AuthorSerializer(authors, many=True).data).decode('utf-8'))
         if isFrontendRequest(request):

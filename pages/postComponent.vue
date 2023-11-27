@@ -96,7 +96,7 @@ export default {
 
   async created() {
     const authorStore = useAuthorStore();
-    axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+    axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
     try {
       const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
       console.log(response)
@@ -125,7 +125,7 @@ export default {
       // Example:
       try {
         console.log("likessssss")
-        axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+        axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
         const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/likes/');
         if (response.status === 200) {
           console.log('109', response.data)
@@ -140,7 +140,7 @@ export default {
     async toggleLike() {
       const authorStore = useAuthorStore();
       try {
-        axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+        axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
         if (this.liked) {
           // Logic to unlike the post
           await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/likes/',
@@ -188,7 +188,7 @@ export default {
         published: new Date().toISOString(),
         categories: 'string', // Adjust as per your requirement
       };
-      axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+      axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
       const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/', payload);
       console.log(response)
     },
@@ -198,7 +198,7 @@ export default {
     const postId = this.postID; // Assuming this is a prop or data property
 
     try {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+      axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
       const response = await axios.delete(`${authorStore.BASE_URL}/authors/${authorId}/posts/${postId}`);
 
       if (response.status === 200 || response.status === 204) {
