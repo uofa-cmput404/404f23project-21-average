@@ -161,7 +161,6 @@ class InboxItemView(generics.GenericAPIView):
             return Response({"message": "Only Nodes can request to inbox"}, status=status.HTTP_400_BAD_REQUEST)
 
         inbox.items = json.dumps(items, default=str)
-        print(inbox.items)
         inbox.save()
         return Response({"message": "Item Added to inbox!"}, status=status.HTTP_201_CREATED)
     
