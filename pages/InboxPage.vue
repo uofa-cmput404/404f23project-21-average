@@ -4,7 +4,7 @@
     <div class="main-content">
       <div class="header">INBOX</div>
       <div class="notification-list">
-        <div v-for="notification in notifications" :key="notification.id" class="notification-item">
+        <div v-for="(notification, index) in notifications" :key="notification.id" class="notification-item">
           <div class="notification-content">
             <div v-if="notification.type === 'post'">
               <h3>{{ notification.author.username }}</h3>
@@ -15,6 +15,11 @@
             </div>
             <div v-if="notification.type === 'follow'">
               <h3>{{ notification.summary }}</h3>
+              <div class="button-group">
+              <button @click="toggleAccept(index)">
+                  {{ isAccepted ? 'Remove Follower' : 'Accept' }}
+              </button>
+            </div>
             </div>
           </div>
           <h4 v-if="notification.type === 'post'" class="notification-type">{{ notification.type.toUpperCase() }}</h4>
@@ -36,6 +41,8 @@ export default {
   data() {
     return {
       notifications: [], // This will hold the fetched notifications
+      isAccepted:false,
+      foreignId: '',
     };
   },
 
@@ -50,7 +57,30 @@ export default {
     } catch (error) {
       console.error('Error fetching inbox items:', error);
     }
-  }
+  },
+  methods: {
+
+  async toggleAccept(index) {
+      const notification = this.notifications[index];
+      const authorStore = useAuthorStore();
+      axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
+      try {
+        let response;
+        if (this.isAccept) {
+          // Call the unfollow API
+          response = await axios.delete(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id + '/');
+        } else {
+          // Call the follow API
+          response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + notification.object.id+ '/');
+          console.log('Following', this.username);
+        }
+        if (!(response.status === 400 || response.status === 401)) {
+          this.isFollowing = !this.isFollowing;
+        }
+      } catch (error) {
+        console.error('Error while toggling follow:', error);
+      }
+    }}
 };
 </script>
 
@@ -129,5 +159,20 @@ export default {
 .notification-list .notification-item button:hover {
   background-color: #009B75;
   color: white;
+}
+
+ button {
+  width: 100px;
+  padding: 5px 15px;
+  cursor: pointer;
+  background-color: #00C58E;
+  color: black;
+  margin-right: 10px;
+  /* Adds spacing between buttons */
+}
+
+button {
+  margin-right: 0;
+  /* Removes margin from the last button */
 }
 </style>

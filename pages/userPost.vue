@@ -20,7 +20,6 @@
   
           <div class="post-actions">
             <button @click="toggleLike">{{ liked ? 'Unlike' : 'Like' }}</button>
-            <span class="like-count">{{ likeCount }} like(s)</span>
             <button @click="toggleCommentBox">Comment</button>
             <button class='edit' @click="showEditPost = !showEditPost">Edit</button>
           </div>
@@ -92,12 +91,13 @@
     async mounted() {
       const authorStore = useAuthorStore();
       this.postImage = authorStore.BASE_URL.split('/api')[0] + this.postImage;
-    },
+    }, 
   
     async created() {
       const authorStore = useAuthorStore();
+      axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
       try {
-        axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+        axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
         const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
         console.log(response)
         this.postMainContent = response.data.results['content'] // Updat
@@ -106,7 +106,6 @@
           this.post = response.data;
           this.postImageUrl = this.post.image;
           // Fetch likes
-          this.getLikes();
         } else {
           console.error('Error fetching post:', response);
         }
@@ -118,12 +117,12 @@
   
   
     methods: {
-      async getLikes() {
+  
+      async checkLike(){
         const authorStore = useAuthorStore();
-        // Implement the logic to get likes
-        // Example:
         try {
-          axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+          console.log("likessssss")
+          axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
           const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/likes/');
           if (response.status === 200) {
             console.log('109', response.data)
@@ -131,14 +130,18 @@
             this.liked = response.data.userLiked; // Assuming the API returns if the current user liked the post
           }
           console.log(response.data)
-        } catch (error) {
-          console.error('Error while fetching likes:', error);
+          }
+          catch (error) {
+          console.error('Error while checking likes:', error);
         }
+      }
+  
       },
       async toggleLike() {
+        console.log(hey)
         const authorStore = useAuthorStore();
         try {
-          axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+          axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
           if (this.liked) {
             // Logic to unlike the post
             await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/likes/');
@@ -172,21 +175,20 @@
         // this.postContent = this.editedPostContent;  // Update the main content
         this.showEditPost = false;
         this.postMainContent = this.editedPostContent;
-        let formData = new FormData();
-          formData.append('visibility', this.isPublic ? 'PUBLIC' : 'FRIENDS');
-          formData.append('unlisted', false);
-          formData.append('title', 'Your Title Here'); // Adjust accordingly
-          formData.append('source', 'Your Source Here'); // Adjust accordingly
-          formData.append('origin', 'Your Origin Here'); // Adjust accordingly
-          formData.append('description', 'Your Description Here'); // Adjust accordingly
-          formData.append('content', this.editedPostContent);
-          formData.append('published', new Date().toISOString());
-          formData.append('categories', 'Your Categories Here'); // Adjust accordingly
-          if (this.postImage) {
-            formData.append('image', this.postImage);
-          }
-        axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
-        const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID+ "/", formData);
+        const payload = {
+          visibility: this.isPublic ? 'PUBLIC' : 'FRIENDS', // Adjust as per your requirement
+          unlisted: false,
+          title: 'string', // You can add a title input field in your template
+          source: 'string', // Adjust as per your requirement
+          origin: 'string', // Adjust as per your requirement
+          description: 'string', // You can add a description input field in your template
+          contentType: 'string', // Adjust based on your content type
+          content: this.editedPostContent,
+          published: new Date().toISOString(),
+          categories: 'string', // Adjust as per your requirement
+        };
+        axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
+        const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + '/', payload);
         console.log(response)
       },
       async deletePost() {
@@ -195,7 +197,7 @@
       const postId = this.postID; // Assuming this is a prop or data property
   
       try {
-        axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
+        axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
         const response = await axios.delete(`${authorStore.BASE_URL}/authors/${authorId}/posts/${postId}`);
   
         if (response.status === 200 || response.status === 204) {
@@ -207,7 +209,6 @@
         // Handle error
       }
     }
-  }
   };
   </script>
   
