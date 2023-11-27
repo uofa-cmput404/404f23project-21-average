@@ -81,40 +81,46 @@ export default {
 </script>
 
 <style scoped>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Ensures padding does not affect overall width */
+}
+
 .app-container {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
   display: flex;
-  background-color: black;
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  background-color: #00C58E;
   color: white;
 }
 
-
 .main-content {
-  position: fixed;
-  left: 26%;
-  top: 0;
-  bottom: 0;
-  right: 0;
+  flex-grow: 1;
+  overflow-y: auto;
   background-color: #00C58E;
+  padding-left: 26%; /* Adjust based on your sidebar width */
+}
+
+.search-bar {
+  padding-top: 15px;
+  width: 70%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center; /* Center the search bar horizontally */
 }
 
 .search-bar input {
-  width: 80%;
+  width: 100%;
   padding: 10px;
-  margin: 20px;
   border: none;
   background-color: white;
 }
 
 .user-list {
   padding: 20px;
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
+  width: 70%;
+  margin: 0 auto;
 }
 </style>

@@ -7,8 +7,8 @@
         <div v-for="(notification, index) in notifications" :key="notification.id" class="notification-item">
           <div class="notification-content">
             <div v-if="notification.type === 'post'">
-              <h3>{{ notification.author.username }}</h3>
-              <p>{{ notification.content }}</p>
+              <PostComponent :key="notification.id" :postContent="notification.content" :userId="notification.author.username"
+                :postImage="notification.image" :postID="notification.id" :isPublic="notification.visibility" :contentType="notification.contentType"/>
             </div>
             <div v-if="notification.type === 'like'">
               <h3>{{ notification.summary }}</h3>
@@ -35,11 +35,13 @@
 <script>
 import axios from 'axios';
 import SidebarComponent from './sidebar.vue';
+import PostComponent from './postComponent.vue'
 
 export default {
   name: "InboxApp",
   components: {
-    SidebarComponent
+    SidebarComponent,
+    PostComponent
   },
   data() {
     return {
