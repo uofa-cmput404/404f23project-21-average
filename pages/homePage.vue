@@ -65,7 +65,7 @@ import { useAuthorStore } from '../stores/authorStore';
 import PostComponent from './postComponent.vue';
 import SidebarComponent from './sidebar.vue';
 import axios from 'axios';
-// import marked from 'marked';
+import * as marked from 'marked'
 
 export default {
   name: "SocialDistributionApp",
@@ -75,12 +75,12 @@ export default {
   },
 
   computed: {
-    // renderedContent() {
-    //   if (this.contentType === 'text/markdown') {
-    //     return marked(this.postContent);
-    //   }
-    //   return this.postContent; // For plain text, return as-is
-    // },
+    renderedContent() {
+      if (this.contentType === 'text/markdown') {
+        return marked(this.postContent);
+      }
+      return this.postContent; // For plain text, return as-is
+    },
   },
 
   data() {
