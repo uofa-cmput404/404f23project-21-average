@@ -110,7 +110,7 @@ class FollowDetailViewSet(generics.GenericAPIView):
     
     @extend_schema(
         tags=['Followers'],
-        description="Accept FOREIGN_AUTHOR_ID’s follow request (must be authenticated)"
+        description="Accept AUTHOR_ID follow request from FOREIGN_AUTHOR_ID (must be authenticated)"
     )
     def post(self, request, author_pk, foreign_author_pk, format=None):
         author = Author.objects.get(pk=author_pk)
