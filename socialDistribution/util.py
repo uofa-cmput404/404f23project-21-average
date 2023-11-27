@@ -9,16 +9,22 @@ CONNECTED = ["vibely", "CtrlAltDefeat"]
 team1 = sessions.BaseUrlSession(base_url='https://vibely-23b7dc4c736d.herokuapp.com/api/')
 team1.headers['Authorization'] = f"Basic {base64.b64encode('vibely:vibely'.encode('utf - 8')).decode('utf - 8')}"
 
+secondInstance = sessions.BaseUrlSession(base_url='https://second-instance-a06a2b03061a.herokuapp.com/api/')
+secondInstance.headers['Authorization'] = f"Basic {base64.b64encode('vibely:string'.encode('utf - 8')).decode('utf - 8')}"
+
 team2 = sessions.BaseUrlSession(base_url='https://cmput404-project-backend-tian-aaf1fa9b20e8.herokuapp.com/')
 team2.headers['Authorization'] = 'Basic Y3Jvc3Mtc2VydmVyOnBhc3N3b3Jk'
 
 
 def addToInbox(author, data):
-    inbox = Inbox.objects.get(author=author)
-    items = json.loads(inbox.items)
-    items.append(json.dumps(data, default=str))
-    inbox.items = json.dumps(items)
-    inbox.save()
+    if author.type == "NodeAuthor":
+        secondInstance.post(f"authors/{author.id}/inbox/", json={"items":data})
+    else:
+        inbox = Inbox.objects.get(author=author)
+        items = json.loads(inbox.items)
+        items.append(json.dumps(data, default=str))
+        inbox.items = json.dumps(items)
+        inbox.save()
 
 
 def sendToEveryonesInbox(data):

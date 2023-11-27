@@ -7,7 +7,7 @@ from socialDistribution.serializers import AuthorSerializer
 from ..models import Author
 from rest_framework import generics
 from drf_spectacular.utils import extend_schema
-from socialDistribution.util import team1, team2
+from socialDistribution.util import team1, team2, secondInstance
 import json
 from rest_framework.renderers import JSONRenderer
 from ..util import isFrontendRequest, serializeTeam1Author
@@ -29,13 +29,14 @@ class AuthorListViewSet(generics.ListAPIView):
         # check request origin
         all_authors = json.loads(JSONRenderer().render(AuthorSerializer(authors, many=True).data).decode('utf-8'))
         if isFrontendRequest(request):
-            remote_authors = team1.get("authors/")
-            for author in remote_authors.json()["items"]:
-                all_authors.append(serializeTeam1Author(author))
-            # remote_authors1 = team2.get("authors/")
-            # for author in remote_authors1.json()["items"]:
-            #     author["github"] = ""
+            # remote_authors = team1.get("authors/")
+            # for author in remote_authors.json()["items"]:
             #     all_authors.append(serializeTeam1Author(author))
+            
+            remote_authors1 = secondInstance.get("authors/")
+            for author in remote_authors1.json()["results"]:
+                # author["github"] = ""
+                all_authors.append(AuthorSerializer(author).data)
         page = self.paginate_queryset(all_authors)
         return self.get_paginated_response(page)
 
@@ -71,10 +72,14 @@ class AuthorDetailView(APIView):
     )
     def get(self, request, author_pk, format=None):
         if isFrontendRequest(request):
-            remote_author = team1.get(f"authors/{author_pk}")
-            if remote_author.status_code == 200:
-                    author = remote_author.json()
-                    return Response(serializeTeam1Author(author))
+            # remote_author = team1.get(f"authors/{author_pk}")
+            # if remote_author.status_code == 200:
+            #         author = remote_author.json()
+            #         return Response(serializeTeam1Author(author))
+            remote_author1 = secondInstance.get("authors/")
+            if remote_author1.status_code == 200:
+                return Response(AuthorSerializer(remote_author1).data)
+
             # remote_author1 = team2.get(f"authors/{author_pk}/")
             # if remote_author1.status_code == 200:
             #     author = remote_author1.json()

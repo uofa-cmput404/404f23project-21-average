@@ -5,7 +5,7 @@ from socialDistribution.serializers import AuthorSerializer, FollowSerializer
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
-from ..util import isFrontendRequest, team1, team2, serializeTeam1Post, serializeTeam1Author
+from ..util import isFrontendRequest, team1, team2, serializeTeam1Post, serializeTeam1Author, secondInstance
 from drf_spectacular.utils import extend_schema
 from ..util import addToInbox
 
@@ -60,23 +60,24 @@ class FollowingViewSet(generics.ListAPIView):
         try:
             author = Author.objects.get(pk=author_pk)
         except:
-            remote_author = team1.get(f"authors/{author_pk}")
-            if remote_author.status_code == 200:
-                likes = team1.get(f"authors/{author_pk}/followers/")
-                if likes.status_code == 200:
-                    return Response(likes.json())
-            # try to find the author on team2
-            remote_author = team2.get(f"authors/{author_pk}")
-            if remote_author.status_code == 200:
-                likes = team2.get(f"authors/{author_pk}/followers/")
-                if likes.status_code == 200:
-                    return Response(likes.json())
+            # remote_author = team1.get(f"authors/{author_pk}")
+            # if remote_author.status_code == 200:
+            #     likes = team1.get(f"authors/{author_pk}/followers/")
+            #     if likes.status_code == 200:
+            #         return Response(likes.json())
+            # # try to find the author on team2
+            # remote_author = team2.get(f"authors/{author_pk}")
+            # if remote_author.status_code == 200:
+            #     likes = team2.get(f"authors/{author_pk}/followers/")
+            #     if likes.status_code == 200:
+            #         return Response(likes.json())
             return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
         following = author.following.filter(status="Accepted").all()
+        print(following)
         # turn followers queryset into a list of authors
         authors = []
         for follower in following:
-            authors.append(Author.objects.get(pk=follower.follower.id))
+            authors.append(Author.objects.get(pk=follower.following.id))
         
         page = self.paginate_queryset(authors)
         return self.get_paginated_response(AuthorSerializer(page, many=True).data)
@@ -95,8 +96,11 @@ class FollowDetailViewSet(generics.GenericAPIView):
     def get(self, request, author_pk, foreign_author_pk, format=None):
         # return true if foreign_author is a follower of author
         author = Author.objects.get(pk=author_pk)
+        print(author.followers.all())
         foreign_author = Author.objects.get(pk=foreign_author_pk)
+        print(foreign_author.followers.all())
         follow = Follow.objects.filter(following=foreign_author, follower=author)
+        print(follow)
         if author and foreign_author and follow and follow[0].status == "Accepted":
             return Response(True)
         return Response(False)
@@ -122,21 +126,25 @@ class FollowDetailViewSet(generics.GenericAPIView):
         description='Send FOREIGN_AUTHOR_ID a follow request from AUTHOR_ID (must be authenticated)'
     )
     def put(self, request, author_pk, foreign_author_pk, format=None):
-        # PUT http://127.0.0.1:8000/api/authors/2c4733b5-235a-410a-975e-d8422aa19609/followers/87aac38e-48d4-489e-9da9-9f1364baa812/ 
+        # PUT http://127.0.0.1:8000/api/authors/2c4733b5-235a-410a-975e-d8422aa19609/followers/87aac38e-48d4-489e-9da9-9f1364baa812/
         author = Author.objects.get(pk=author_pk)
-        foreign_author = Author.objects.get(pk=foreign_author_pk)
-        if not foreign_author:
-            remote_author = team1.get(f"authors/{foreign_author_pk}")
+        try:
+            foreign_author = Author.objects.get(pk=foreign_author_pk, type="author")
+        except:
+            remote_author = secondInstance.get(f"authors/{foreign_author_pk}")
             if remote_author.status_code == 200:
-                remoteAuthor = remote_author.json()
+                remoteAuthor = AuthorSerializer(remote_author.json()).data
             # send follow request to remote inbox
+            print(remoteAuthor)
             payload = {
                 "type": "follow",
                 "summary": f"{author.username} wants to follow {remoteAuthor['username']}",
-                "actor": serializeTeam1Author(remoteAuthor),
-                "object": AuthorSerializer(author).data,
+                "actor": AuthorSerializer(author).data,
+                "object": remoteAuthor,
             }
-            team1.post(f"author/{foreign_author_pk}/inbox/", payload)
+            print({"items": payload})
+            response = secondInstance.post(f"authors/{foreign_author_pk}/inbox/", json={"items": payload})
+            print(response.text)
             return Response({'message': 'Follow Request Sent Successfully'}, status=status.HTTP_201_CREATED)
         
         if author == foreign_author:
@@ -171,3 +179,32 @@ class FollowDetailViewSet(generics.GenericAPIView):
             follow.save()
             return Response({'message': 'Follow Request Accepted Successfully'}, status=status.HTTP_201_CREATED)
         return Response({'message': 'not found'}, status=status.HTTP_404_NOT_FOUND)
+
+# x = {
+#     "type": "Follow",      
+#     "summary":"secondinstanceuser3 wants to follow user3",
+#     "actor":{
+#       "id": "2e929da1-feab-4797-a22c-ac239fe3885d",
+#       "host": null,
+#       "displayName": "User",
+#       "github": null,
+#       "image": null,
+#       "first_name": "",
+#       "last_name": "",
+#       "email": "",
+#       "username": "secondinstanceuser3",
+#       "type": "author"
+#     },
+#     "object":{
+#       "id": "5f603184-9201-4a66-8b08-98fc3f3ab8b3",
+#       "host": null,
+#       "displayName": "User",
+#       "github": null,
+#       "image": null,
+#       "first_name": "",
+#       "last_name": "",
+#       "email": "",
+#       "username": "user3",
+#       "type": "author"
+#     }
+# }
