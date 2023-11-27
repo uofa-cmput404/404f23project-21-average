@@ -17,7 +17,7 @@ class GitHubView(generics.GenericAPIView):
         tags=['GitHub'],
         description='[local] get a list of GitHub events for AUTHOR_ID (paginated)'
     )
-    def get(self, request, author_pk, format=None):
+    def post(self, request, author_pk, format=None):
         author = Author.objects.get(pk=author_pk)
         githubData = requests.get('https://api.github.com/users/' + author.github.split('/')[-1] + '/events')
         

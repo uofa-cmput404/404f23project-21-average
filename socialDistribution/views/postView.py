@@ -15,7 +15,7 @@ import base64
 from io import BytesIO
 from PIL import Image
 from django.http import HttpResponse
-from ..util import isFrontendRequest, team1, team2, serializeTeam1Post, sendToEveryonesInbox
+from ..util import isFrontendRequest, team1, team2, serializeTeam1Post, sendToEveryonesInbox, secondInstance
 import json
 from rest_framework.renderers import JSONRenderer
 
@@ -116,9 +116,13 @@ class PostDetail(APIView):
     )
     def get(self, request, author_pk, post_pk, format=None):
         try:
-            author = Author.objects.get(pk=author_pk)
+            author = Author.objects.get(pk=author_pk, type="author")
         except Author.DoesNotExist:
-            # if isFrontendRequest(request):
+            if isFrontendRequest(request):
+                remote_posts = secondInstance.get(f"authors/{author_pk}/posts/{post_pk}/")
+                print(remote_posts)
+                if remote_posts.status_code == 200:
+                    return Response(PostSerializer(remote_posts).data)
             #     team1_post = team1.get(f"authors/{author_pk}/posts/{post_pk}/")
             #     if team1_post.status_code == 200:
             #         return Response(serializeTeam1Post(team1_post.json()))
@@ -130,7 +134,12 @@ class PostDetail(APIView):
             #         post["categories"] = ""
             #         return Response(serializeTeam1Post(post))
             return Response({"message": "Author not found"}, status=status.HTTP_404_NOT_FOUND)
-        
+        # if isFrontendRequest(request):
+        #     print('sjfhhvsdkhbhsd')
+        #     remote_posts = secondInstance.get(f"authors/{author_pk}/posts/{post_pk}/")
+        #     print(remote_posts.status_code)
+        #     if remote_posts.status_code == 200:
+        #         return Response(PostSerializer(remote_posts).data)
         post = self.get_object(post_pk)
 
         serializer = PostSerializer(post)
