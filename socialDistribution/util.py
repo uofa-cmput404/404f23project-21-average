@@ -9,6 +9,9 @@ CONNECTED = ["vibely", "CtrlAltDefeat"]
 team1 = sessions.BaseUrlSession(base_url='https://vibely-23b7dc4c736d.herokuapp.com/api/')
 team1.headers['Authorization'] = f"Basic {base64.b64encode('vibely:vibely'.encode('utf - 8')).decode('utf - 8')}"
 
+secondInstance = sessions.BaseUrlSession(base_url='https://second-instance-a06a2b03061a.herokuapp.com/api/')
+secondInstance.headers['Authorization'] = f"Basic {base64.b64encode('vibely:string'.encode('utf - 8')).decode('utf - 8')}"
+
 team2 = sessions.BaseUrlSession(base_url='https://cmput404-project-backend-tian-aaf1fa9b20e8.herokuapp.com/')
 team2.headers['Authorization'] = 'Basic Y3Jvc3Mtc2VydmVyOnBhc3N3b3Jk'
 
@@ -58,10 +61,10 @@ def isFriend(author, foreign_author):
 
 
 def isFrontendRequest(request):
-    # return False
-    if request.user.username in CONNECTED:
-        return False
-    return True
+    return False
+    # if request.user.username in CONNECTED:
+    #     return False
+    # return True
     # try:
     #     # TODO: check prod swagger
     #     if request.headers['Host'] in settings.ALLOWED_HOSTS:

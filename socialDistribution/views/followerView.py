@@ -5,7 +5,7 @@ from socialDistribution.serializers import AuthorSerializer, FollowSerializer
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
-from ..util import isFrontendRequest, team1, team2, serializeTeam1Post, serializeTeam1Author
+from ..util import isFrontendRequest, team1, team2, serializeTeam1Post, serializeTeam1Author, secondInstance
 from drf_spectacular.utils import extend_schema
 from ..util import addToInbox
 
@@ -126,17 +126,17 @@ class FollowDetailViewSet(generics.GenericAPIView):
         author = Author.objects.get(pk=author_pk)
         foreign_author = Author.objects.get(pk=foreign_author_pk)
         if not foreign_author:
-            remote_author = team1.get(f"authors/{foreign_author_pk}")
+            remote_author = secondInstance.get(f"authors/{foreign_author_pk}")
             if remote_author.status_code == 200:
-                remoteAuthor = remote_author.json()
+                remoteAuthor = AuthorSerializer(remote_author).data
             # send follow request to remote inbox
             payload = {
                 "type": "follow",
                 "summary": f"{author.username} wants to follow {remoteAuthor['username']}",
-                "actor": serializeTeam1Author(remoteAuthor),
+                "actor": remoteAuthor,
                 "object": AuthorSerializer(author).data,
             }
-            team1.post(f"author/{foreign_author_pk}/inbox/", payload)
+            secondInstance.post(f"author/{foreign_author_pk}/inbox/", payload)
             return Response({'message': 'Follow Request Sent Successfully'}, status=status.HTTP_201_CREATED)
         
         if author == foreign_author:

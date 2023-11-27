@@ -10,30 +10,29 @@ from ..util import isFrontendRequest, serializeTeam1Post, serializeTeam1Author
 
 
 def handlePostItem(newItem):
-    post = serializeTeam1Post(newItem)
-    authorJson = serializeTeam1Author(newItem["author"])
-    authorJson["type"] = "NodeAuthor"
-    author = Author.objects.get_or_create(**authorJson)
-    # print(author[0])
-    # print(AuthorSerializer(author[0]).data)
-    # create the post object
-    newPost = Post.objects.get_or_create(
-        id=post["id"],
-        title=post["title"],
-        source=post["source"],
-        type="NodePost",
-        origin=post["origin"],
-        description=post["description"],
-        contentType=post["contentType"],
-        content=post["content"],
-        author=author[0],
-        categories=','.join(post["categories"]),
-        count=post["count"],
-        visibility=post["visibility"],
-        unlisted=post["unlisted"],
-        published=post["published"],
-    )
-    return PostSerializer(newPost[0]).data
+    # TODO: maybe dont need to save post on db???
+    # post = serializeTeam1Post(newItem)
+    # authorJson = serializeTeam1Author(newItem["author"])
+    # authorJson["type"] = "NodeAuthor"
+    # author = Author.objects.get_or_create(**authorJson)
+    # # create the post object
+    # newPost = Post.objects.get_or_create(
+    #     id=post["id"],
+    #     title=post["title"],
+    #     source=post["source"],
+    #     type="NodePost",
+    #     origin=post["origin"],
+    #     description=post["description"],
+    #     contentType=post["contentType"],
+    #     content=post["content"],
+    #     author=author[0],
+    #     categories=','.join(post["categories"]),
+    #     count=post["count"],
+    #     visibility=post["visibility"],
+    #     unlisted=post["unlisted"],
+    #     published=post["published"],
+    # )
+    return PostSerializer(newItem).data
 
 
 def handleCommentItem(newItem):
@@ -57,11 +56,11 @@ def handleFollowItem(newItem):
     # object key must be an author on my server
     # actor key is the foreign_author following my object
     # actor is requesting to follow object
-    actorJson = serializeTeam1Author(newItem["actor"])
+    actorJson = AuthorSerializer(newItem["actor"]).data
     actorJson["type"] = "NodeAuthor"
     author = Author.objects.get_or_create(**actorJson)
 
-    objectJson = serializeTeam1Author(newItem["object"])
+    objectJson = AuthorSerializer(newItem["object"]).data
     # print(f"{objectJson['id']}")
     foreign_author = Author.objects.get(pk=objectJson["id"])
 
