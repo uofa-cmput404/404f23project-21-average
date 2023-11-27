@@ -101,7 +101,7 @@ class FollowDetailViewSet(generics.GenericAPIView):
         # add follow request to Inbox
         addToInbox(foreign_author, {
             "type": "follow",
-            "summary": f"{foreign_author.username} wants to follow {author.username}",
+            "summary": f"{author.username} wants to follow {foreign_author.username}",
             "actor": AuthorSerializer(foreign_author).data,
             "object": AuthorSerializer(author).data,
         })
