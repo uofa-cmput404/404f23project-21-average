@@ -61,7 +61,6 @@ def handleFollowItem(newItem):
     author = Author.objects.get_or_create(**actorJson)
 
     objectJson = AuthorSerializer(newItem["object"]).data
-    # print(f"{objectJson['id']}")
     foreign_author = Author.objects.get(pk=objectJson["id"])
 
     # author is requesting to follow foreign_author
