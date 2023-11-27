@@ -39,6 +39,17 @@
             </label>
             <span>{{ isPublic ? 'Public' : 'Private' }}</span>
           </div>
+          <!-- Add this inside your create-post form -->
+          <!-- Add this inside your create-post form -->
+
+          <div class="toggle-container">
+            <label class="switch">
+              <input type="checkbox" v-model="isPlainText">
+              <span class="slider"></span>
+            </label>
+            <span>{{ isPlainText ? 'Plain Text' : 'Markdown' }}</span>
+          </div>
+
         </div>
 
         <button @click="submitPost">Post</button>
@@ -54,6 +65,7 @@ import { useAuthorStore } from '../stores/authorStore';
 import PostComponent from './postComponent.vue';
 import SidebarComponent from './sidebar.vue';
 import axios from 'axios';
+// import marked from 'marked';
 
 export default {
   name: "SocialDistributionApp",
@@ -61,6 +73,16 @@ export default {
     PostComponent,
     SidebarComponent,
   },
+
+  computed: {
+    // renderedContent() {
+    //   if (this.contentType === 'text/markdown') {
+    //     return marked(this.postContent);
+    //   }
+    //   return this.postContent; // For plain text, return as-is
+    // },
+  },
+
   data() {
     return {
       posts: [],
@@ -68,13 +90,14 @@ export default {
       postImage: null,
       isPublic: true,
       showPostPopup: false, // Variable to control the visibility of the create post popup
+      isPlainText: true,
     };
   },
   async mounted() {
     // this.fetchPosts();
     const authorStore = useAuthorStore();
     axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
+    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/allposts/stream/');
     console.log(response.data.results)
     this.posts = response.data.results;
   },
@@ -97,7 +120,7 @@ export default {
         formData.append('source', 'Your Source Here'); // Adjust accordingly
         formData.append('origin', 'Your Origin Here'); // Adjust accordingly
         formData.append('description', 'Your Description Here'); // Adjust accordingly
-        formData.append('contentType', 'Your ContentType Here'); // Adjust accordingly
+        formData.append('contentType', this.isPlainText === false ? 'text/markdown' : 'text/plain');
         formData.append('content', this.postContent);
         formData.append('published', new Date().toISOString());
         formData.append('categories', 'Your Categories Here'); // Adjust accordingly

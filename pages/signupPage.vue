@@ -10,13 +10,13 @@
         <h2>REGISTER</h2>
         <form>
           <div class="input-group">
-            <label for="first_name">First Name</label>
-            <input type="text" id="first_name" v-model="firstName" placeholder="First Name" />
-          </div>
-          <div class="input-group">
-            <label for="last_name">Last Name</label>
-            <input type="text" id="last_name" v-model="lastName" placeholder="Last Name" />
-          </div>
+          <label for="first_name">First Name</label>
+          <input type="text" id="first_name" v-model="firstName" placeholder="First Name" />
+        </div>
+        <div class="input-group">
+          <label for="last_name">Last Name</label>
+          <input type="text" id="last_name" v-model="lastName" placeholder="Last Name" />
+        </div>
           <div class="input-group">
             <label for="email">Email</label>
             <input type="email" id="email" v-model="email" placeholder="Email" />
@@ -29,9 +29,9 @@
             <label for="password">Password</label>
             <input type="password" id="password" v-model="password" placeholder="Password" />
             <div class="input-group">
-              <label for="github_id">GitHub ID (Optional)</label>
-              <input type="text" id="github_id" v-model="githubId" placeholder="GitHub ID" />
-            </div>
+          <label for="github_id">GitHub ID (Optional)</label>
+          <input type="text" id="github_id" v-model="githubId" placeholder="GitHub ID" />
+        </div>
           </div>
           <button type="button" @click="register();">SIGN UP</button>
         </form>
@@ -60,26 +60,27 @@ const register = async () => {
       username: username.value,
       password1: password.value,
       password2: password.value,
+
     }
     const registerData = {
-      host: "string",
       displayName: username.value,
       github: githubId.value,
-      image: "string",
       first_name: firstName.value,
       last_name: lastName.value,
+      password1: password.value,
+      password2: password.value,
       email: email.value,
       username: username.value,
-      groups: [
-        0
-      ]
+      is_active: true
     }
     try {
       console.log(data)
-      const response = await axios.post(authorStore.BASE_URL + '/auth/register/', data)
+      const response = await axios.post(authorStore.BASE_URL + '/auth/register/', registerData)
       // axios.defaults.headers.common['Authorization'] = 'Token ' + response.data.key;
-      await authorStore.setAuthToken(response.data.access)
-      await authorStore.setAuthorId(btoa(`${data.username}:${data.password1}`))
+      authorStore.setAuthToken(btoa(`${data.username}:${data.password1}`))
+      console.log(response.data)
+      authorStore.setAuthorId(response.data.user.pk)
+      console.log(authorStore.getAuthorId)
       // axios.defaults.headers.common['Authorization'] = 'Basic ' + authorStore.getAuthToken;
       // const registerResponse = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/', registerData)
       window.location.href = "/homePage";

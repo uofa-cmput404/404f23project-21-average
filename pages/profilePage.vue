@@ -12,7 +12,6 @@
         <div class="follow-info">
           
           <button @click="fetchFollowers">Followers</button>
-          <button @click="fetchFriends">Friends</button> <!-- New Friends button -->
           <button @click="fetchFollowing">Following</button> <!-- New Friends button -->
           
           </div>
@@ -40,6 +39,10 @@
           <h3>MY POSTS:</h3>
           <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :userId="post.author.username"
           :postImage="post.image" :postID="post.id" />
+        </div>
+
+        <div class = "github">
+          <h3>GITHUB STREAM</h3>
         </div>
       </div>
     </main>
@@ -88,7 +91,8 @@ export default {
       showFollowersPopup: false,
       showFriendsPopup: false,
       showFollowingPopup: false,
-      username : '' 
+      username : '' ,
+      github: []
     };
 
   },
@@ -107,6 +111,9 @@ export default {
       if (profileResponse.data.profilePicture) {
         this.profilePhoto = profileResponse.data.profilePicture;
       }
+
+      // fetch github
+      this.getGithub();
 
     } catch (error) {
       console.error('Error while fetching data:', error);
@@ -140,9 +147,17 @@ export default {
     // Fetch and populate friends
     this.showFriendsPopup = true;
   },
-  fetchFollowing() {
-    // Fetch and populate following
+  async fetchFollowing() {
+    const authorStore = useAuthorStore();
+    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/');
     this.showFollowingPopup = true;
+  },
+
+  async getGithub(){
+    const authorStore = useAuthorStore();
+    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/github/');
+    this.github = response.data
+    console.log(response)
   },
     
   

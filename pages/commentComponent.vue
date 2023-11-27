@@ -36,11 +36,12 @@ export default {
     async fetchComments() {
       const authorStore = useAuthorStore();
       try {
+        axios.defaults.headers.common["Authorization"] = `Bearer ${authorStore.getAuthToken}`;
         const response = await axios.get(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postId}/comments/`);
         console.log('40', response.data)
         this.comments = response.data.results;
         console.log("jjkkkjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj")
-        console.log(this.comments.results)
+        console.log(response.data)
       } catch (error) {
         console.error('Error while fetching comments:', error);
       }
