@@ -57,20 +57,22 @@ class AddLikeToPostView(generics.ListCreateAPIView):
     def post(self, request, author_pk, post_pk, format=None):
         author = Author.objects.get(pk=author_pk)
         post = Post.objects.get(pk=post_pk)
+        if not post:
+            return Response({"message": "post not found"}, status=status.HTTP_404_NOT_FOUND)
 
         # check if author already liked the post
         if PostLike.objects.filter(author=author, post=post).exists():
             return Response({"message": "cannot like post again"}, status=status.HTTP_400_BAD_REQUEST)
 
         # can only like a friends only post or public post
-        if (post.visibility == "FRIENDS" and isFriend(author, post.author)) or post.visibility == "PUBLIC":
-            serializer = PostLikeSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save(author=author, post=post)
+        # if (post.visibility == "FRIENDS" and isFriend(author, post.author)) or post.visibility == "PUBLIC":
+        serializer = PostLikeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(author=author, post=post)
 
-                # send like to post owners inbox
-                addToInbox(post.author, serializer.data)
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            # send like to post owners inbox
+            addToInbox(post.author, serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response({"message": "insufficient permissions to like psot"}, status=status.HTTP_403_FORBIDDEN)
 
@@ -133,7 +135,6 @@ class GetAllAuthorLikes(generics.ListAPIView):
         description='GET [local, remote] list what public things AUTHOR_ID liked.'
     )
     def get(self, request, author_pk, format=None):
-        # TODO: check if authourID can be a remote author
         # if i call that endpoint to ur server i should also check to see if theres any public likes from that author on my server
         try:
             author = Author.objects.get(pk=author_pk)

@@ -97,7 +97,7 @@ class FollowDetailViewSet(generics.GenericAPIView):
         author = Author.objects.get(pk=author_pk)
         foreign_author = Author.objects.get(pk=foreign_author_pk)
         follow = Follow.objects.filter(following=foreign_author, follower=author)
-        if follow.status == "Accepted":
+        if author and foreign_author and follow and follow[0].status == "Accepted":
             return Response(True)
         return Response(False)
     
@@ -151,7 +151,9 @@ class FollowDetailViewSet(generics.GenericAPIView):
     def post(self, request, author_pk, foreign_author_pk, format=None):
         author = Author.objects.get(pk=author_pk)
         foreign_author = Author.objects.get(pk=foreign_author_pk)
-        follow = Follow.objects.get(following=foreign_author, follower=author)
+        
+        follow = Follow.objects.get(following=author, follower=foreign_author, status="Pending")
+        print(follow)
         if follow:
             follow.status = "Accepted"
             follow.save()
