@@ -14,7 +14,9 @@
       <div class="post-content">
         
         <div>
-          <img v-if="postImage" :src="postImage">
+          <div v-if="postImage !== null">
+            <img v-if="postImage" :src="postImage">
+          </div>
           <div v-if = "contentType === 'text/markdown'">
             <div v-html="renderedContent"></div>
           </div>
