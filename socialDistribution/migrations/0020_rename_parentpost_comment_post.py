@@ -77,4 +77,9 @@ class Migration(migrations.Migration):
             name='id',
             field=models.UUIDField(default=uuid.uuid4, primary_key=True, serialize=False),
         ),
+        migrations.RenameField(
+            model_name='author',
+            old_name='image',
+            new_name='profileImage',
+        ),
     ]
