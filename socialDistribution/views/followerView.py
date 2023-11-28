@@ -5,7 +5,7 @@ from socialDistribution.serializers import AuthorSerializer, FollowSerializer
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
-from ..util import isFrontendRequest, team1, team2, serializeTeam1Post, serializeTeam1Author, secondInstance
+from ..util import team1, team2, secondInstance
 from drf_spectacular.utils import extend_schema
 from ..util import addToInbox
 
