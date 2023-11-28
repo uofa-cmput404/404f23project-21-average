@@ -3,6 +3,9 @@
     <div v-for="comment in comments" :key="comment.id" class="comment">
       <div class="comment-author">{{ comment.author.username }}</div>
       <div class="comment-content">{{ comment.comment }}</div>
+      <div class="comment-actions">
+        <button @click="likeComment(comment.id)">Like</button>
+      </div>
     </div>
 
     <div class="add-comment">
@@ -11,6 +14,7 @@
     </div>
   </div>
 </template>
+
   
 <script>
 import { useAuthorStore } from '../stores/authorStore';
@@ -41,7 +45,7 @@ export default {
         console.log('40', response.data)
         this.comments = response.data.results;
         console.log("jjkkkjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj")
-        console.log(response.data)
+        console.log(response.data.results[0].id)
       } catch (error) {
         console.error('Error while fetching comments:', error);
       }
@@ -63,6 +67,17 @@ export default {
         catch (error) {
           console.error('Error while creating comment:', error);
         }
+      }
+    },
+
+    async likeComment(commentId) {
+      const authorStore = useAuthorStore();
+      try {
+        axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
+        await axios.post(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postId}/comments/${commentId}/likes/`);
+        await this.fetchComments(); // Update comments to reflect new like count
+      } catch (error) {
+        console.error('Error while liking comment:', error);
       }
     },
   }

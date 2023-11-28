@@ -43,8 +43,16 @@
 
         <div class = "github">
           <h3>GITHUB STREAM</h3>
+
+          <div v-for="activity in github" :key="activity.id" class="github_activity">
+            <div>
+              <h4>Activity Type: {{ activity.type }}</h4>
+              <h4>Activity Repository: {{ activity.repo.name }} </h4>
+              <h4>Activity Author: {{ activity.actor.login }}</h4>
+            </div>
         </div>
       </div>
+        </div>
     </main>
   </div>
 </template>
@@ -92,7 +100,8 @@ export default {
       showFriendsPopup: false,
       showFollowingPopup: false,
       username : '' ,
-      github: []
+      github: [],
+      formattedGithubActivities: []
     };
 
   },
@@ -157,10 +166,13 @@ export default {
 
   async getGithub(){
     const authorStore = useAuthorStore();
-    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/github/');
+    const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/github/');
     this.github = response.data
-    console.log(response)
+    console.log(this.github)
   },
+
+
+
     
   
     
@@ -379,6 +391,22 @@ li {
   padding: 10px 15px;
   width: auto;
 
+}
+
+.github_activity{
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  background-color: black;
+  margin: 10px auto;
+  padding: 15px;
+  border-radius: 10px;
+  color: white;
+  border: 1px solid #00C58E;
+}
+
+h4{
+  color:white
 }
 </style>
  

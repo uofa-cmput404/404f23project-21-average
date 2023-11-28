@@ -4,6 +4,7 @@ from dj_rest_auth.serializers import JWTSerializer
 from rest_framework.serializers import ModelSerializer
 import base64
 from socialDistribution.models import Author
+from django.conf import settings
 
 
 class CustomRegisterSerializer(RegisterSerializer):
@@ -19,7 +20,7 @@ class CustomRegisterSerializer(RegisterSerializer):
         user.github = self.validated_data.get('github', '')
         user.first_name = self.validated_data.get('first_name', '')
         user.last_name = self.validated_data.get('last_name', '')
-        user.host = request.headers['Origin']
+        user.host = settings.BASEHOST
         user.save()
         return user
 

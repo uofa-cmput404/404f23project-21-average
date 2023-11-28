@@ -12,11 +12,18 @@
       </div>
 
       <div class="post-content">
-        <div v-html="renderedContent"></div>
+        
         <div>
-          <img v-if="postImage" :src="postImage">
-
-          <p style="margin-top: 25px;">{{ postContent }}</p>
+          <div v-if="postImage !== null">
+            <img v-if="postImage" :src="postImage">
+          </div>
+          <div v-if = "contentType === 'text/markdown'">
+            <div v-html="renderedContent"></div>
+          </div>
+          <div v-else>
+            <p style="margin-top: 25px;">{{ postContent }}</p>
+          </div>
+          
         </div>
 
         <div class="post-actions">
@@ -93,18 +100,17 @@ export default {
   },
 
   computed: {
-    // renderedContent() {
-    //   if (this.contentType === 'text/markdown') {
-    //     return marked(this.postContent);
-    //   }
-    //   return this.postContent; // For plain text, return as-is
-    // },
+    renderedContent() {
+      if (this.contentType === 'text/markdown') {
+        return marked.marked(this.postContent);
+      }
+      return this.postContent; // For plain text, return as-is
+    },
   },
   async mounted() {
     const authorStore = useAuthorStore();
     this.postImage = authorStore.BASE_URL.split('/api')[0] + this.postImage;
     const response = await axios.get(authorStore.BASE_URL + '/posts/' + authorStore.getAuthorId + '/liked/')
-    console.log(response.data)
     for (let i = 0; i < response.length; i++) {
       if (response.data[i] === postID) {
         liked = true

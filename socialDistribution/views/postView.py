@@ -15,7 +15,7 @@ import base64
 from io import BytesIO
 from PIL import Image
 from django.http import HttpResponse
-from ..util import isFrontendRequest, team1, team2, serializeTeam1Post, sendToEveryonesInbox, secondInstance
+from ..util import isFrontendRequest, team1, team2, serializeTeam1Post, sendToEveryonesInbox
 import json
 from rest_framework.renderers import JSONRenderer
 
@@ -58,6 +58,7 @@ class PostList(generics.ListCreateAPIView):
             tempPost = Post.objects.get(pk=serializer.data["id"])
             if tempPost.imageOnlyPost:
                 tempPost.unlisted = True
+                tempPost.contentType = "image/png;base64"
             tempPost.origin = f"{settings.BASEHOST}/authors/{author.id}/posts/{tempPost.id}"
             tempPost.save()
 
@@ -119,13 +120,9 @@ class PostDetail(APIView):
             author = Author.objects.get(pk=author_pk, type="author")
         except Author.DoesNotExist:
             if isFrontendRequest(request):
-                remote_posts = secondInstance.get(f"authors/{author_pk}/posts/{post_pk}/")
-                print(remote_posts)
-                if remote_posts.status_code == 200:
-                    return Response(PostSerializer(remote_posts).data)
-            #     team1_post = team1.get(f"authors/{author_pk}/posts/{post_pk}/")
-            #     if team1_post.status_code == 200:
-            #         return Response(serializeTeam1Post(team1_post.json()))
+                team1_post = team1.get(f"authors/{author_pk}/posts/{post_pk}/")
+                if team1_post.status_code == 200:
+                    return Response(serializeTeam1Post(team1_post.json()))
             #     # team2_post = team2.get("author/posts/" + post_pk)
             #     team2_post = team2.get(f"authors/{author_pk}/posts/{post_pk}")
             #     if team2_post.status_code == 200:
@@ -193,8 +190,11 @@ class ImageViewSet(APIView):
             elif post.image:
                 with open(post.image.path, "rb") as img_file:
                     base64_data = base64.b64encode(img_file.read())
-            return HttpResponse(base64_data)
+            post.content = base64_data
+            serializer = PostSerializer(post)
+            return Response(serializer.data)
         elif post.visibility == 'PUBLIC' or post.unlisted == True:
+            post.content = base64_data
             serializer = PostSerializer(post)
             return Response(serializer.data)
         return Response(status=status.HTTP_400_BAD_REQUEST)

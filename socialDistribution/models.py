@@ -14,7 +14,7 @@ class Author(AbstractUser):
     host = models.CharField(max_length=255, blank=True, null=True)
     displayName = models.CharField(max_length=255, blank=True, null=True, default="User")
     github = models.TextField(blank=True, null=True)
-    image = models.ImageField(
+    profileImage = models.ImageField(
         upload_to='profile_images/', blank=True, null=True)
 
     def __str__(self):
