@@ -42,26 +42,6 @@ class AuthorListViewSet(generics.ListAPIView):
         return self.get_paginated_response(page)
 
 
-class NodeListViewSet(generics.ListAPIView):
-    queryset = Author.objects.all()
-    serializer_class = AuthorSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    pagination_class = JsonObjectPaginator
-    paginate_by_param = 'page_size'
-    
-    @extend_schema(
-        tags=['Authors'],
-        description='Get the list of connected nodes'
-    )
-    def get(self, request, *args, **kwargs):
-        authors = Author.objects.filter(type="node").all()
-        # check request origin
-        all_authors = json.loads(JSONRenderer().render(AuthorSerializer(authors, many=True).data).decode('utf-8'))
-        
-        page = self.paginate_queryset(all_authors)
-        return self.get_paginated_response(page)
-
-
 class AuthorDetailView(APIView):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
@@ -80,7 +60,7 @@ class AuthorDetailView(APIView):
                 # if remote_author.status_code == 200:
                 #         author = remote_author.json()
                 #         return Response(serializeTeam1Author(author))
-                remote_author1 = secondInstance.get("authors/")
+                remote_author1 = secondInstance.get(f"authors/{author_pk}")
                 if remote_author1.status_code == 200:
                     return Response(AuthorSerializer(remote_author1).data)
 
@@ -114,3 +94,23 @@ class AuthorDetailView(APIView):
         # delete the author from the database
         author.delete()
         return Response(status=204)
+
+
+class NodeListViewSet(generics.ListAPIView):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = JsonObjectPaginator
+    paginate_by_param = 'page_size'
+    
+    @extend_schema(
+        tags=['Authors'],
+        description='Get the list of connected nodes'
+    )
+    def get(self, request, *args, **kwargs):
+        authors = Author.objects.filter(type="node").all()
+        # check request origin
+        all_authors = json.loads(JSONRenderer().render(AuthorSerializer(authors, many=True).data).decode('utf-8'))
+        
+        page = self.paginate_queryset(all_authors)
+        return self.get_paginated_response(page)
