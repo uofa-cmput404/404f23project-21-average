@@ -46,7 +46,9 @@
 
           <div v-for="activity in github" :key="activity.id" class="github_activity">
             <div>
-              <h4>{{ activity }}</h4>
+              <h4>Activity Type: {{ activity.type }}</h4>
+              <h4>Activity Repository: {{ activity.repo.name }} </h4>
+              <h4>Activity Author: {{ activity.actor.login }}</h4>
             </div>
         </div>
       </div>
@@ -166,20 +168,10 @@ export default {
     const authorStore = useAuthorStore();
     const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/github/');
     this.github = response.data
-    this.formatGithubActivities();
     console.log(this.github)
   },
 
-  formatGithubActivities() {
-      this.formattedGithubActivities = this.github.map(activity => ({
-        id: activity.id,
-        type: activity.type,
-        // repoName: activity.repo.name,
-        //commitMessage: activity.payload.commits?.[0]?.message || 'No commit message',
-        time: new Date(activity.created_at).toLocaleString(),
-      }))
 
-    },
 
     
   
