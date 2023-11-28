@@ -62,8 +62,13 @@ def handleFollowItem(newItem):
     actorJson["type"] = "NodeAuthor"
     author = Author.objects.get_or_create(**actorJson)
 
-    objectJson = serializeTeam1Author(newItem["object"])
-    foreign_author = Author.objects.get(pk=objectJson["id"])
+    # objectJson = serializeTeam1Author(newItem["object"])
+    # print(newItem["object"]["id"].split('/')[-1])
+    try:
+        foreign_author = Author.objects.get(pk=newItem["object"]["id"].split('/')[-1])
+        # print(foreign_author)
+    except:
+        raise Exception("Object Author not found")
 
     # author is requesting to follow foreign_author
     follow = {
@@ -100,7 +105,7 @@ def handleLikeItem(newItem):
     #     }
     #     newLike = CommentLike.objects.get_or_create(**like)
     likeJson = {
-        "id": newItem["id"].split("/")[-1],
+        # "id": newItem["id"].split("/")[-1],
         "author": authorJson,
         "summary": newItem["summary"],
         "context": newItem["context"],
@@ -159,7 +164,10 @@ class InboxItemView(generics.GenericAPIView):
 
         if not isFrontendRequest(request):
             if newItem["type"].lower() == "follow":
-                items.append(json.dumps(handleFollowItem(newItem), default=str))
+                try:
+                    items.append(json.dumps(handleFollowItem(newItem), default=str))
+                except:
+                    return Response({"message": "Object Author not found"}, status=status.HTTP_404_NOT_FOUND)
             elif newItem["type"].lower() == "like":
                 items.append(json.dumps(handleLikeItem(newItem), default=str))
             elif newItem["type"].lower() == "comment":
