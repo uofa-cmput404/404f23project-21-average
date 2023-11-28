@@ -164,10 +164,10 @@ export default {
 
   async getGithub(){
     const authorStore = useAuthorStore();
-    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/github/');
+    const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/github/');
     this.github = response.data
     this.formatGithubActivities();
-    console.log(this.github)
+console.log(this.github)
   },
 
   formatGithubActivities() {
