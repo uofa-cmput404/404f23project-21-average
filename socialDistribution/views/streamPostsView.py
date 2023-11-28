@@ -11,7 +11,7 @@ from socialDistribution.models import Author, Post, Comment
 from socialDistribution.pagination import Pagination, JsonObjectPaginator
 from socialDistribution.serializers import PostSerializer, FollowSerializer, AuthorSerializer, \
     CommentSerializer
-from socialDistribution.util import sendToFriendsInbox, isFriend, serializeTeam1Author, secondInstance
+from socialDistribution.util import sendToFriendsInbox, isFriend, serializeTeam1Author
 import base64
 from io import BytesIO
 from PIL import Image
@@ -23,14 +23,6 @@ from rest_framework.renderers import JSONRenderer
 
 def getPostsFromAuthors():
     res = []
-    remote_author1 = secondInstance.get("authors/")
-    if remote_author1.status_code == 200:
-        for author in remote_author1.json()["results"]:
-            author1 = AuthorSerializer(author).data
-            remote_posts = secondInstance.get(f"authors/{author1['id']}/posts/")
-            if remote_posts.status_code == 200:
-                for post in remote_posts.json()["results"]:
-                    res.append(PostSerializer(post).data)
     team1_authors = team1.get("authors/")
     if team1_authors.status_code == 200:
         for author in team1_authors.json()["items"]:

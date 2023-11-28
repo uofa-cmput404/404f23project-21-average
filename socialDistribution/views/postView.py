@@ -15,7 +15,7 @@ import base64
 from io import BytesIO
 from PIL import Image
 from django.http import HttpResponse
-from ..util import isFrontendRequest, team1, team2, serializeTeam1Post, sendToEveryonesInbox, secondInstance
+from ..util import isFrontendRequest, team1, team2, serializeTeam1Post, sendToEveryonesInbox
 import json
 from rest_framework.renderers import JSONRenderer
 
@@ -120,10 +120,6 @@ class PostDetail(APIView):
             author = Author.objects.get(pk=author_pk, type="author")
         except Author.DoesNotExist:
             if isFrontendRequest(request):
-                remote_posts = secondInstance.get(f"authors/{author_pk}/posts/{post_pk}/")
-                print(remote_posts)
-                if remote_posts.status_code == 200:
-                    return Response(PostSerializer(remote_posts).data)
                 team1_post = team1.get(f"authors/{author_pk}/posts/{post_pk}/")
                 if team1_post.status_code == 200:
                     return Response(serializeTeam1Post(team1_post.json()))

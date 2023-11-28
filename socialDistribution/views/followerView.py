@@ -5,7 +5,7 @@ from socialDistribution.serializers import AuthorSerializer, FollowSerializer
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
-from ..util import team1, team2, secondInstance
+from ..util import team1, team2
 from drf_spectacular.utils import extend_schema
 from ..util import addToInbox
 
@@ -130,20 +130,18 @@ class FollowDetailViewSet(generics.GenericAPIView):
         try:
             foreign_author = Author.objects.get(pk=foreign_author_pk, type="author")
         except:
-            remote_author = secondInstance.get(f"authors/{foreign_author_pk}")
-            if remote_author.status_code == 200:
-                remoteAuthor = AuthorSerializer(remote_author.json()).data
-            # send follow request to remote inbox
-            print(remoteAuthor)
-            payload = {
-                "type": "follow",
-                "summary": f"{author.username} wants to follow {remoteAuthor['username']}",
-                "actor": AuthorSerializer(author).data,
-                "object": remoteAuthor,
-            }
-            print({"items": payload})
-            response = secondInstance.post(f"authors/{foreign_author_pk}/inbox/", json={"items": payload})
-            print(response.text)
+            # remote_author = secondInstance.get(f"authors/{foreign_author_pk}")
+            # if remote_author.status_code == 200:
+            #     remoteAuthor = AuthorSerializer(remote_author.json()).data
+            # # send follow request to remote inbox
+            # payload = {
+            #     "type": "follow",
+            #     "summary": f"{author.username} wants to follow {remoteAuthor['username']}",
+            #     "actor": AuthorSerializer(author).data,
+            #     "object": remoteAuthor,
+            # }
+            # print({"items": payload})
+            # response = secondInstance.post(f"authors/{foreign_author_pk}/inbox/", json={"items": payload})
             return Response({'message': 'Follow Request Sent Successfully'}, status=status.HTTP_201_CREATED)
         
         if author == foreign_author:
