@@ -87,7 +87,7 @@ def serializeTeam1Author(author):
         "host": author["host"],
         "displayName": author["displayName"],
         "github": author["github"],
-        "image": author["profileImage"],
+        "profileImage": author["profileImage"],
         "first_name": "",
         "last_name": "",
         "email": "",

@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework import generics
 from drf_spectacular.utils import extend_schema
 import json
+import uuid
 from ..util import isFrontendRequest, serializeTeam1Post, serializeTeam1Author
 
 
@@ -65,7 +66,9 @@ def handleFollowItem(newItem):
     # objectJson = serializeTeam1Author(newItem["object"])
     # print(newItem["object"]["id"].split('/')[-1])
     try:
-        foreign_author = Author.objects.get(pk=newItem["object"]["id"].split('/')[-1])
+        print(uuid.UUID(hex=newItem["object"]["id"].split('/')[-1]))
+        foreign_author = Author.objects.get(pk=uuid.UUID(hex=newItem["object"]["id"].split('/')[-1]))
+        print(foreign_author)
         # print(foreign_author)
     except:
         raise Exception("Object Author not found")
@@ -166,7 +169,8 @@ class InboxItemView(generics.GenericAPIView):
             if newItem["type"].lower() == "follow":
                 try:
                     items.append(json.dumps(handleFollowItem(newItem), default=str))
-                except:
+                except Exception as e:
+                    print(e)
                     return Response({"message": "Object Author not found"}, status=status.HTTP_404_NOT_FOUND)
             elif newItem["type"].lower() == "like":
                 items.append(json.dumps(handleLikeItem(newItem), default=str))
