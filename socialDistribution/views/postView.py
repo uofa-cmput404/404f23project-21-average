@@ -58,6 +58,7 @@ class PostList(generics.ListCreateAPIView):
             tempPost = Post.objects.get(pk=serializer.data["id"])
             if tempPost.imageOnlyPost:
                 tempPost.unlisted = True
+                tempPost.contentType = "image/png;base64"
             tempPost.origin = f"{settings.BASEHOST}/authors/{author.id}/posts/{tempPost.id}"
             tempPost.save()
 
@@ -193,8 +194,11 @@ class ImageViewSet(APIView):
             elif post.image:
                 with open(post.image.path, "rb") as img_file:
                     base64_data = base64.b64encode(img_file.read())
-            return HttpResponse(base64_data)
+            post.content = base64_data
+            serializer = PostSerializer(post)
+            return Response(serializer.data)
         elif post.visibility == 'PUBLIC' or post.unlisted == True:
+            post.content = base64_data
             serializer = PostSerializer(post)
             return Response(serializer.data)
         return Response(status=status.HTTP_400_BAD_REQUEST)
