@@ -23,4 +23,5 @@ foreign post on our app:
 
 connected to our own second instance
 connected second instance 1: `https://second-instance-a06a2b03061a.herokuapp.com/api/`
+second group: `https://vibely-23b7dc4c736d.herokuapp.com/api/swagger/`
 
