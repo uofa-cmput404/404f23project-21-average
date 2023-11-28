@@ -31,14 +31,14 @@ def getPostsFromAuthors():
             if remote_posts.status_code == 200:
                 for post in remote_posts.json()["results"]:
                     res.append(PostSerializer(post).data)
-    # team1_authors = team1.get("authors/")
-    # if team1_authors.status_code == 200:
-    #     for author in team1_authors.json()["items"]:
-    #         author1 = serializeTeam1Author(author)
-    #         team1_posts = team1.get(f"authors/{author1['id']}/posts/")
-    #         if team1_posts.status_code == 200:
-    #             for post in team1_posts.json()["items"]:
-    #                 res.append(serializeTeam1Post(post))
+    team1_authors = team1.get("authors/")
+    if team1_authors.status_code == 200:
+        for author in team1_authors.json()["items"]:
+            author1 = serializeTeam1Author(author)
+            team1_posts = team1.get(f"authors/{author1['id']}/posts/")
+            if team1_posts.status_code == 200:
+                for post in team1_posts.json()["items"]:
+                    res.append(serializeTeam1Post(post))
     # team2_posts = team2.get(f"authors/{author_pk}/posts/")
             # if team2_posts.status_code == 200:
             #     for post in team2_posts.json()["items"]:

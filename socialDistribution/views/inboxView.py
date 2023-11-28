@@ -11,7 +11,7 @@ from ..util import isFrontendRequest, serializeTeam1Post, serializeTeam1Author
 
 def handlePostItem(newItem):
     # TODO: maybe dont need to save post on db???
-    # post = serializeTeam1Post(newItem)
+    post = serializeTeam1Post(newItem)
     # authorJson = serializeTeam1Author(newItem["author"])
     # authorJson["type"] = "NodeAuthor"
     # author = Author.objects.get_or_create(**authorJson)
@@ -32,35 +32,37 @@ def handlePostItem(newItem):
     #     unlisted=post["unlisted"],
     #     published=post["published"],
     # )
-    return PostSerializer(newItem).data
+    return post
+    # return PostSerializer(newItem).data
 
 
 def handleCommentItem(newItem):
     authorJson = serializeTeam1Author(newItem["author"])
-    authorJson["type"] = "NodeAuthor"
-    author = Author.objects.get_or_create(**authorJson)
+    # authorJson["type"] = "NodeAuthor"
+    # author = Author.objects.get_or_create(**authorJson)
     comment = {
         "id": newItem["id"].split("/")[-1],
-        "author": author[0],
+        "author": authorJson,
         "comment": newItem["comment"],
         "contentType": newItem["contentType"],
         "published": newItem["published"],
         "type": "NodeComment",
         # "post": comment["post"],
     }
-    newComment = Comment.objects.get_or_create(**comment)
-    return CommentSerializer(newComment[0]).data
+    # newComment = Comment.objects.get_or_create(**comment)
+    # return CommentSerializer(newComment[0]).data
+    return comment
 
 
 def handleFollowItem(newItem):
     # object key must be an author on my server
     # actor key is the foreign_author following my object
     # actor is requesting to follow object
-    actorJson = AuthorSerializer(newItem["actor"]).data
+    actorJson = serializeTeam1Author(newItem["actor"])
     actorJson["type"] = "NodeAuthor"
     author = Author.objects.get_or_create(**actorJson)
 
-    objectJson = AuthorSerializer(newItem["object"]).data
+    objectJson = serializeTeam1Author(newItem["object"])
     foreign_author = Author.objects.get(pk=objectJson["id"])
 
     # author is requesting to follow foreign_author
@@ -76,29 +78,38 @@ def handleFollowItem(newItem):
 
 def handleLikeItem(newItem):
     authorJson = serializeTeam1Author(newItem["author"])
-    authorJson["type"] = "NodeAuthor"
-    author = Author.objects.get_or_create(**authorJson)
+    # authorJson["type"] = "NodeAuthor"
+    # author = Author.objects.get_or_create(**authorJson)
     
-    if newItem["summary"].split()[-1] == "post":
-        like = {
-        "context": newItem["context"],
-        "author": author[0],
-        "object": newItem["object"],
-        "type": "NodePostLike",
+    # if newItem["summary"].split()[-1] == "post":
+    #     like = {
+    #     "context": newItem["context"],
+    #     "author": author[0],
+    #     "object": newItem["object"],
+    #     "type": "NodePostLike",
+    #     "summary": newItem["summary"],
+    #     }
+    #     newLike = PostLike.objects.get_or_create(**like)
+    # elif newItem["summary"].split()[-1] == 'comment':
+    #     like = {
+    #     "context": newItem["context"],
+    #     "author": author[0],
+    #     "object": newItem["object"],
+    #     "type": "NodeCommentLike",
+    #     "summary": newItem["summary"],
+    #     }
+    #     newLike = CommentLike.objects.get_or_create(**like)
+    likeJson = {
+        "id": newItem["id"].split("/")[-1],
+        "author": authorJson,
         "summary": newItem["summary"],
-        }
-        newLike = PostLike.objects.get_or_create(**like)
-    elif newItem["summary"].split()[-1] == 'comment':
-        like = {
         "context": newItem["context"],
-        "author": author[0],
         "object": newItem["object"],
-        "type": "NodeCommentLike",
-        "summary": newItem["summary"],
-        }
-        newLike = CommentLike.objects.get_or_create(**like)
+        "type": "Like",
+    }
 
-    return PostLikeSerializer(newLike[0]).data
+    # return PostLikeSerializer(newLike[0]).data
+    return likeJson
 
 
 class InboxItemView(generics.GenericAPIView):

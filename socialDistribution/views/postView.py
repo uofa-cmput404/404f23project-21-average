@@ -123,9 +123,9 @@ class PostDetail(APIView):
                 print(remote_posts)
                 if remote_posts.status_code == 200:
                     return Response(PostSerializer(remote_posts).data)
-            #     team1_post = team1.get(f"authors/{author_pk}/posts/{post_pk}/")
-            #     if team1_post.status_code == 200:
-            #         return Response(serializeTeam1Post(team1_post.json()))
+                team1_post = team1.get(f"authors/{author_pk}/posts/{post_pk}/")
+                if team1_post.status_code == 200:
+                    return Response(serializeTeam1Post(team1_post.json()))
             #     # team2_post = team2.get("author/posts/" + post_pk)
             #     team2_post = team2.get(f"authors/{author_pk}/posts/{post_pk}")
             #     if team2_post.status_code == 200:
