@@ -21,6 +21,7 @@ class PostSerializer(ModelSerializer):
     author = AuthorSerializer(read_only=True)
     categories = serializers.SerializerMethodField(method_name='get_categories')
     comments = serializers.SerializerMethodField(method_name='get_comments')
+    source = serializers.SerializerMethodField(method_name='get_id')
     # image = serializers.SerializerMethodField(method_name='get_image_link')
 
     class Meta:

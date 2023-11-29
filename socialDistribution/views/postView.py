@@ -40,8 +40,8 @@ class PostList(generics.ListCreateAPIView):
         all_posts = PostSerializer(authorPosts, many=True).data
 
         # add source to posts and return everything
-        for post in all_posts:
-            post["source"] = f"{settings.BASEHOST}/authors/{post['author']['id']}/posts/{post['id']}"
+        # for post in all_posts:
+        #     post["source"] = f"{settings.BASEHOST}/authors/{post['author']['id'].split('/')[-1]}/posts/{post['id'].split('/')[-1]}"
         page = self.paginate_queryset(all_posts)
         return self.get_paginated_response(page)
 
