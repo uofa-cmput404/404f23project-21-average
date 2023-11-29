@@ -63,13 +63,8 @@ def handleFollowItem(newItem):
     actorJson["type"] = "NodeAuthor"
     author = Author.objects.get_or_create(**actorJson)
 
-    # objectJson = serializeTeam1Author(newItem["object"])
-    # print(newItem["object"]["id"].split('/')[-1])
     try:
-        print(uuid.UUID(hex=newItem["object"]["id"].split('/')[-1]))
         foreign_author = Author.objects.get(pk=uuid.UUID(hex=newItem["object"]["id"].split('/')[-1]))
-        print(foreign_author)
-        # print(foreign_author)
     except:
         raise Exception("Object Author not found")
 

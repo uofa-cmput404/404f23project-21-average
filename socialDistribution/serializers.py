@@ -5,23 +5,29 @@ from django.conf import settings
 
 
 class AuthorSerializer(ModelSerializer):
+    id = serializers.SerializerMethodField(method_name='get_id')
 
     class Meta:
         model = Author
         fields = ['id', 'host', 'displayName', 'github', 'profileImage', 'first_name',
                   'last_name', 'email', 'username', 'type']
+    
+    def get_id(self, obj):
+        return f"{settings.BASEHOST}/author/{obj.id}"
 
 
 class PostSerializer(ModelSerializer):
+    id = serializers.SerializerMethodField(method_name='get_id')
     author = AuthorSerializer(read_only=True)
     categories = serializers.SerializerMethodField(method_name='get_categories')
+    comments = serializers.SerializerMethodField(method_name='get_comments')
     # image = serializers.SerializerMethodField(method_name='get_image_link')
 
     class Meta:
         model = Post
         fields = ['id', 'title', 'type', 'source', 'origin', 'description', 'contentType', 'visibility', 'unlisted',
-                  'content', 'published', 'author', 'categories', 'image_link', 'image', 'imageOnlyPost', 'count']
-        read_only_fields = ['author', 'count', 'published', 'id', 'origin', 'source', 'type']
+                  'content', 'published', 'author', 'categories', 'image_link', 'image', 'imageOnlyPost', 'count', 'comments']
+        read_only_fields = ['author', 'count', 'published', 'id', 'origin', 'source', 'type', 'comments']
         ordering = ['-id']
 
     def get_categories(self, obj):
@@ -32,6 +38,11 @@ class PostSerializer(ModelSerializer):
         except:
             return []
     
+    def get_id(self, obj):
+        return f"{settings.BASEHOST}/author/{obj.author.id}/posts/{obj.id}"
+    
+    def get_comments(self, obj):
+        return f"{settings.BASEHOST}/author/{obj.author.id}/posts/{obj.id}/comments/"
     # def get_image_link(self, obj):
     #     if obj.image:
     #         return settings.BASEHOST[0:-4] + obj.image.url
@@ -39,7 +50,9 @@ class PostSerializer(ModelSerializer):
 
 
 class CommentSerializer(ModelSerializer):
+    id = serializers.SerializerMethodField(method_name='get_id')
     author = AuthorSerializer(read_only=True)
+    post = serializers.SerializerMethodField(method_name='get_post')
 
     class Meta:
         model = Comment
@@ -47,7 +60,12 @@ class CommentSerializer(ModelSerializer):
                   'contentType', 'published']
         read_only_fields = ['author', 'post', 'published', 'id', 'type']
         ordering = ['-id']
+    
+    def get_id(self, obj):
+        return f"{settings.BASEHOST}/author/{obj.post.author.id}/posts/{obj.post.id}/comments/{obj.id}"
 
+    def get_post(self, obj):
+        return f"{settings.BASEHOST}/author/{obj.post.author.id}/posts/{obj.post.id}"
 
 class FollowSerializer(ModelSerializer):
     following = AuthorSerializer(read_only=True)
