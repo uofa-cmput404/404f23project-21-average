@@ -89,3 +89,10 @@ class FollowerViewsTest(TestCase):
         response = self.client.get(f'/path/to/follow-list/{self.author1.pk}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('results', response.data)
+
+    def test_follow_detail_view_get(self):
+        # Test FollowDetailViewSet GET
+        response = self.client.get(f'/path/to/follow-detail/{self.author1.pk}/{self.author2.pk}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, True)
+
