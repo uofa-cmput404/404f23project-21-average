@@ -41,3 +41,8 @@ class AuthorViewsTest(TestCase):
         # Check if the returned data contains the updated username
         self.assertIn('username', response.data)
         self.assertEqual(response.data['username'], updated_username)
+
+    def test_author_detail_view_delete(self):
+        # Test AuthorDetailView DELETE
+        response = self.client.delete(reverse('authors', args=[self.author.pk]))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
