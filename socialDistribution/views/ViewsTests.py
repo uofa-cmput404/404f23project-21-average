@@ -12,3 +12,9 @@ class AuthorViewsTest(TestCase):
         self.client = APIClient()
         # Create a test author
         self.author = Author.objects.create(username='test_author')
+
+    def test_author_list_view(self):
+        # Test AuthorListViewSet
+        response = self.client.get(reverse('authors-list')) #Reverse creates a URL based on the view name. 
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('results', response.data)
