@@ -48,26 +48,28 @@ class AuthorViewsTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     
-    #Tests for CommentView.py
-    class CommentViewsTest(TestCase):
-        def setUp(self):
-            # Set up for the Test Data
-            self.client = APIClient()
-            # Create test author, post, and comment instances
-            self.author = Author.objects.create(username='test_author')
-            self.post = Post.objects.create(author=self.author, title='Test Post', content='Test Content', visibility='PUBLIC')
-            self.comment_data = {'text': 'Test Comment'}
+#Tests for CommentView.py
 
-        def test_comment_list_view(self):
-            # Test CommentViewSet GET
-            response = self.client.get(f'/path/to/comment-list/{self.author.pk}/{self.post.pk}/')
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
-            self.assertIn('results', response.data)
+class CommentViewsTest(TestCase):
+    def setUp(self):
+        # Set up for the Test Data
+        self.client = APIClient()
+        # Create test author, post, and comment instances
+        self.author = Author.objects.create(username='test_author')
+        self.post = Post.objects.create(author=self.author, title='Test Post', content='Test Content', visibility='PUBLIC')
+        self.comment_data = {'text': 'Test Comment'}
 
-        def test_comment_create_view(self):
-            # Test CommentViewSet POST
-            response = self.client.post(f'/path/to/comment-list/{self.author.pk}/{self.post.pk}/', self.comment_data, format='json')
-            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-            #Check for a Text Field:
-            self.assertIn('text', response.data)
-            self.assertEqual(response.data['text'], self.comment_data['text'])
+    def test_comment_list_view(self):
+        # Test CommentViewSet GET
+        response = self.client.get(f'/path/to/comment-list/{self.author.pk}/{self.post.pk}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('results', response.data)
+
+    def test_comment_create_view(self):
+        # Test CommentViewSet POST
+        response = self.client.post(f'/path/to/comment-list/{self.author.pk}/{self.post.pk}/', self.comment_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        #Check for a Text Field:
+        self.assertIn('text', response.data)
+        self.assertEqual(response.data['text'], self.comment_data['text'])
+
