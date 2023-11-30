@@ -30,3 +30,14 @@ class AuthorViewsTest(TestCase):
         response = self.client.get(reverse('authors', args=[self.author.pk]))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('username', response.data)
+
+    def test_author_detail_view_post(self):
+        # Test AuthorDetailView POST
+        updated_username = 'Test_user'
+        data = {'username': updated_username}
+        response = self.client.post(reverse('authors', args=[self.author.pk]), data, format='json')
+        # Check if the response is successful HTTP 200
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Check if the returned data contains the updated username
+        self.assertIn('username', response.data)
+        self.assertEqual(response.data['username'], updated_username)
