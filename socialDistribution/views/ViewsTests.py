@@ -57,3 +57,9 @@ class AuthorViewsTest(TestCase):
             self.author = Author.objects.create(username='test_author')
             self.post = Post.objects.create(author=self.author, title='Test Post', content='Test Content', visibility='PUBLIC')
             self.comment_data = {'text': 'Test Comment'}
+
+        def test_comment_list_view(self):
+            # Test CommentViewSet GET
+            response = self.client.get(f'/path/to/comment-list/{self.author.pk}/{self.post.pk}/')
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertIn('results', response.data)
