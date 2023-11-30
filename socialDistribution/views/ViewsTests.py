@@ -96,3 +96,8 @@ class FollowerViewsTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, True)
 
+    def test_follow_detail_view_delete(self):
+        # Test FollowDetailViewSet DELETE
+        response = self.client.delete(f'/path/to/follow-detail/{self.author1.pk}/{self.author2.pk}/')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
