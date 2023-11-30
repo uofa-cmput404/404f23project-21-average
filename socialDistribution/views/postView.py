@@ -55,7 +55,7 @@ class PostList(generics.ListCreateAPIView):
         
         if serializer.is_valid():
             serializer.save(author=author, origin=f"{settings.BASEHOST}/authors/{author.id}/posts/")
-            tempPost = Post.objects.get(pk=serializer.data["id"])
+            tempPost = Post.objects.get(pk=serializer.data["id"].split("/")[-1])
             if tempPost.imageOnlyPost:
                 tempPost.unlisted = True
                 tempPost.contentType = "image/png;base64"

@@ -132,6 +132,7 @@ class InboxItemView(generics.GenericAPIView):
         allItems = json.loads(inbox.items)
         result = []
         for item in allItems:
+            print('\n\n', item)
             result.append(json.loads(item))
 
         copy = serializer.data

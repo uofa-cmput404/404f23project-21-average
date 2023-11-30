@@ -36,18 +36,17 @@ def sendToEveryonesInbox(data):
 def sendToFriendsInbox(author, data):
     # send to all friends that have status accepted
     followers = author.followers.filter(status="Accepted").all()
-    following = author.following.filter(status="Accepted").all()
-    print(followers)
-    print(following)
+    # following = author.following.filter(status="Accepted").all()
+    # print(following)
     result = []
     for follower in followers:
         result.append(Author.objects.get(id=follower.follower.id))
-    for friend in following:
-        result.append(Author.objects.get(id=friend.following.id))
+    # for friend in following:
+    #     result.append(Author.objects.get(id=friend.following.id))
     
     # remover duplicate authors
     # TODO: check if this works
-    result = list(dict.fromkeys(result))
+    # result = list(dict.fromkeys(result))
     # Convert the follow object to author object
     print(result)
     for friend in result:

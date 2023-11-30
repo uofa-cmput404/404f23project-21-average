@@ -25,8 +25,9 @@ class FollowViewSet(generics.ListAPIView):
         try:
             author = Author.objects.get(pk=author_pk, type="author")
             followers = author.followers.filter(status="Accepted").all()
+            print(followers)
             for follower in followers:
-                authors.append(Author.objects.get(pk=follower.follower.id))
+                authors.append(AuthorSerializer(Author.objects.get(pk=follower.follower.id)).data)
         except:
             # TODO: i dont think we need to get followers of remote authors on UI???
             team1RemoteAuthor = team1.get(f"authors/{author_pk}")
@@ -80,10 +81,10 @@ class FollowingViewSet(generics.ListAPIView):
         # turn followers queryset into a list of authors
         authors = []
         for follower in following:
-            authors.append(Author.objects.get(pk=follower.following.id))
+            authors.append(AuthorSerializer(Author.objects.get(pk=follower.following.id)).data)
         
         page = self.paginate_queryset(authors)
-        return self.get_paginated_response(AuthorSerializer(page, many=True).data)
+        return self.get_paginated_response(page)
 
 
 class FollowDetailViewSet(generics.GenericAPIView):

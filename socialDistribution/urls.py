@@ -7,6 +7,7 @@ from socialDistribution.views.inboxView import InboxItemView
 from socialDistribution.views.likesView import AddLikeToCommentView, AddLikeToPostView, GetAllAuthorLikes
 from socialDistribution.views.postView import ImageViewSet, PostList, PostDetail
 from socialDistribution.views.streamPostsView import StreamPostList
+from socialDistribution.views.shareView import ShareView
 
 # The API URLs are now determined automatically by the router.
 urlpatterns = [
@@ -48,5 +49,7 @@ urlpatterns = [
     # inbox
     path('authors/<slug:author_pk>/inbox/', InboxItemView.as_view(), name='inbox'),
 
-    path('authors/<slug:author_pk>/posts/allposts/stream/', StreamPostList.as_view(), name='public-posts'),
+    path('authors/<slug:author_pk>/posts/allposts/stream/', StreamPostList.as_view(), name='share-posts'),
+
+    path('share/<slug:post_pk>/', ShareView.as_view(), name='share-post'),
 ]
