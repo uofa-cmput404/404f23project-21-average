@@ -74,3 +74,12 @@ class CommentViewsTest(TestCase):
         self.assertEqual(response.data['text'], self.comment_data['text'])
 
 # Tests for followerView.py
+class FollowerViewsTest(TestCase):
+    def setUp(self):
+        # Set up the Test Data
+        self.client = APIClient()
+        # Create test authors
+        self.author1 = Author.objects.create(username='author1')
+        self.author2 = Author.objects.create(username='author2')
+        # Create test follow relationship
+        Follow.objects.create(following=self.author1, follower=self.author2, status="Accepted")
