@@ -3,6 +3,9 @@ from rest_framework.test import APIClient
 from rest_framework import status
 from django.urls import reverse
 from ..models import Author,Comment, Post, Follow
+import requests
+from unittest.mock import patch, MagicMock
+
 
 #Testing for authorView.py
 
