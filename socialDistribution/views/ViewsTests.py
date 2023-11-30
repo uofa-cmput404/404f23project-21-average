@@ -24,3 +24,9 @@ class AuthorViewsTest(TestCase):
         response = self.client.get(reverse('nodes'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('results', response.data)
+
+    def test_author_detail_view(self):
+        # Test AuthorDetailView GET
+        response = self.client.get(reverse('authors', args=[self.author.pk]))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('username', response.data)
