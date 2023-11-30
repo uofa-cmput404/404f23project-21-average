@@ -88,7 +88,7 @@ class FollowingViewSet(generics.ListAPIView):
 
 class FollowDetailViewSet(generics.GenericAPIView):
     queryset = Follow.objects.all()
-    serializer_class = FollowSerializer
+    # serializer_class = FollowSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = Pagination
     
@@ -99,11 +99,11 @@ class FollowDetailViewSet(generics.GenericAPIView):
     def get(self, request, author_pk, foreign_author_pk, format=None):
         # return true if foreign_author is a follower of author
         author = Author.objects.get(pk=author_pk)
-        print(author.followers.all())
-        foreign_author = Author.objects.get(pk=foreign_author_pk)
-        print(foreign_author.followers.all())
+        try:
+            foreign_author = Author.objects.get(pk=foreign_author_pk)
+        except:
+            return Response(False)
         follow = Follow.objects.filter(following=foreign_author, follower=author)
-        print(follow)
         if author and foreign_author and follow and follow[0].status == "Accepted":
             return Response(True)
         return Response(False)

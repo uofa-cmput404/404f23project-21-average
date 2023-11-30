@@ -110,7 +110,7 @@ export default {
     try {
       // Fetch user's posts
       let postsResponse = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
-      this.posts = postsResponse.data.results;
+      this.posts = postsResponse.data.items;
 
       // Fetch user's profile
       let profileResponse = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId);
@@ -148,7 +148,7 @@ export default {
     const authorStore = useAuthorStore();
     const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/');
     console.log("yoyoyoyo")
-    this.followers = response.data.results
+    this.followers = response.data.items
     console.log(this.followers)
     this.showFollowersPopup = true;
   },
@@ -159,7 +159,7 @@ export default {
   async fetchFollowing() {
     const authorStore = useAuthorStore();
     const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/following/');
-    this.following = response.data.results;
+    this.following = response.data.items;
     console.log(this.following)
     this.showFollowingPopup = true;
   },
@@ -195,7 +195,7 @@ export default {
       const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
       console.log(response)
       if (response.status === 200) {
-        this.posts = response.data.results; // Update the posts data property with the fetched posts
+        this.posts = response.data.items; // Update the posts data property with the fetched posts
         this.author = author.data;
         this.profileImage = author.data.image;
         // console.log((await this).profileImage, (await this).author)

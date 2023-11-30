@@ -38,12 +38,12 @@ export default {
     async checkFollowingStatus() {
       const authorStore = useAuthorStore();
       try {
+        console.log(this.id.split('/'))
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-        const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id + '/');
-        if (!(response.status === 400 || response.status === 401 || response.status===500)) {
-          console.log(response.data);
+        const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id.split('/')[5] + '/');
+        if (!(response.status === 400 || response.status === 401 || response.status === 500)) {
           this.isFollowing = response.data;
-
+          console.log(this.isFollowing)
         }
       } catch (error) {
         console.error('Error while checking following status:', error);
@@ -61,7 +61,7 @@ export default {
           console.log('Unfollowing', this.username);
         } else {
           // Call the follow API
-          response = await axios.put(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id + '/');
+          response = await axios.put(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id.split('/')[5] + '/');
           console.log('Following', this.username);
         }
         if (!(response.status === 400 || response.status === 401)) {

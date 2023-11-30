@@ -42,7 +42,7 @@ export default {
       console.log(`Basic ${authorStore.getAuthToken}`)
       axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
       const response = await axios.get(authorStore.BASE_URL + '/authors/?page_size=100');
-      this.friends = response.data.results; // Save the data in friends
+      this.friends = response.data.items; // Save the data in friends
       console.log("heyyyy")
       // console.log(this.friends)
       // for (friend in this.friends) {
@@ -73,8 +73,6 @@ export default {
       //   this.filteredFriends = response.data;
       // });
     },
-
-
   },
 
 };
@@ -84,7 +82,8 @@ export default {
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box; /* Ensures padding does not affect overall width */
+  box-sizing: border-box;
+  /* Ensures padding does not affect overall width */
 }
 
 .app-container {
@@ -100,7 +99,8 @@ export default {
   flex-grow: 1;
   overflow-y: auto;
   background-color: #00C58E;
-  padding-left: 26%; /* Adjust based on your sidebar width */
+  padding-left: 26%;
+  /* Adjust based on your sidebar width */
 }
 
 .search-bar {
@@ -108,7 +108,8 @@ export default {
   width: 70%;
   margin: 0 auto;
   display: flex;
-  justify-content: center; /* Center the search bar horizontally */
+  justify-content: center;
+  /* Center the search bar horizontally */
 }
 
 .search-bar input {

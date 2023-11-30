@@ -76,7 +76,7 @@ export default {
           response = await axios.delete(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id + '/');
         } else {
           // Call the follow API
-          response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + notification.object.id+ '/');
+          response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + notification.object.id.split('/')[5] + '/');
           console.log('Following', this.username);
         }
         if (!(response.status === 400 || response.status === 401)) {

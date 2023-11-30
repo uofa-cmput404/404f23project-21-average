@@ -99,8 +99,8 @@ export default {
     const authorStore = useAuthorStore();
     axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
     const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/allposts/stream/?page_size=100');
-    console.log(response.data.results)
-    this.posts = response.data.results;
+    console.log('102', response.data.items)
+    this.posts = response.data.items;
   },
   methods: {
     // Methods for CreatePostComponent
@@ -143,6 +143,7 @@ export default {
 
     async checkRemote(post) {
       const authorStore = useAuthorStore();
+      console.log('checkRemote', post)
       return post.origin.split('/')[2] !== authorStore.BASE_URL.split('/')[2];
     },
     async created() {
