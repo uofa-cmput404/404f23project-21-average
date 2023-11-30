@@ -63,3 +63,11 @@ class AuthorViewsTest(TestCase):
             response = self.client.get(f'/path/to/comment-list/{self.author.pk}/{self.post.pk}/')
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertIn('results', response.data)
+
+        def test_comment_create_view(self):
+            # Test CommentViewSet POST
+            response = self.client.post(f'/path/to/comment-list/{self.author.pk}/{self.post.pk}/', self.comment_data, format='json')
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+            #Check for a Text Field:
+            self.assertIn('text', response.data)
+            self.assertEqual(response.data['text'], self.comment_data['text'])
