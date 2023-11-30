@@ -101,3 +101,7 @@ class FollowerViewsTest(TestCase):
         response = self.client.delete(f'/path/to/follow-detail/{self.author1.pk}/{self.author2.pk}/')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
+    def test_follow_detail_view_put(self):
+        # Test FollowDetailViewSet PUT
+        response = self.client.put(f'/path/to/follow-detail/{self.author1.pk}/{self.author2.pk}/')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
