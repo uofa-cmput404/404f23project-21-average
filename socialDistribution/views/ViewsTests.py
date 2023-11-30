@@ -46,3 +46,14 @@ class AuthorViewsTest(TestCase):
         # Test AuthorDetailView DELETE
         response = self.client.delete(reverse('authors', args=[self.author.pk]))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    
+    #Tests for CommentView.py
+    class CommentViewsTest(TestCase):
+        def setUp(self):
+            # Set up for the Test Data
+            self.client = APIClient()
+            # Create test author, post, and comment instances
+            self.author = Author.objects.create(username='test_author')
+            self.post = Post.objects.create(author=self.author, title='Test Post', content='Test Content', visibility='PUBLIC')
+            self.comment_data = {'text': 'Test Comment'}
