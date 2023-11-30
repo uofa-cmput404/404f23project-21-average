@@ -2,7 +2,7 @@ from django.test import TestCase #Using Djangos Built in TestCase
 from rest_framework.test import APIClient
 from rest_framework import status
 from django.urls import reverse
-from ..models import Author,Comment, Post
+from ..models import Author,Comment, Post, Follow
 
 #Testing for authorView.py
 
@@ -73,3 +73,4 @@ class CommentViewsTest(TestCase):
         self.assertIn('text', response.data)
         self.assertEqual(response.data['text'], self.comment_data['text'])
 
+# Tests for followerView.py
