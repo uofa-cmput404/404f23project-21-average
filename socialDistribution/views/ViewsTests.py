@@ -83,3 +83,9 @@ class FollowerViewsTest(TestCase):
         self.author2 = Author.objects.create(username='author2')
         # Create test follow relationship
         Follow.objects.create(following=self.author1, follower=self.author2, status="Accepted")
+
+    def test_follow_list_view(self):
+        # Test FollowViewSet GET
+        response = self.client.get(f'/path/to/follow-list/{self.author1.pk}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('results', response.data)
