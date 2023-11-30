@@ -18,3 +18,9 @@ class AuthorViewsTest(TestCase):
         response = self.client.get(reverse('authors-list')) #Reverse creates a URL based on the view name. 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('results', response.data)
+
+    def test_node_list_view(self):
+        # Test NodeListViewSet
+        response = self.client.get(reverse('nodes'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('results', response.data)
