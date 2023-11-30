@@ -7,7 +7,7 @@ from socialDistribution.serializers import AuthorSerializer
 from ..models import Author
 from rest_framework import generics
 from drf_spectacular.utils import extend_schema
-from socialDistribution.util import team1, team2
+from socialDistribution.util import team1, team3
 import json
 from rest_framework.renderers import JSONRenderer
 from ..util import isFrontendRequest, serializeTeam1Author
@@ -30,9 +30,19 @@ class AuthorListViewSet(generics.ListAPIView):
         # check request origin
         all_authors = json.loads(JSONRenderer().render(AuthorSerializer(authors, many=True).data).decode('utf-8'))
         if isFrontendRequest(request):
-            remote_authors = team1.get("authors/")
-            for author in remote_authors.json()["items"]:
+            team1RemoteAuthors = team1.get("authors/")
+            for author in team1RemoteAuthors.json()["items"]:
                 all_authors.append(serializeTeam1Author(author))
+            
+            # team2RemoteAuthors = team2.get("authors/")
+            # print(team2RemoteAuthors.url, team2RemoteAuthors.text, team2RemoteAuthors.headers)
+            # for author in team2RemoteAuthors.json()["items"]:
+            #     all_authors.append(serializeTeam1Author(author))
+
+            team3RemoteAuthors = team3.get("authors/")
+            for author in team3RemoteAuthors.json()["items"]:
+                all_authors.append(serializeTeam1Author(author))
+
         page = self.paginate_queryset(all_authors)
         return self.get_paginated_response(page)
 
@@ -51,16 +61,21 @@ class AuthorDetailView(APIView):
             author = Author.objects.get(pk=author_pk)
         except:
             if isFrontendRequest(request):
-                remote_author = team1.get(f"authors/{author_pk}")
-                if remote_author.status_code == 200:
-                        author = remote_author.json()
-                        return Response(serializeTeam1Author(author))
+                team1RemoteAuthor = team1.get(f"authors/{author_pk}")
+                if team1RemoteAuthor.status_code == 200:
+                    author = team1RemoteAuthor.json()
+                    return Response(serializeTeam1Author(author))
+                
+                # team2RemoteAuthor = team2.get(f"authors/{author_pk}")
+                # if team2RemoteAuthor.status_code == 200:
+                #     author = team2RemoteAuthor.json()
+                #     return Response(serializeTeam1Author(author))
 
-            # remote_author1 = team2.get(f"authors/{author_pk}/")
-            # if remote_author1.status_code == 200:
-            #     author = remote_author1.json()
-            #     author["github"] = ""
-            #     return Response(serializeTeam1Author(author))
+                team3RemoteAuthor = team3.get(f"authors/{author_pk}")
+                if team3RemoteAuthor.status_code == 200:
+                    author = team3RemoteAuthor.json()
+                    return Response(serializeTeam1Author(author))
+                
             return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
         serializer = AuthorSerializer(author)
         return Response(serializer.data)

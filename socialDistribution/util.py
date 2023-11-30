@@ -9,13 +9,10 @@ CONNECTED = ["vibely", "CtrlAltDefeat"]
 team1 = sessions.BaseUrlSession(base_url='https://vibely-23b7dc4c736d.herokuapp.com/api/')
 team1.headers['Authorization'] = f"Basic {base64.b64encode('vibely:vibely'.encode('utf - 8')).decode('utf - 8')}"
 
-# secondInstance = sessions.BaseUrlSession(base_url='https://second-instance-a06a2b03061a.herokuapp.com/api/')
-# secondInstance.headers['Authorization'] = f"Basic {base64.b64encode('vibely:string'.encode('utf - 8')).decode('utf - 8')}"
+# team2 = sessions.BaseUrlSession(base_url='https://social-distribution-backend-f20f02be801f.herokuapp.com/service/')
+# team2.headers['Authorization'] = 'Basic Y3VycmVudFNlcnZlcjox'
 
-team2 = sessions.BaseUrlSession(base_url='https://cmput404-project-backend-tian-aaf1fa9b20e8.herokuapp.com/')
-team2.headers['Authorization'] = 'Basic Y3Jvc3Mtc2VydmVyOnBhc3N3b3Jk'
-
-team3 = sessions.BaseUrlSession(base_url='https://cmput404-ctrl-alt-defeat-api-12dfa609f364.herokuapp.com/api/authors')
+team3 = sessions.BaseUrlSession(base_url='https://cmput404-ctrl-alt-defeat-api-12dfa609f364.herokuapp.com/api/')
 team3.headers['Authorization'] = 'Basic MjFBdmVyYWdlOnBhc3N3b3Jk'
 
 def addToInbox(author, data):
@@ -70,20 +67,11 @@ def isFrontendRequest(request):
     if request.user.username in CONNECTED:
         return False
     return True
-    # try:
-    #     # TODO: check prod swagger
-    #     if request.headers['Host'] in settings.ALLOWED_HOSTS:
-    #         return True
-
-    #     if request.headers['Origin'] == 'https://frontend-21-average-f45e3b82895c.herokuapp.com':
-    #         return True
-    # except KeyError:
-    #     return False
 
 
 def serializeTeam1Author(author):
     return {
-        "id": uuid.UUID(hex=author["id"].split('/')[-1]),
+        "id": author["id"],
         "host": author["host"],
         "displayName": author["displayName"],
         "github": author["github"],
@@ -98,7 +86,7 @@ def serializeTeam1Author(author):
 
 def serializeTeam1Post(post):
     return {
-        "id": post["id"].split('/')[-1],
+        "id": post["id"],
         "title": post["title"],
         "type": "post",
         "source": post["source"],
@@ -111,8 +99,47 @@ def serializeTeam1Post(post):
         "published": post["published"],
         "author": serializeTeam1Author(post["author"]),
         "categories": post["categories"],
-        # "image_link": post["image_link"],
-        # "image": post["image"],
-        # "imageOnlyPost": post["imageOnlyPost"],
-        "count": post["count"]
+        "image_link": None,
+        "image": None,
+        "imageOnlyPost": None,
+        "count": post["count"],
+        "comments": post["comments"]
+    }
+
+
+def serializeTeam3Post(post):
+    return {
+        "id": post["id"],
+        "title": "",
+        "type": "post",
+        "source": post["source"],
+        "origin": post["origin"],
+        "description": post["description"],
+        "contentType": post["contentType"],
+        "visibility": post["visibility"],
+        "unlisted": post["unlisted"],
+        "content": post["content"],
+        "published": post["published"],
+        "author": serializeTeam1Author(post["author"]),
+        "categories": post["categories"],
+        "comments": post["comments"],
+        "image_link": None,
+        "image": None,
+        "imageOnlyPost": None,
+        "count": 0,
+    }
+
+
+def serializeTeam3Author(author):
+    return {
+        "id": author["url"],
+        "host": author["host"],
+        "displayName": author["displayName"],
+        "github": author["github"],
+        # "profileImage": author["profileImage"],
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "username": author["displayName"],
+        "type": "author"
     }

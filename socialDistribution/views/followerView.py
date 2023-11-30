@@ -5,45 +5,49 @@ from socialDistribution.serializers import AuthorSerializer, FollowSerializer
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
-from ..util import team1, team2
+from ..util import team1, team3, addToInbox, serializeTeam1Author, serializeTeam3Author
 from drf_spectacular.utils import extend_schema
-from ..util import addToInbox
+from ..pagination import JsonObjectPaginator
 
 
 class FollowViewSet(generics.ListAPIView):
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
     permission_classes = [permissions.IsAuthenticated]
-    pagination_class = Pagination
+    pagination_class = JsonObjectPaginator
     
     @extend_schema(
         tags=['Followers'],
         description='[local, remote] get a list of authors who are AUTHOR_ID’s followers'
     )
     def get(self, request, author_pk, format=None):
-        try:
-            author = Author.objects.get(pk=author_pk)
-        except:
-            remote_author = team1.get(f"authors/{author_pk}")
-            if remote_author.status_code == 200:
-                likes = team1.get(f"authors/{author_pk}/followers/")
-                if likes.status_code == 200:
-                    return Response(likes.json())
-            # try to find the author on team2
-            remote_author = team2.get(f"authors/{author_pk}")
-            if remote_author.status_code == 200:
-                likes = team2.get(f"authors/{author_pk}/followers/")
-                if likes.status_code == 200:
-                    return Response(likes.json())
-            return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
-        followers = author.followers.filter(status="Accepted").all()
-        # turn followers queryset into a list of authors
         authors = []
-        for follower in followers:
-            authors.append(Author.objects.get(pk=follower.follower.id))
+        try:
+            author = Author.objects.get(pk=author_pk, type="author")
+            followers = author.followers.filter(status="Accepted").all()
+            for follower in followers:
+                authors.append(Author.objects.get(pk=follower.follower.id))
+        except:
+            # TODO: i dont think we need to get followers of remote authors on UI???
+            team1RemoteAuthor = team1.get(f"authors/{author_pk}")
+            if team1RemoteAuthor.status_code == 200:
+                team1AuthorFollowers = team1.get(f"authors/{author_pk}/followers/")
+                if team1AuthorFollowers.status_code == 200:
+                    for follower in team1AuthorFollowers.json()["items"]:
+                        authors.append(serializeTeam1Author(follower["follower"]))
+            
+            # try to find the author on team3
+            team3RemoteAuthor = team3.get(f"authors/{author_pk}")
+            if team3RemoteAuthor.status_code == 200:
+                team3AuthorFollowers = team3.get(f"authors/{author_pk}/followers")
+                if team3AuthorFollowers.status_code == 200:
+                    for follower in team3AuthorFollowers.json()["items"]:
+                        authors.append(serializeTeam3Author(follower))
         
+        if not authors:
+            return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
         page = self.paginate_queryset(authors)
-        return self.get_paginated_response(AuthorSerializer(page, many=True).data)
+        return self.get_paginated_response(page)
 
 
 class FollowingViewSet(generics.ListAPIView):
@@ -58,19 +62,19 @@ class FollowingViewSet(generics.ListAPIView):
     )
     def get(self, request, author_pk, format=None):
         try:
-            author = Author.objects.get(pk=author_pk)
+            author = Author.objects.get(pk=author_pk, type="author")
         except:
-            # remote_author = team1.get(f"authors/{author_pk}")
-            # if remote_author.status_code == 200:
-            #     likes = team1.get(f"authors/{author_pk}/followers/")
-            #     if likes.status_code == 200:
-            #         return Response(likes.json())
-            # # try to find the author on team2
-            # remote_author = team2.get(f"authors/{author_pk}")
-            # if remote_author.status_code == 200:
-            #     likes = team2.get(f"authors/{author_pk}/followers/")
-            #     if likes.status_code == 200:
-            #         return Response(likes.json())
+            # team1RemoteAuthor = team1.get(f"authors/{author_pk}")
+            # if team1RemoteAuthor.status_code == 200:
+            #     team3AuthorFollowers = team1.get(f"authors/{author_pk}/followers/")
+            #     if team3AuthorFollowers.status_code == 200:
+            #         return Response(team3AuthorFollowers.json())
+            # # try to find the author on team3
+            # team3RemoteAuthor = team3.get(f"authors/{author_pk}")
+            # if team3RemoteAuthor.status_code == 200:
+            #     team3AuthorFollowers = team3.get(f"authors/{author_pk}/followers/")
+            #     if team3AuthorFollowers.status_code == 200:
+            #         return Response(team3AuthorFollowers.json())
             return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
         following = author.following.filter(status="Accepted").all()
         # turn followers queryset into a list of authors
@@ -130,10 +134,8 @@ class FollowDetailViewSet(generics.GenericAPIView):
         try:
             foreign_author = Author.objects.get(pk=foreign_author_pk, type="author")
         except:
-            # remote_author = secondInstance.get(f"authors/{foreign_author_pk}")
-            # if remote_author.status_code == 200:
-            #     remoteAuthor = AuthorSerializer(remote_author.json()).data
             # # send follow request to remote inbox
+            # TODO: Implement other teams inbox
             # payload = {
             #     "type": "follow",
             #     "summary": f"{author.username} wants to follow {remoteAuthor['username']}",

@@ -13,7 +13,7 @@ class AuthorSerializer(ModelSerializer):
                   'last_name', 'email', 'username', 'type']
     
     def get_id(self, obj):
-        return f"{settings.BASEHOST}/author/{obj.id}"
+        return f"{settings.BASEHOST}/authors/{obj.id}"
 
 
 class PostSerializer(ModelSerializer):
@@ -40,10 +40,10 @@ class PostSerializer(ModelSerializer):
             return []
     
     def get_id(self, obj):
-        return f"{settings.BASEHOST}/author/{obj.author.id}/posts/{obj.id}"
+        return f"{settings.BASEHOST}/authors/{obj.author.id}/posts/{obj.id}"
     
     def get_comments(self, obj):
-        return f"{settings.BASEHOST}/author/{obj.author.id}/posts/{obj.id}/comments/"
+        return f"{settings.BASEHOST}/authors/{obj.author.id}/posts/{obj.id}/comments/"
     # def get_image_link(self, obj):
     #     if obj.image:
     #         return settings.BASEHOST[0:-4] + obj.image.url
@@ -63,10 +63,10 @@ class CommentSerializer(ModelSerializer):
         ordering = ['-id']
     
     def get_id(self, obj):
-        return f"{settings.BASEHOST}/author/{obj.post.author.id}/posts/{obj.post.id}/comments/{obj.id}"
+        return f"{settings.BASEHOST}/authors/{obj.post.author.id}/posts/{obj.post.id}/comments/{obj.id}"
 
     def get_post(self, obj):
-        return f"{settings.BASEHOST}/author/{obj.post.author.id}/posts/{obj.post.id}"
+        return f"{settings.BASEHOST}/authors/{obj.post.author.id}/posts/{obj.post.id}"
 
 class FollowSerializer(ModelSerializer):
     following = AuthorSerializer(read_only=True)
@@ -108,7 +108,7 @@ class CommentLikeSerializer(ModelSerializer):
     class Meta:
         model = CommentLike
         fields = ['published', 'author', 'comment', 'id', 'type', 'summary', 'context', 'object']
-        ordering = ['-id']
+        ordering = ['published']
         read_only_fields = ['author', 'comment', 'id', 'published', 'type', 'summary', 'context', 'object']
 
     def get_object(self, obj):

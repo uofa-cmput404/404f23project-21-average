@@ -15,7 +15,7 @@ import base64
 from io import BytesIO
 from PIL import Image
 from django.http import HttpResponse
-from ..util import isFrontendRequest, team1, team2, serializeTeam1Post, sendToEveryonesInbox
+from ..util import isFrontendRequest, team1, serializeTeam1Post, sendToEveryonesInbox
 import json
 from rest_framework.renderers import JSONRenderer
 
@@ -116,13 +116,14 @@ class PostDetail(APIView):
         description='GET [local, remote] get the public post whose id is POST_ID'
     )
     def get(self, request, author_pk, post_pk, format=None):
+        # TODO: may not need to implement for other groups depeninf on ui
         try:
             author = Author.objects.get(pk=author_pk, type="author")
         except Author.DoesNotExist:
             if isFrontendRequest(request):
-                team1_post = team1.get(f"authors/{author_pk}/posts/{post_pk}/")
-                if team1_post.status_code == 200:
-                    return Response(serializeTeam1Post(team1_post.json()))
+                team1RemotePost = team1.get(f"authors/{author_pk}/posts/{post_pk}/")
+                if team1RemotePost.status_code == 200:
+                    return Response(serializeTeam1Post(team1RemotePost.json()))
             #     # team2_post = team2.get("author/posts/" + post_pk)
             #     team2_post = team2.get(f"authors/{author_pk}/posts/{post_pk}")
             #     if team2_post.status_code == 200:
@@ -174,9 +175,9 @@ class ImageViewSet(APIView):
     def get(self, request, post_pk, format=None):
         # TODO: check other groups image only posts
         # if isFrontendRequest(request):
-        #     team1_post = team1.get("authors/" + author_pk + "/posts/" + post_pk + "/")
-        #     if team1_post.status_code == 200:
-        #         return Response(serializeTeam1Post(team1_post.json()))
+        #     team1RemotePost = team1.get("authors/" + author_pk + "/posts/" + post_pk + "/")
+        #     if team1RemotePost.status_code == 200:
+        #         return Response(serializeTeam1Post(team1RemotePost.json()))
         #     # team2_post = team2.get("author/posts/" + post_pk)
 
         post = Post.objects.get(pk=post_pk)

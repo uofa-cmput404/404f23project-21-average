@@ -16,27 +16,31 @@ import base64
 from io import BytesIO
 from PIL import Image
 from django.http import HttpResponse
-from ..util import isFrontendRequest, team1, team2, serializeTeam1Post, sendToEveryonesInbox
+from ..util import isFrontendRequest, team1, team3, serializeTeam1Post, sendToEveryonesInbox, serializeTeam3Post
 import json
+import uuid
 from rest_framework.renderers import JSONRenderer
 
 
 def getPostsFromAuthors():
     res = []
-    team1_authors = team1.get("authors/")
-    if team1_authors.status_code == 200:
-        for author in team1_authors.json()["items"]:
+    team1Authors = team1.get("authors/")
+    if team1Authors.status_code == 200:
+        for author in team1Authors.json()["items"]:
             author1 = serializeTeam1Author(author)
-            team1_posts = team1.get(f"authors/{author1['id']}/posts/")
-            if team1_posts.status_code == 200:
-                for post in team1_posts.json()["items"]:
+            team1Posts = team1.get(f"authors/{author1['id']}/posts/")
+            if team1Posts.status_code == 200:
+                for post in team1Posts.json()["items"]:
                     res.append(serializeTeam1Post(post))
-    # team2_posts = team2.get(f"authors/{author_pk}/posts/")
-            # if team2_posts.status_code == 200:
-            #     for post in team2_posts.json()["items"]:
-            #         post["author"]["github"] = ""
-            #         post["categories"] = ""
-            #         all_posts.append(serializeTeam1Post(post))
+
+    team2Authors = team3.get("authors/")
+    if team2Authors.status_code == 200:
+        for author in team2Authors.json()["items"]:
+            author2 = serializeTeam1Author(author)
+            team2Posts = team3.get(f"authors/{author2['id'].split('/')[-1]}/posts/")
+            if team2Posts.status_code == 200:
+                for post in team2Posts.json()["items"]:
+                    res.append(serializeTeam3Post(post))
     return res
 
 
@@ -61,7 +65,7 @@ class StreamPostList(generics.ListAPIView):
         publicPosts = Post.objects.filter(visibility="PUBLIC", unlisted=False)
         
         authorFriends = FollowSerializer(author.following.filter(status="Accepted"), many=True).data
-        authorFriends = [(Author.objects.get(pk=friend["following"]["id"])) for friend in authorFriends]
+        authorFriends = [(Author.objects.get(pk=friend["following"]["id"].split('/')[-1])) for friend in authorFriends]
         friendsPosts = Post.objects.filter(author__in=authorFriends, visibility="FRIENDS")
 
         all_posts = json.loads(JSONRenderer().render(PostSerializer(authorPosts, many=True).data + 
@@ -74,7 +78,7 @@ class StreamPostList(generics.ListAPIView):
 
         # add source to posts and return everything
         for post in all_posts:
-            post["source"] = f"{settings.BASEHOST}/authors/{post['author']['id']}/posts/{post['id']}"
+            post["source"] = f"{settings.BASEHOST}/authors/{post['author']['id'].split('/')[-1]}/posts/{post['id'].split('/')[-1]}"
         page = self.paginate_queryset(all_posts)
         return self.get_paginated_response(page)
 
@@ -92,7 +96,7 @@ class StreamComments(generics.ListAPIView):
     def get(self, request, author_pk, post_pk, format=None):
         author = Author.objects.get(pk=request.user.id)
         post = Post.objects.get(pk=post_pk)
-        all_comments = []
+        # allComments = []
 
         if post.visibility == "PUBLIC":
             comments = Comment.objects.filter(post=post_pk)
@@ -101,11 +105,11 @@ class StreamComments(generics.ListAPIView):
 
         # if isFrontendRequest(request):
         # TODO: check duplicate comment returns 
-        all_comments = json.loads(JSONRenderer().render(CommentSerializer(comments, many=True).data).decode('utf-8'))
-        team1_comments = team1.get(f"authors/{author_pk}/posts/{post_pk}/comments")
-        if team1_comments.status_code == 200:
-            for comment in team1_comments.json()["comments"]:
-                all_comments.append({
+        allComments = json.loads(JSONRenderer().render(CommentSerializer(comments, many=True).data).decode('utf-8'))
+        team1Comments = team1.get(f"authors/{author_pk}/posts/{post_pk}/comments")
+        if team1Comments.status_code == 200:
+            for comment in team1Comments.json()["comments"]:
+                allComments.append({
                     "id": comment["id"],
                     "author": serializeTeam1Author(comment["author"]),
                     "comment": comment["comment"],
@@ -114,10 +118,10 @@ class StreamComments(generics.ListAPIView):
                     "type": "NodeComment",
                     # "post": comment["post"],
                 })
-        # team2_comments = team2.get(f"authors/{author_pk}/posts/{post_pk}/comments")
+        # team2_comments = team3.get(f"authors/{author_pk}/posts/{post_pk}/comments")
         # if team2_comments.status_code == 200:
         #     for comment in team2_comments.json()["comments"]:
-        #         all_comments.append({
+        #         allComments.append({
         #             "id": comment["id"],
         #             "author": serializeTeam1Author(comment["author"]),
         #             "comment": comment["comment"],
