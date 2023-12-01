@@ -286,3 +286,9 @@ class PostViewTestCase(APITestCase):
         self.client.force_authenticate(user=self.user)
         response = self.client.delete(f'/authors/{self.author.id}/posts/{post.id}/')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_get_image(self):
+        # Test getting an image associated with a post
+        post = Post.objects.create(author=self.author, title='Test Image Post', content='Test Content', visibility='PUBLIC')
+        response = self.client.get(f'/posts/{post.id}/image/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
