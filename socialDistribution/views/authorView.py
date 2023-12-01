@@ -29,7 +29,6 @@ class AuthorListViewSet(generics.ListAPIView):
 
         # check request origin
         all_authors = json.loads(JSONRenderer().render(AuthorSerializer(authors, many=True).data).decode('utf-8'))
-        print(isFrontendRequest(request))
         if isFrontendRequest(request):
             team1RemoteAuthors = team1.get("authors/")
             
@@ -41,7 +40,6 @@ class AuthorListViewSet(generics.ListAPIView):
                 all_authors.append(serializeTeam1Author(author))
 
             team3RemoteAuthors = team3.get("authors/")
-            print(team3RemoteAuthors.url, team3RemoteAuthors.status_code, team3RemoteAuthors.json())
             for author in team3RemoteAuthors.json()["items"]:
                 all_authors.append(serializeTeam1Author(author))
 

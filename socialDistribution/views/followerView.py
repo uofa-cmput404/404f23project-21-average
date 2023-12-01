@@ -1,11 +1,11 @@
 from rest_framework.response import Response
 from socialDistribution.models import Author, Follow
 from socialDistribution.pagination import Pagination
-from socialDistribution.serializers import AuthorSerializer, FollowSerializer
+from socialDistribution.serializers import AuthorSerializer, FollowSerializer, FollowRequestSerializer
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
-from ..util import team1, team2, team3, addToInbox, serializeTeam1Author, serializeTeam3Author
+from ..util import team1, team2, team3, addToInbox, serializeTeam1Author, serializeTeam3Author, getUUID
 from drf_spectacular.utils import extend_schema
 from ..pagination import JsonObjectPaginator
 from django.conf import settings
@@ -54,7 +54,7 @@ class FollowViewSet(generics.ListAPIView):
                         authors.append(serializeTeam3Author(follower))
         
         if not authors:
-            return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'No followers'}, status=status.HTTP_200_OK)
         page = self.paginate_queryset(authors)
         return self.get_paginated_response(page)
 
@@ -97,7 +97,7 @@ class FollowingViewSet(generics.ListAPIView):
 
 class FollowDetailViewSet(generics.GenericAPIView):
     queryset = Follow.objects.all()
-    serializer_class = FollowSerializer
+    serializer_class = FollowRequestSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = Pagination
     
@@ -157,8 +157,7 @@ class FollowDetailViewSet(generics.GenericAPIView):
                     "actor": AuthorSerializer(author).data,
                     "object": remoteAuthor,
                 }
-                print(remoteAuthor['id'].split('/')[-1])
-                response = team2.post(f"authors/{remoteAuthor['id'].split('/')[-1]}/inbox", json=payload)
+                response = team2.post(f"authors/{getUUID(remoteAuthor['id'])}/inbox", json=payload)
                 print(response.url)
                 print(response, response.text)
             
@@ -198,30 +197,32 @@ class FollowDetailViewSet(generics.GenericAPIView):
         return Response({'message': 'not found'}, status=status.HTTP_404_NOT_FOUND)
 
 # x = {
+#   "items": {
 #     "type": "Follow",      
 #     "summary":"secondinstanceuser3 wants to follow user3",
 #     "actor":{
-#       "id": "2e929da1-feab-4797-a22c-ac239fe3885d",
-#       "host": null,
-#       "displayName": "User",
+#       "id": "https://socialsync-404-project-6469dd163e44.herokuapp.com/authors/7",
+#       "host": "https://socialsync-404-project-6469dd163e44.herokuapp.com/",
+#       "displayName": "itachi",
 #       "github": null,
-#       "image": null,
+#       "profileImage": null,
 #       "first_name": "",
 #       "last_name": "",
 #       "email": "",
-#       "username": "secondinstanceuser3",
+#       "username": "itachi",
 #       "type": "author"
 #     },
 #     "object":{
-#       "id": "5f603184-9201-4a66-8b08-98fc3f3ab8b3",
+#       "id": "http://127.0.0.1:8000/api/authors/51184e23-d699-494f-8b0a-f485bdc80a27/",
 #       "host": null,
 #       "displayName": "User",
 #       "github": null,
-#       "image": null,
+#       "profileImage": null,
 #       "first_name": "",
 #       "last_name": "",
 #       "email": "",
-#       "username": "user3",
+#       "username": "legituser",
 #       "type": "author"
 #     }
+# }
 # }

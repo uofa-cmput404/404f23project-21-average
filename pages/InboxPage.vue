@@ -74,10 +74,10 @@ export default {
         let response;
         if (this.isAccept) {
           // Call the unfollow API
-          response = await axios.delete(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id.split('/').pop() + '/');
+          response = await axios.delete(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + await authorStore.getIDFromURL(this.id) + '/');
         } else {
           // Call the follow API
-          response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + notification.object.id.split('/').pop() + '/');
+          response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + await authorStore.getIDFromURL(notification.object.id) + '/');
           console.log('Following', this.username);
         }
         if (!(response.status === 400 || response.status === 401)) {

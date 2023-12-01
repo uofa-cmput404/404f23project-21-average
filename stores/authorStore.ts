@@ -37,5 +37,17 @@ export const useAuthorStore = defineStore({
       this.authToken = token;
       localStorage.setItem("token", token);
     },
+    async getIDFromURL(url: string) {
+      const components = url.split("/");
+      const id = components.pop();
+      
+      if (id === "") {
+        console.log('45')
+        return components.pop()
+      }
+      console.log('43: ', id, typeof id)
+      return id;
+    }
+
   },
 });

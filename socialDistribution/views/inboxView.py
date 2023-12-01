@@ -7,7 +7,7 @@ from rest_framework import generics
 from drf_spectacular.utils import extend_schema
 import json
 import uuid
-from ..util import isFrontendRequest, serializeTeam1Post, serializeTeam1Author
+from ..util import isFrontendRequest, serializeTeam1Post, serializeTeam1Author, getUUID
 
 
 def handlePostItem(newItem):
@@ -61,16 +61,20 @@ def handleFollowItem(newItem):
     # actor is requesting to follow object
     actorJson = serializeTeam1Author(newItem["actor"])
     actorJson["type"] = "NodeAuthor"
-    author = Author.objects.get_or_create(**actorJson)
-
+    actorJson["id"] = getUUID(newItem["actor"]["id"])
     try:
-        foreign_author = Author.objects.get(pk=uuid.UUID(hex=newItem["object"]["id"].split('/')[-1]))
+        author = Author.objects.get(pk=actorJson["id"])
+    except:
+        author = Author.objects.create(**actorJson)
+    
+    try:
+        foreign_author = Author.objects.get(pk=getUUID(newItem["object"]["id"]))
     except:
         raise Exception("Object Author not found")
 
     # author is requesting to follow foreign_author
     follow = {
-        "follower": author[0],
+        "follower": author,
         "following": foreign_author,
         "status": "Pending",
         "summary": newItem["summary"],
@@ -188,7 +192,6 @@ class InboxItemView(generics.GenericAPIView):
         # TODO: TEST IF IT WORKSS
         author = Author.objects.get(pk=author_pk)
         inbox = Inbox.objects.get(author=author)
-        print(inbox.items)
         inbox.items = json.dumps([])
         inbox.save()
         return Response({'message': "Inbox Cleared!"}, status=status.HTTP_204_NO_CONTENT)

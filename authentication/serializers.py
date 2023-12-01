@@ -22,13 +22,12 @@ class CustomRegisterSerializer(RegisterSerializer, ModelSerializer):
         optional_fields = ['github']
 
     def custom_signup(self, request, user):
-        print(request)
         user.github = self.validated_data.get('github', '')
         user.first_name = self.validated_data.get('first_name', '')
         user.last_name = self.validated_data.get('last_name', '')
         user.displayName = self.validated_data.get('username', '')
         user.host = settings.BASEHOST
-        # user.save()
+        user.save()
         return user
 
 
