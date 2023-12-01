@@ -5,7 +5,6 @@ from requests.auth import HTTPBasicAuth
 import base64
 import uuid
 
-CONNECTED = ["vibely", "CtrlAltDefeat"]
 team1 = sessions.BaseUrlSession(base_url='https://vibely-23b7dc4c736d.herokuapp.com/api/')
 team1.headers['Authorization'] = f"Basic {base64.b64encode('vibely:vibely'.encode('utf - 8')).decode('utf - 8')}"
 
@@ -14,6 +13,12 @@ team2.headers['Authorization'] = f"Basic {base64.b64encode('21average:bigPass'.e
 
 team3 = sessions.BaseUrlSession(base_url='https://cmput404-ctrl-alt-defeat-api-12dfa609f364.herokuapp.com/api/')
 team3.headers['Authorization'] = 'Basic MjFBdmVyYWdlOnBhc3N3b3Jk'
+
+nodeDict = {
+    "vibely": team1,
+    "CtrlAltDefeat": team3,
+    "socialSync": team2
+}
 
 def addToInbox(author, data):
     if author.type == "NodeAuthor":
@@ -63,9 +68,11 @@ def isFriend(author, foreign_author):
 
 def isFrontendRequest(request):
     # return False
-    if request.user.username in CONNECTED:
-        return False
-    return True
+    nodes = Author.objects.filter(type="node").all()
+    for node in nodes:
+        if request.user.username == node.username:
+            return False
+        return True
 
 
 def serializeTeam1Author(author):

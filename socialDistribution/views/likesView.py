@@ -193,6 +193,6 @@ class GetAllAuthorLikes(generics.ListAPIView):
         commentLikes = CommentLike.objects.filter(author=author, comment__post__visibility='PUBLIC')
         if postLikes or commentLikes:
             return Response({"type":"liked",
-            "items":PostLikeSerializer(postLikes, many=True).data + CommentLikeSerializer(commentLikes, many=True).data})
+            "items": PostLikeSerializer(postLikes, many=True).data + CommentLikeSerializer(commentLikes, many=True).data})
 
         return Response({"message": "no likes found"}, status=status.HTTP_200_OK)

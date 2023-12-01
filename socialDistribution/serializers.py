@@ -69,19 +69,20 @@ class CommentSerializer(ModelSerializer):
         return f"{settings.BASEHOST}/authors/{obj.post.author.id}/posts/{obj.post.id}"
 
 class FollowSerializer(ModelSerializer):
-    following = AuthorSerializer(read_only=True)
-    follower = AuthorSerializer(read_only=True)
-    summary = serializers.SerializerMethodField(method_name='get_summary')
+    # following = AuthorSerializer(read_only=True)
+    # follower = AuthorSerializer(read_only=True)
+    # summary = serializers.SerializerMethodField(method_name='get_summary')
+    objectHost = serializers.CharField(write_only=True, required=False)
 
     class Meta:
         model = Follow
-        fields = ['following', 'follower', 'status', 'id', 'summary']
-        read_only_fields = ['following', 'follower', 'id', 'status', 'summary']
+        fields = ['objectHost']
+        # read_only_fields = ['following', 'follower', 'id', 'status', 'summary']
     
-    def get_summary(self, obj):
-        if obj.summary:
-            return obj.summary
-        return f"{obj.follower.displayName} wants to follow {obj.following.displayName}"
+    # def get_summary(self, obj):
+    #     if obj.summary:
+    #         return obj.summary
+    #     return f"{obj.follower.displayName} wants to follow {obj.following.displayName}"
 
 
 class PostLikeSerializer(ModelSerializer):

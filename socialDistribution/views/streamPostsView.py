@@ -39,7 +39,6 @@ def getPostsFromAuthors():
         for author in team2Authors.json()["items"]:
             author2 = serializeTeam1Author(author)
             team2Posts = team2.get(f"authors/{author2['id'].split('/')[-1]}/posts")
-            print(team2Posts.json())
             if team2Posts.status_code == 200:
                 for post in team2Posts.json()["items"]:
                     # print(post)

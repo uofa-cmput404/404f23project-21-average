@@ -244,7 +244,7 @@ STORAGES = {
 #     'REGISTER_SERIALIZER': 'authentication.serializers.CustomRegisterSerializer'
 # }
 
-CONNECTED = ["vibely", "CtrlAltDefeat"]
+CONNECTED = ["vibely", "CtrlAltDefeat", "socialSync"]
 DEFAULT_AUTHORS = ["string", "user1", "user2", "user3"]
 DEFAULT_AUTHORS_PASSWORD = "string"
 BASEHOST = os.environ.get("BASE_URL")
