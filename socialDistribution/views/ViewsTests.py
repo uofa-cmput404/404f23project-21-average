@@ -220,3 +220,12 @@ class InboxItemViewTest(TestCase):
         }
         response = self.client.post(url, {'items': comment_item}, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_add_post_item_to_inbox(self):
+        # Test adding a post item to the inbox
+        url = reverse('inbox', args=[self.author.pk])
+        post_item = {
+            "type": "post",
+        }
+        response = self.client.post(url, {'items': post_item}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
