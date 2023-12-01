@@ -177,3 +177,5 @@ class GitHubViewTest(TestCase):
         response = self.client.post(reverse('github-events', args=[self.author.pk]))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertIn('GitHub not found', response.data['message'])
+
+# Tests for Inbox View
