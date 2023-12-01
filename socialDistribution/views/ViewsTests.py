@@ -193,3 +193,12 @@ class InboxItemViewTest(TestCase):
         url = reverse('inbox', args=[self.author.pk])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_add_follow_item_to_inbox(self): #DOUBLE CHECK THIS TEST
+        # Test adding a follow item to the inbox
+        url = reverse('inbox-items', args=[self.author.pk])
+        follow_item = {
+            "type": "follow",
+        }
+        response = self.client.post(url, {'items': follow_item}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
