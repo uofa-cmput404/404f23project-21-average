@@ -205,9 +205,18 @@ class InboxItemViewTest(TestCase):
 
     def test_add_like_item_to_inbox(self):
         # Test adding a like item to the inbox
-        url = reverse('inbox-items', args=[self.author.pk])
+        url = reverse('inbox', args=[self.author.pk])
         like_item = {
             "type": "like",
         }
         response = self.client.post(url, {'items': like_item}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_add_comment_item_to_inbox(self):
+        # Test adding a comment item to the inbox
+        url = reverse('inbox', args=[self.author.pk])
+        comment_item = {
+            "type": "comment",
+        }
+        response = self.client.post(url, {'items': comment_item}, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
