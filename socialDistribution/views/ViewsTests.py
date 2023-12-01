@@ -353,3 +353,13 @@ class StreamPostListTestCase(APITestCase):
         self.client.force_authenticate(user=self.user)
         response = self.client.get(f'/authors/{self.author.id}/posts/allposts/stream/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_stream_posts_with_friends(self):
+        # Test getting stream posts with friends
+        friend_user = User.objects.create_user(username='frienduser', password='friendpassword')
+        friend_author = Author.objects.create(user=friend_user)
+        self.author.friends.add(friend_author)
+
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(f'/authors/{self.author.id}/posts/allposts/stream/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
