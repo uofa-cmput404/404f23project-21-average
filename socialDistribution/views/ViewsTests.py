@@ -167,3 +167,13 @@ class GitHubViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('event_type', response.data[0])
         self.assertIn('created_at', response.data[0])
+
+    @patch('requests.get')
+    def test_get_github_events_not_found(self, mock_requests_get):
+        # Test handling the case where GitHub events are not found
+        mock_response = mock_requests_get.return_value
+        mock_response.status_code = 404
+
+        response = self.client.post(reverse('github-events', args=[self.author.pk]))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertIn('GitHub not found', response.data['message'])
