@@ -18,21 +18,24 @@ class AuthorViewsTest(TestCase):
 
     def test_author_list_view(self):
         # Test AuthorListViewSet
-        response = self.client.get(reverse('authors-list')) #Reverse creates a URL based on the view name. 
+        response = self.client.get(reverse('authors-list'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('results', response.data)
+        # Ensure that the response contains the expected key 'results'
 
     def test_node_list_view(self):
         # Test NodeListViewSet
         response = self.client.get(reverse('nodes'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('results', response.data)
+        # Ensure that the response contains the expected key 'results'
 
     def test_author_detail_view(self):
         # Test AuthorDetailView GET
         response = self.client.get(reverse('authors', args=[self.author.pk]))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('username', response.data)
+        # Ensure that the response contains the author's username
 
     def test_author_detail_view_post(self):
         # Test AuthorDetailView POST
@@ -49,6 +52,8 @@ class AuthorViewsTest(TestCase):
         # Test AuthorDetailView DELETE
         response = self.client.delete(reverse('authors', args=[self.author.pk]))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        # Ensure that the response indicates successful deletion with HTTP 204
+
 
     
 #Tests for CommentView.py
