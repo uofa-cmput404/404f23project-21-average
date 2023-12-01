@@ -13,7 +13,7 @@ class AuthorSerializer(ModelSerializer):
                   'last_name', 'email', 'username', 'type']
     
     def get_id(self, obj):
-        return f"{settings.BASEHOST}/authors/{obj.id}"
+        return f"{settings.BASEHOST}/authors/{obj.id}/"
 
 
 class PostSerializer(ModelSerializer):
