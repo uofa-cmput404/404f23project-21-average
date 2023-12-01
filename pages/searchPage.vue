@@ -41,7 +41,7 @@ export default {
     try {
       console.log(`Basic ${authorStore.getAuthToken}`)
       axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-      const response = await axios.get(authorStore.BASE_URL + '/authors/?page_size=100');
+      const response = await axios.get(authorStore.BASE_URL + '/authors/?size=100');
       this.friends = response.data.items; // Save the data in friends
       console.log("heyyyy")
       // console.log(this.friends)
