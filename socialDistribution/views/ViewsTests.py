@@ -139,3 +139,10 @@ class FollowViewsTest(TestCase):
         response = self.client.put(reverse('follow-request', args=[self.author1.pk, self.author2.pk]))
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['message'], 'Follow Request Sent Successfully')
+
+    def test_accept_follow_request(self):
+        # Test accepting a follow request from another author
+        follow_request = Follow.objects.create(following=self.author1, follower=self.author2, status='Pending')
+        response = self.client.post(reverse('accept-follow', args=[self.author2.pk, self.author1.pk]))
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['message'], 'Follow Request Accepted Successfully')
