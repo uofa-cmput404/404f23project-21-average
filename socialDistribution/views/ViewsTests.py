@@ -133,3 +133,9 @@ class FollowViewsTest(TestCase):
         response = self.client.delete(reverse('unfollow', args=[self.author1.pk, self.author2.pk]))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Follow.objects.filter(following=self.author2, follower=self.author1).exists())
+
+    def test_send_follow_request(self):
+        # Test sending a follow request to another author
+        response = self.client.put(reverse('follow-request', args=[self.author1.pk, self.author2.pk]))
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['message'], 'Follow Request Sent Successfully')
