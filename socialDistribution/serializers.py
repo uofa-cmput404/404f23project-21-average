@@ -75,8 +75,8 @@ class FollowSerializer(ModelSerializer):
 
     class Meta:
         model = Follow
-        fields = ['id', 'following', 'follower', 'status', 'summary']
-        read_only_fields = ['following', 'follower', 'id', 'status', 'summary']
+        fields = ['id', 'following', 'follower', 'status', 'summary', 'type']
+        read_only_fields = ['following', 'follower', 'id', 'status', 'summary', 'type']
     
     def get_summary(self, obj):
         if obj.summary:

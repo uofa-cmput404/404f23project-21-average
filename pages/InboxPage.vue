@@ -6,15 +6,15 @@
       <div class="notification-list">
         <div v-for="(notification, index) in notifications" :key="notification.id" class="notification-item">
           <div class="notification-content">
-            <div v-if="notification.type === 'post'">
+            <div v-if="notification.type.toLowerCase() === 'post'">
               <PostComponent :key="notification.id" :postContent="notification.content"
                 :userId="notification.author.username" :postImage="notification.image" :postID="notification.id"
                 :isPublic="notification.visibility" :contentType="notification.contentType" />
             </div>
-            <div v-if="notification.type === 'like'">
+            <div v-if="notification.type.toLowerCase() === 'like'">
               <h3>{{ notification.summary }}</h3>
             </div>
-            <div v-if="notification.type === 'follow'">
+            <div v-if="notification.type.toLowerCase() === 'follow'">
               <h3>{{ notification.summary }}</h3>
               <div class="button-group">
                 <button @click="toggleAccept(index)">
@@ -22,7 +22,7 @@
                 </button>
               </div>
             </div>
-            <div v-if="notification.type === 'comment'">
+            <div v-if="notification.type.toLowerCase() === 'comment'">
               <h3>{{ notification.author.username }} commented "{{ notification.comment }}" on your post</h3>
             </div>
           </div>
