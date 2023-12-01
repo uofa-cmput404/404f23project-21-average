@@ -12,8 +12,28 @@ from ..util import isFrontendRequest, serializeTeam1Post, serializeTeam1Author, 
 
 def handlePostItem(newItem):
     # TODO: maybe dont need to save post on db???
-    post = serializeTeam1Post(newItem)
-    return post
+    return {
+        "id": post["id"],
+        "title": post["title"],
+        "type": "post",
+        "source": post["source"],
+        "origin": post["origin"],
+        "description": post["description"],
+        "contentType": post["contentType"],
+        "visibility": post["visibility"],
+        "unlisted": post["unlisted"],
+        "content": post["content"],
+        "published": post["published"],
+        "author": serializeTeam1Author(post["author"]),
+        "categories": post["categories"],
+        "image_link": None,
+        "image": None,
+        "imageOnlyPost": None,
+        # "count": post["count"],
+        "comments": post["comments"]
+    }
+    # post = serializeTeam1Post(newItem)
+    # return post
 
 
 def handleCommentItem(newItem):
