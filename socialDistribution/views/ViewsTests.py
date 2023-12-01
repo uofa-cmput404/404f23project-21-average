@@ -84,6 +84,14 @@ class CommentViewsTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('results', response.data)
 
+    
+    def test_get_comments_list_remote(self):
+        # Test retrieving the list of remote comments for a post
+        # Remote teams already configured
+        response = self.client.get(reverse('comments', args=[self.author.pk, self.post.pk]))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('results', response.data)
+
 
 # Tests for followerView.py
 class FollowerViewsTest(TestCase):
