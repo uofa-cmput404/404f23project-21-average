@@ -292,3 +292,7 @@ class PostViewTestCase(APITestCase):
         post = Post.objects.create(author=self.author, title='Test Image Post', content='Test Content', visibility='PUBLIC')
         response = self.client.get(f'/posts/{post.id}/image/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+# Tests for Share View
+
