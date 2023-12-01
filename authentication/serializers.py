@@ -7,8 +7,8 @@ from socialDistribution.models import Author
 from django.conf import settings
 
 
-class CustomRegisterSerializer(RegisterSerializer):
-    github = serializers.CharField(required=False,)
+class CustomRegisterSerializer(RegisterSerializer, ModelSerializer):
+    github = serializers.CharField(required=False)
     host = serializers.CharField(required=False, read_only=True)
     first_name = serializers.CharField(required=False)
     last_name = serializers.CharField(required=False)
@@ -16,13 +16,19 @@ class CustomRegisterSerializer(RegisterSerializer):
     # make is_active = False by default
     is_active = serializers.BooleanField(required=False, default=True)
 
+    class Meta:
+        model = Author
+        fields = ['username', 'password1', 'password2', 'github', 'host', 'first_name', 'last_name', 'is_active']
+        optional_fields = ['github']
+
     def custom_signup(self, request, user):
+        print(request)
         user.github = self.validated_data.get('github', '')
         user.first_name = self.validated_data.get('first_name', '')
         user.last_name = self.validated_data.get('last_name', '')
-        user.displayName = self.falidated_data.get('username', '')
+        user.displayName = self.validated_data.get('username', '')
         user.host = settings.BASEHOST
-        user.save()
+        # user.save()
         return user
 
 

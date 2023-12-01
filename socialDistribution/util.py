@@ -4,6 +4,7 @@ from requests_toolbelt import sessions
 from requests.auth import HTTPBasicAuth
 import base64
 import uuid
+from socialDistribution.serializers import AuthorSerializer
 
 team1 = sessions.BaseUrlSession(base_url='https://vibely-23b7dc4c736d.herokuapp.com/api/')
 team1.headers['Authorization'] = f"Basic {base64.b64encode('vibely:vibely'.encode('utf - 8')).decode('utf - 8')}"
@@ -67,12 +68,11 @@ def isFriend(author, foreign_author):
 
 
 def isFrontendRequest(request):
-    # return False
     nodes = Author.objects.filter(type="node").all()
     for node in nodes:
         if request.user.username == node.username:
             return False
-        return True
+    return True
 
 
 def serializeTeam1Author(author):
