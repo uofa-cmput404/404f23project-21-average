@@ -235,3 +235,6 @@ class InboxItemViewTest(TestCase):
         url = reverse('inbox-items', args=[self.author.pk])
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+# Tests for Likes View
+
