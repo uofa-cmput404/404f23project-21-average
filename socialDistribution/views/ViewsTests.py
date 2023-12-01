@@ -296,3 +296,15 @@ class PostViewTestCase(APITestCase):
 
 # Tests for Share View
 
+class ShareViewTestCase(APITestCase):
+    def setUp(self):
+        # Set up a user and author for testing
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.author = Author.objects.create(user=self.user)
+        # Set up a post for testing
+        self.post_data = {
+            'title': 'Test Post',
+            'content': 'Test Content',
+            'visibility': 'PUBLIC',
+        }
+        self.post = Post.objects.create(author=self.author, **self.post_data)
