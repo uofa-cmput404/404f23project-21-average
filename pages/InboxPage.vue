@@ -56,7 +56,7 @@ export default {
     const authorStore = useAuthorStore();
     try {
       axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-      const response = await axios.get(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/inbox/?page_size=100`);
+      const response = await axios.get(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/inbox/?size=100`);
 
       this.notifications = response.data.items;
       console.log(this.notifications)

@@ -98,7 +98,7 @@ export default {
     // this.fetchPosts();
     const authorStore = useAuthorStore();
     axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/allposts/stream/?page_size=100');
+    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/allposts/stream/?size=100');
     console.log('102', response.data.items)
     this.posts = response.data.items;
   },
