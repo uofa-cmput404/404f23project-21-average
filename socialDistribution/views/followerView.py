@@ -196,33 +196,35 @@ class FollowDetailViewSet(generics.GenericAPIView):
             return Response({'message': 'Follow Request Accepted Successfully'}, status=status.HTTP_201_CREATED)
         return Response({'message': 'not found'}, status=status.HTTP_404_NOT_FOUND)
 
-# x = {
+
+
+# {
 #   "items": {
-#     "type": "Follow",      
-#     "summary":"secondinstanceuser3 wants to follow user3",
-#     "actor":{
-#       "id": "https://socialsync-404-project-6469dd163e44.herokuapp.com/authors/7",
-#       "host": "https://socialsync-404-project-6469dd163e44.herokuapp.com/",
-#       "displayName": "itachi",
-#       "github": null,
-#       "profileImage": null,
-#       "first_name": "",
-#       "last_name": "",
-#       "email": "",
-#       "username": "itachi",
-#       "type": "author"
-#     },
-#     "object":{
-#       "id": "http://127.0.0.1:8000/api/authors/51184e23-d699-494f-8b0a-f485bdc80a27/",
-#       "host": null,
-#       "displayName": "User",
-#       "github": null,
-#       "profileImage": null,
-#       "first_name": "",
-#       "last_name": "",
-#       "email": "",
-#       "username": "legituser",
-#       "type": "author"
+#         "type": "Follow",      
+#         "summary":"secondinstanceuser3 wants to follow user3",
+#         "actor":{
+#         "id": "https://socialsync-404-project-6469dd163e44.herokuapp.com/authors/7",
+#         "host": "https://socialsync-404-project-6469dd163e44.herokuapp.com/",
+#         "displayName": "itachi",
+#         "github": null,
+#         "profileImage": null,
+#         "first_name": "",
+#         "last_name": "",
+#         "email": "",
+#         "username": "itachi",
+#         "type": "author"
+#         },
+#         "object":{
+#         "id": "https://cmput-average-21-b54788720538.herokuapp.com/api/authors/db7d3968-c035-4950-a606-e690638189dd/",
+#         "host": "https://cmput-average-21-b54788720538.herokuapp.com/api",
+#         "displayName": "string",
+#         "github": null,
+#         "profileImage": null,
+#         "first_name": "",
+#         "last_name": "",
+#         "email": "",
+#         "username": "string",
+#         "type": "author"
+#         }
 #     }
-# }
 # }
