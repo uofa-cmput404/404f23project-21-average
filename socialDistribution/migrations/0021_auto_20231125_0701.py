@@ -47,7 +47,8 @@ def generate_default_user(apps, schema_editor):
         if not user.objects.filter(username=default_username).exists():
             logger.info("Creating new default user")
             default_user = user.objects.create_user(
-                username=default_username, password=settings.DEFAULT_AUTHORS_PASSWORD, host=settings.BASEHOST, type="author"
+                username=default_username, password=settings.DEFAULT_AUTHORS_PASSWORD, host=settings.BASEHOST,
+                type="author", displayName=default_username
             )
             default_user.save()
         else:

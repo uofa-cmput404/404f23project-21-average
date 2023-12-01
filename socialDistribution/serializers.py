@@ -40,7 +40,7 @@ class PostSerializer(ModelSerializer):
             return []
     
     def get_id(self, obj):
-        return f"{settings.BASEHOST}/authors/{obj.author.id}/posts/{obj.id}"
+        return f"{settings.BASEHOST}/authors/{obj.author.id}/posts/{obj.id}/"
     
     def get_comments(self, obj):
         return f"{settings.BASEHOST}/authors/{obj.author.id}/posts/{obj.id}/comments/"
@@ -63,26 +63,33 @@ class CommentSerializer(ModelSerializer):
         ordering = ['-id']
     
     def get_id(self, obj):
-        return f"{settings.BASEHOST}/authors/{obj.post.author.id}/posts/{obj.post.id}/comments/{obj.id}"
+        return f"{settings.BASEHOST}/authors/{obj.post.author.id}/posts/{obj.post.id}/comments/{obj.id}/"
 
     def get_post(self, obj):
-        return f"{settings.BASEHOST}/authors/{obj.post.author.id}/posts/{obj.post.id}"
+        return f"{settings.BASEHOST}/authors/{obj.post.author.id}/posts/{obj.post.id}/"
 
 class FollowSerializer(ModelSerializer):
-    # following = AuthorSerializer(read_only=True)
-    # follower = AuthorSerializer(read_only=True)
-    # summary = serializers.SerializerMethodField(method_name='get_summary')
+    following = AuthorSerializer(read_only=True)
+    follower = AuthorSerializer(read_only=True)
+    summary = serializers.SerializerMethodField(method_name='get_summary')
+
+    class Meta:
+        model = Follow
+        fields = ['id', 'following', 'follower', 'status', 'summary']
+        read_only_fields = ['following', 'follower', 'id', 'status', 'summary']
+    
+    def get_summary(self, obj):
+        if obj.summary:
+            return obj.summary
+        return f"{obj.follower.displayName} wants to follow {obj.following.displayName}"
+
+
+class FollowRequestSerializer(ModelSerializer):
     objectHost = serializers.CharField(write_only=True, required=False)
 
     class Meta:
         model = Follow
         fields = ['objectHost']
-        # read_only_fields = ['following', 'follower', 'id', 'status', 'summary']
-    
-    # def get_summary(self, obj):
-    #     if obj.summary:
-    #         return obj.summary
-    #     return f"{obj.follower.displayName} wants to follow {obj.following.displayName}"
 
 
 class PostLikeSerializer(ModelSerializer):
@@ -97,7 +104,7 @@ class PostLikeSerializer(ModelSerializer):
     
     def get_object(self, obj):
         if obj.post:
-            return f"{settings.BASEHOST}/authors/{obj.author.id}/posts/{obj.post.id}"
+            return f"{settings.BASEHOST}/authors/{obj.author.id}/posts/{obj.post.id}/"
         else:
             return obj.object
 
@@ -114,7 +121,7 @@ class CommentLikeSerializer(ModelSerializer):
 
     def get_object(self, obj):
         if obj.comment:
-            return f"{settings.BASEHOST}/authors/{obj.author.id}/posts/{obj.comment.post.id}/comments/{obj.comment.id}"
+            return f"{settings.BASEHOST}/authors/{obj.author.id}/posts/{obj.comment.post.id}/comments/{obj.comment.id}/"
         else:
             return obj.object
 

@@ -61,16 +61,20 @@ def handleFollowItem(newItem):
     # actor is requesting to follow object
     actorJson = serializeTeam1Author(newItem["actor"])
     actorJson["type"] = "NodeAuthor"
-    author = Author.objects.get_or_create(**actorJson)
-
+    actorJson["id"] = newItem["actor"]["id"].split('/')[-1]
     try:
-        foreign_author = Author.objects.get(pk=uuid.UUID(hex=newItem["object"]["id"].split('/')[-1]))
+        author = Author.objects.get(pk=actorJson["id"])
+    except:
+        author = Author.objects.create(**actorJson)
+    
+    try:
+        foreign_author = Author.objects.get(pk=newItem["object"]["id"].split('/')[-2])
     except:
         raise Exception("Object Author not found")
 
     # author is requesting to follow foreign_author
     follow = {
-        "follower": author[0],
+        "follower": author,
         "following": foreign_author,
         "status": "Pending",
         "summary": newItem["summary"],
