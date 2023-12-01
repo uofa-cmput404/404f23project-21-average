@@ -59,6 +59,26 @@ class AuthorViewsTest(TestCase):
     
 #Tests for CommentView.py
 
+class CommentViewsTest(TestCase):
+    def setUp(self):
+        # Set up any necessary test data
+        self.client = APIClient()
+        # Create a test author and post
+        self.author = Author.objects.create(username='test_author')
+        self.post = Post.objects.create(
+            title='Test Post',
+            description='Test Description',
+            content='Test Content',
+            author=self.author
+        )
+        # Create test data for a comment
+        self.comment_data = {
+            'comment': 'Test Comment',
+            'contentType': 'text/plain',
+            'published': (datetime.now() - timedelta(days=1)).isoformat(),
+        }
+
+    
 
 
 # Tests for followerView.py
