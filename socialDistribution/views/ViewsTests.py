@@ -238,3 +238,5 @@ class InboxItemViewTest(TestCase):
 
 # Tests for Likes View
 
+# Tests for Post View
+
