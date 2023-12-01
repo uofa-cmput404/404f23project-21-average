@@ -146,3 +146,12 @@ class FollowViewsTest(TestCase):
         response = self.client.post(reverse('accept-follow', args=[self.author2.pk, self.author1.pk]))
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['message'], 'Follow Request Accepted Successfully')
+
+# Tests for Github View
+
+class GitHubViewTest(TestCase):
+    def setUp(self):
+        # Set up any necessary test data
+        self.client = APIClient()
+        # Create a test author with a GitHub username
+        self.author = Author.objects.create(username='test_author', github='https://github.com/test_user') #Replace URL with a real user. 
