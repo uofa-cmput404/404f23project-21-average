@@ -114,3 +114,9 @@ class FollowViewsTest(TestCase):
         response = self.client.get(reverse('followers', args=[self.author2.pk]))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('results', response.data)
+
+    def test_get_following_list(self):
+        # Test retrieving the list of authors that an author is following
+        response = self.client.get(reverse('following', args=[self.author1.pk]))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('results', response.data)
