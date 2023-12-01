@@ -42,9 +42,7 @@ export default {
     async checkFollowingStatus() {
       const authorStore = useAuthorStore();
       try {
-        // console.log(this.id.split('/'))
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-        // console.log(this.id)
         const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id.split('/').pop() + '/');
         if (!(response.status === 400 || response.status === 401 || response.status === 500)) {
           this.isFollowing = response.data;
@@ -66,8 +64,6 @@ export default {
           console.log('Unfollowing', this.username);
         } else {
           // Call the follow API
-          const idList = this.id.split('/')
-          const foreignId = idList[idList.length - 1]
           response = await axios.put(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id.split('/').pop() + '/',
             { objectHost: this.host });
           console.log('Following', this.username);

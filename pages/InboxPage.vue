@@ -1,14 +1,15 @@
 <template>
   <div class="app-container">
-    <SidebarComponent/>
+    <SidebarComponent />
     <div class="main-content">
       <div class="header">INBOX</div>
       <div class="notification-list">
         <div v-for="(notification, index) in notifications" :key="notification.id" class="notification-item">
           <div class="notification-content">
             <div v-if="notification.type === 'post'">
-              <PostComponent :key="notification.id" :postContent="notification.content" :userId="notification.author.username"
-                :postImage="notification.image" :postID="notification.id" :isPublic="notification.visibility" :contentType="notification.contentType"/>
+              <PostComponent :key="notification.id" :postContent="notification.content"
+                :userId="notification.author.username" :postImage="notification.image" :postID="notification.id"
+                :isPublic="notification.visibility" :contentType="notification.contentType" />
             </div>
             <div v-if="notification.type === 'like'">
               <h3>{{ notification.summary }}</h3>
@@ -46,7 +47,7 @@ export default {
   data() {
     return {
       notifications: [], // This will hold the fetched notifications
-      isAccepted:false,
+      isAccepted: false,
       foreignId: '',
     };
   },
@@ -65,7 +66,7 @@ export default {
   },
   methods: {
 
-  async toggleAccept(index) {
+    async toggleAccept(index) {
       const notification = this.notifications[index];
       const authorStore = useAuthorStore();
       axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
@@ -73,10 +74,10 @@ export default {
         let response;
         if (this.isAccept) {
           // Call the unfollow API
-          response = await axios.delete(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id + '/');
+          response = await axios.delete(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id.split('/').pop() + '/');
         } else {
           // Call the follow API
-          response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + notification.object.id.split('/')[5] + '/');
+          response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + notification.object.id.split('/').pop() + '/');
           console.log('Following', this.username);
         }
         if (!(response.status === 400 || response.status === 401)) {
@@ -85,7 +86,8 @@ export default {
       } catch (error) {
         console.error('Error while toggling follow:', error);
       }
-    }}
+    }
+  }
 };
 </script>
 
@@ -113,7 +115,7 @@ export default {
 }
 
 .header {
-  color: black;  
+  color: black;
   font-size: 30px;
   text-align: center;
   margin-top: 20px;
@@ -166,7 +168,7 @@ export default {
   color: white;
 }
 
- button {
+button {
   width: 100px;
   padding: 5px 15px;
   cursor: pointer;
