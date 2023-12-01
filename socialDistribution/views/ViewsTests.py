@@ -2,7 +2,7 @@ from django.test import TestCase #Using Djangos Built in TestCase
 from rest_framework.test import APIClient
 from rest_framework import status
 from django.urls import reverse
-from ..models import Author,Comment, Post, Follow, Inbox
+from ..models import Author,Comment, Post, Follow, Inbox,PostLike, CommentLike
 import requests
 from unittest.mock import patch, MagicMock
 from datetime import datetime, timedelta
