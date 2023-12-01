@@ -229,3 +229,9 @@ class InboxItemViewTest(TestCase):
         }
         response = self.client.post(url, {'items': post_item}, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_delete_inbox_items(self):
+        # Test deleting all inbox items for the current user
+        url = reverse('inbox-items', args=[self.author.pk])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
