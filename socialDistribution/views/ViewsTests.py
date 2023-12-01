@@ -2,7 +2,7 @@ from django.test import TestCase #Using Djangos Built in TestCase
 from rest_framework.test import APIClient
 from rest_framework import status
 from django.urls import reverse
-from ..models import Author,Comment, Post, Follow
+from ..models import Author,Comment, Post, Follow, Inbox
 import requests
 from unittest.mock import patch, MagicMock
 from datetime import datetime, timedelta
@@ -179,3 +179,11 @@ class GitHubViewTest(TestCase):
         self.assertIn('GitHub not found', response.data['message'])
 
 # Tests for Inbox View
+
+class InboxItemViewTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        # Create a test author
+        self.author = Author.objects.create(username='test_author')
+        # Create an inbox for the test author
+        Inbox.objects.create(author=self.author, items='[]')
