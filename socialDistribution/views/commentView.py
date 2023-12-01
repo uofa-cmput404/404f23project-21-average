@@ -6,7 +6,7 @@ from socialDistribution.serializers import CommentSerializer
 from rest_framework import status
 from rest_framework import generics
 from drf_spectacular.utils import extend_schema
-from socialDistribution.util import addToInbox, team1, serializeTeam1Author, isFriend, team3, serializeTeam3Author
+from socialDistribution.util import addToInbox, team1, serializeTeam1Author, isFriend, team2, team3, serializeTeam3Author
 
 
 class CommentViewSet(generics.ListCreateAPIView):
@@ -33,13 +33,13 @@ class CommentViewSet(generics.ListCreateAPIView):
             elif request.user.id == post.author.id and author.id == post.author.id and post.visibility == "PRIVATE":
                 comments = Comment.objects.filter(post=post_pk)
 
-            all_comments = CommentSerializer(comments, many=True).data
+            allComments = CommentSerializer(comments, many=True).data
         except:
             team1Comments = team1.get(f"authors/{author_pk}/posts/{post_pk}/comments")
             if team1Comments.status_code == 200:
-                all_comments = []
+                allComments = []
                 for comment in team1Comments.json()["comments"]:
-                    all_comments.append({
+                    allComments.append({
                         "id": comment["id"],
                         "author": serializeTeam1Author(comment["author"]),
                         "comment": comment["comment"],
@@ -48,11 +48,23 @@ class CommentViewSet(generics.ListCreateAPIView):
                         "type": "comment",
                         "post": post_pk,
                     })
+            team2Comments = team2.get(f"authors/{author_pk}/posts/{post_pk}/comments")
+            if team2Comments.status_code == 200:
+                for comment in team2Comments.json()["comments"]:
+                    allComments.append({
+                        "id": comment["id"],
+                        "author": serializeTeam1Author(comment["author"]),
+                        "comment": comment["comment"],
+                        "contentType": comment["contentType"],
+                        "published": comment["published"],
+                        "type": "NodeComment",
+                        "post": post_pk,
+                    })
             # TODO: Team3 not implemented yet
             # team3Comments = team3.get(f"authors/{author_pk}/posts/{post_pk}/comments")
             # if team3Comments.status_code == 200:
             #     for comment in team3Comments.json()["comments"]:
-            #         all_comments.append({
+            #         allComments.append({
             #             "id": comment["id"],
             #             "author": serializeTeam3Author(comment["author"]),
             #             "comment": comment["comment"],
@@ -61,10 +73,10 @@ class CommentViewSet(generics.ListCreateAPIView):
             #             "post": post_pk,
             #         })
         
-        if not all_comments:
+        if not allComments:
             return Response({'message': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
         
-        page = self.paginate_queryset(all_comments)
+        page = self.paginate_queryset(allComments)
         return self.get_paginated_response(page)
 
     @extend_schema(

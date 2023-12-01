@@ -21,6 +21,10 @@ export default {
       type: String,
       default: ''
     },
+    host: {
+      type: String,
+      default: ''
+    },
     // ... other props
   },
   data() {
@@ -38,9 +42,8 @@ export default {
     async checkFollowingStatus() {
       const authorStore = useAuthorStore();
       try {
-        console.log(this.id.split('/'))
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-        const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id.split('/')[5] + '/');
+        const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id.split('/').pop() + '/');
         if (!(response.status === 400 || response.status === 401 || response.status === 500)) {
           this.isFollowing = response.data;
           console.log(this.isFollowing)
@@ -57,11 +60,12 @@ export default {
         let response;
         if (this.isFollowing) {
           // Call the unfollow API
-          response = await axios.delete(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id + '/');
+          response = await axios.delete(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id.split('/').pop() + '/');
           console.log('Unfollowing', this.username);
         } else {
           // Call the follow API
-          response = await axios.put(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id.split('/')[5] + '/');
+          response = await axios.put(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + this.id.split('/').pop() + '/',
+            { objectHost: this.host });
           console.log('Following', this.username);
         }
         if (!(response.status === 400 || response.status === 401)) {

@@ -5,15 +5,20 @@ from requests.auth import HTTPBasicAuth
 import base64
 import uuid
 
-CONNECTED = ["vibely", "CtrlAltDefeat"]
 team1 = sessions.BaseUrlSession(base_url='https://vibely-23b7dc4c736d.herokuapp.com/api/')
 team1.headers['Authorization'] = f"Basic {base64.b64encode('vibely:vibely'.encode('utf - 8')).decode('utf - 8')}"
 
-# team2 = sessions.BaseUrlSession(base_url='https://social-distribution-backend-f20f02be801f.herokuapp.com/service/')
-# team2.headers['Authorization'] = 'Basic Y3VycmVudFNlcnZlcjox'
+team2 = sessions.BaseUrlSession(base_url='https://socialsync-404-project-6469dd163e44.herokuapp.com/')
+team2.headers['Authorization'] = f"Basic {base64.b64encode('21average:bigPass'.encode('utf - 8')).decode('utf - 8')}"
 
 team3 = sessions.BaseUrlSession(base_url='https://cmput404-ctrl-alt-defeat-api-12dfa609f364.herokuapp.com/api/')
 team3.headers['Authorization'] = 'Basic MjFBdmVyYWdlOnBhc3N3b3Jk'
+
+nodeDict = {
+    "vibely": team1,
+    "CtrlAltDefeat": team3,
+    "socialSync": team2
+}
 
 def addToInbox(author, data):
     if author.type == "NodeAuthor":
@@ -36,18 +41,17 @@ def sendToEveryonesInbox(data):
 def sendToFriendsInbox(author, data):
     # send to all friends that have status accepted
     followers = author.followers.filter(status="Accepted").all()
-    following = author.following.filter(status="Accepted").all()
-    print(followers)
-    print(following)
+    # following = author.following.filter(status="Accepted").all()
+    # print(following)
     result = []
     for follower in followers:
         result.append(Author.objects.get(id=follower.follower.id))
-    for friend in following:
-        result.append(Author.objects.get(id=friend.following.id))
+    # for friend in following:
+    #     result.append(Author.objects.get(id=friend.following.id))
     
     # remover duplicate authors
     # TODO: check if this works
-    result = list(dict.fromkeys(result))
+    # result = list(dict.fromkeys(result))
     # Convert the follow object to author object
     print(result)
     for friend in result:
@@ -64,9 +68,11 @@ def isFriend(author, foreign_author):
 
 def isFrontendRequest(request):
     # return False
-    if request.user.username in CONNECTED:
-        return False
-    return True
+    nodes = Author.objects.filter(type="node").all()
+    for node in nodes:
+        if request.user.username == node.username:
+            return False
+        return True
 
 
 def serializeTeam1Author(author):
@@ -107,6 +113,27 @@ def serializeTeam1Post(post):
     }
 
 
+def serializeTeam2Post(post):
+    return {
+        "id": post["id"],
+        "title": "",
+        "type": "post",
+        "source": post["source"],
+        "origin": post["origin"],
+        "description": post["description"],
+        "contentType": post["contentType"],
+        "visibility": post["visibility"],
+        "unlisted": post["unlisted"],
+        "content": post["content"],
+        "published": post["published"],
+        "author": serializeTeam1Author(post["author"]),
+        "categories": post["categories"],
+        "comments": post["comments"],
+        "image_link": None,
+        "image": None,
+        "imageOnlyPost": None,
+        "count": 0,
+    }
 def serializeTeam3Post(post):
     return {
         "id": post["id"],

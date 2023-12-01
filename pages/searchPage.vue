@@ -9,7 +9,7 @@
 
       <div class="user-list">
         <FriendComponent v-for="friend in filteredFriends" :key="friend.id" :id="friend.id" :username="friend.username"
-          :fs="friend.first_name" :ls="friend.last_name" @onFriendClick="redirectToProfile" />
+          :fs="friend.first_name" :ls="friend.last_name" :host="friend.host" @onFriendClick="redirectToProfile" />
       </div>
 
 

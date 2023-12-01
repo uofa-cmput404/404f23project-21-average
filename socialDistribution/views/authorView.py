@@ -7,7 +7,7 @@ from socialDistribution.serializers import AuthorSerializer
 from ..models import Author
 from rest_framework import generics
 from drf_spectacular.utils import extend_schema
-from socialDistribution.util import team1, team3
+from socialDistribution.util import team1, team3, team2
 import json
 from rest_framework.renderers import JSONRenderer
 from ..util import isFrontendRequest, serializeTeam1Author
@@ -34,10 +34,9 @@ class AuthorListViewSet(generics.ListAPIView):
             for author in team1RemoteAuthors.json()["items"]:
                 all_authors.append(serializeTeam1Author(author))
             
-            # team2RemoteAuthors = team2.get("authors/")
-            # print(team2RemoteAuthors.url, team2RemoteAuthors.text, team2RemoteAuthors.headers)
-            # for author in team2RemoteAuthors.json()["items"]:
-            #     all_authors.append(serializeTeam1Author(author))
+            team2RemoteAuthors = team2.get("authors/")
+            for author in team2RemoteAuthors.json()["items"]:
+                all_authors.append(serializeTeam1Author(author))
 
             team3RemoteAuthors = team3.get("authors/")
             for author in team3RemoteAuthors.json()["items"]:
@@ -66,10 +65,10 @@ class AuthorDetailView(APIView):
                     author = team1RemoteAuthor.json()
                     return Response(serializeTeam1Author(author))
                 
-                # team2RemoteAuthor = team2.get(f"authors/{author_pk}")
-                # if team2RemoteAuthor.status_code == 200:
-                #     author = team2RemoteAuthor.json()
-                #     return Response(serializeTeam1Author(author))
+                team2RemoteAuthor = team2.get(f"authors/{author_pk}")
+                if team2RemoteAuthor.status_code == 200:
+                    author = team2RemoteAuthor.json()
+                    return Response(serializeTeam1Author(author))
 
                 team3RemoteAuthor = team3.get(f"authors/{author_pk}")
                 if team3RemoteAuthor.status_code == 200:

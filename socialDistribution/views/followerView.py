@@ -5,14 +5,15 @@ from socialDistribution.serializers import AuthorSerializer, FollowSerializer
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
-from ..util import team1, team3, addToInbox, serializeTeam1Author, serializeTeam3Author
+from ..util import team1, team2, team3, addToInbox, serializeTeam1Author, serializeTeam3Author
 from drf_spectacular.utils import extend_schema
 from ..pagination import JsonObjectPaginator
+from django.conf import settings
 
 
 class FollowViewSet(generics.ListAPIView):
     queryset = Follow.objects.all()
-    serializer_class = FollowSerializer
+    # serializer_class = FollowSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = JsonObjectPaginator
     
@@ -25,8 +26,9 @@ class FollowViewSet(generics.ListAPIView):
         try:
             author = Author.objects.get(pk=author_pk, type="author")
             followers = author.followers.filter(status="Accepted").all()
+            print(followers)
             for follower in followers:
-                authors.append(Author.objects.get(pk=follower.follower.id))
+                authors.append(AuthorSerializer(Author.objects.get(pk=follower.follower.id)).data)
         except:
             # TODO: i dont think we need to get followers of remote authors on UI???
             team1RemoteAuthor = team1.get(f"authors/{author_pk}")
@@ -36,6 +38,13 @@ class FollowViewSet(generics.ListAPIView):
                     for follower in team1AuthorFollowers.json()["items"]:
                         authors.append(serializeTeam1Author(follower["follower"]))
             
+            team2RemoteAuthor = team2.get(f"authors/{author_pk}")
+            if team2RemoteAuthor.status_code == 200:
+                team2AuthorFollowers = team2.get(f"authors/{author_pk}/followers/")
+                if team2AuthorFollowers.status_code == 200:
+                    for follower in team2AuthorFollowers.json()["items"]:
+                        authors.append(serializeTeam1Author(follower["follower"]))
+
             # try to find the author on team3
             team3RemoteAuthor = team3.get(f"authors/{author_pk}")
             if team3RemoteAuthor.status_code == 200:
@@ -80,15 +89,15 @@ class FollowingViewSet(generics.ListAPIView):
         # turn followers queryset into a list of authors
         authors = []
         for follower in following:
-            authors.append(Author.objects.get(pk=follower.following.id))
+            authors.append(AuthorSerializer(Author.objects.get(pk=follower.following.id)).data)
         
         page = self.paginate_queryset(authors)
-        return self.get_paginated_response(AuthorSerializer(page, many=True).data)
+        return self.get_paginated_response(page)
 
 
 class FollowDetailViewSet(generics.GenericAPIView):
     queryset = Follow.objects.all()
-    # serializer_class = FollowSerializer
+    serializer_class = FollowSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = Pagination
     
@@ -98,6 +107,7 @@ class FollowDetailViewSet(generics.GenericAPIView):
     )
     def get(self, request, author_pk, foreign_author_pk, format=None):
         # return true if foreign_author is a follower of author
+        # TODO: check if this makes sense for cross server??
         author = Author.objects.get(pk=author_pk)
         try:
             foreign_author = Author.objects.get(pk=foreign_author_pk)
@@ -129,21 +139,29 @@ class FollowDetailViewSet(generics.GenericAPIView):
         description='Send FOREIGN_AUTHOR_ID a follow request from AUTHOR_ID (must be authenticated)'
     )
     def put(self, request, author_pk, foreign_author_pk, format=None):
-        # PUT http://127.0.0.1:8000/api/authors/2c4733b5-235a-410a-975e-d8422aa19609/followers/87aac38e-48d4-489e-9da9-9f1364baa812/
         author = Author.objects.get(pk=author_pk)
+        print(request.data)
         try:
             foreign_author = Author.objects.get(pk=foreign_author_pk, type="author")
         except:
             # # send follow request to remote inbox
             # TODO: Implement other teams inbox
-            # payload = {
-            #     "type": "follow",
-            #     "summary": f"{author.username} wants to follow {remoteAuthor['username']}",
-            #     "actor": AuthorSerializer(author).data,
-            #     "object": remoteAuthor,
-            # }
-            # print({"items": payload})
-            # response = secondInstance.post(f"authors/{foreign_author_pk}/inbox/", json={"items": payload})
+            if 'socialsync' in request.data["objectHost"]:
+                remoteAuthor = team2.get(f"authors/{foreign_author_pk}")
+                print(remoteAuthor.url, remoteAuthor.text)
+                if remoteAuthor.status_code == 200:
+                    remoteAuthor = remoteAuthor.json()
+                payload = {
+                    "type": "follow",
+                    "summary": f"{author.username} wants to follow {remoteAuthor['displayName']}",
+                    "actor": AuthorSerializer(author).data,
+                    "object": remoteAuthor,
+                }
+                print(remoteAuthor['id'].split('/')[-1])
+                response = team2.post(f"authors/{remoteAuthor['id'].split('/')[-1]}/inbox", json=payload)
+                print(response.url)
+                print(response, response.text)
+            
             return Response({'message': 'Follow Request Sent Successfully'}, status=status.HTTP_201_CREATED)
         
         if author == foreign_author:
