@@ -308,3 +308,10 @@ class ShareViewTestCase(APITestCase):
             'visibility': 'PUBLIC',
         }
         self.post = Post.objects.create(author=self.author, **self.post_data)
+
+    def test_share_public_post(self):
+        # Test sharing a public post
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post(f'/share/{self.post.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {'message': 'Post shared'})
