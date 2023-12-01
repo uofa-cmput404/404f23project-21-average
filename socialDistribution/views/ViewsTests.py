@@ -78,7 +78,11 @@ class CommentViewsTest(TestCase):
             'published': (datetime.now() - timedelta(days=1)).isoformat(),
         }
 
-    
+    def test_get_comments_list(self):
+        # Test retrieving the list of local comments for a post
+        response = self.client.get(reverse('comments', args=[self.author.pk, self.post.pk]))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('results', response.data)
 
 
 # Tests for followerView.py
