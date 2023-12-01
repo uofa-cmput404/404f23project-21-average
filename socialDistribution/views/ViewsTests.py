@@ -92,6 +92,12 @@ class CommentViewsTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('results', response.data)
 
+    def test_post_comment(self):
+        # Test creating a new comment on a post
+        response = self.client.post(reverse('comments', args=[self.author.pk, self.post.pk]), self.comment_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn('comment', response.data)
+        self.assertEqual(response.data['comment'], self.comment_data['comment'])
 
 # Tests for followerView.py
 class FollowerViewsTest(TestCase):
