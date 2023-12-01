@@ -16,7 +16,7 @@ import base64
 from io import BytesIO
 from PIL import Image
 from django.http import HttpResponse
-from ..util import isFrontendRequest, team1, team2, team3, serializeTeam1Post, sendToEveryonesInbox, serializeTeam3Post, serializeTeam2Post
+from ..util import isFrontendRequest, team1, team2, team3, serializeTeam1Post, sendToEveryonesInbox, serializeTeam3Post, serializeTeam2Post, getUUID
 import json
 import uuid
 from rest_framework.renderers import JSONRenderer
@@ -28,7 +28,7 @@ def getPostsFromAuthors():
     if team1Authors.status_code == 200:
         for author in team1Authors.json()["items"]:
             author1 = serializeTeam1Author(author)
-            team1Posts = team1.get(f"authors/{author1['id']}/posts/")
+            team1Posts = team1.get(f"authors/{getUUID(author1['id'])}/posts/")
             if team1Posts.status_code == 200:
                 for post in team1Posts.json()["items"]:
                     res.append(serializeTeam1Post(post))
@@ -38,7 +38,7 @@ def getPostsFromAuthors():
     if team2Authors.status_code == 200:
         for author in team2Authors.json()["items"]:
             author2 = serializeTeam1Author(author)
-            team2Posts = team2.get(f"authors/{author2['id'].split('/')[-1]}/posts")
+            team2Posts = team2.get(f"authors/{getUUID(author2['id'])}/posts")
             if team2Posts.status_code == 200:
                 for post in team2Posts.json()["items"]:
                     # print(post)
@@ -48,7 +48,7 @@ def getPostsFromAuthors():
     if team3Authors.status_code == 200:
         for author in team3Authors.json()["items"]:
             author3 = serializeTeam1Author(author)
-            team3Posts = team3.get(f"authors/{author3['id'].split('/')[-1]}/posts/")
+            team3Posts = team3.get(f"authors/{getUUID(author3['id'])}/posts/")
             if team3Posts.status_code == 200:
                 for post in team3Posts.json()["items"]:
                     res.append(serializeTeam3Post(post))
@@ -76,7 +76,7 @@ class StreamPostList(generics.ListAPIView):
         publicPosts = Post.objects.filter(visibility="PUBLIC", unlisted=False)
         
         authorFriends = FollowSerializer(author.following.filter(status="Accepted"), many=True).data
-        authorFriends = [(Author.objects.get(pk=friend["following"]["id"].split('/')[-1])) for friend in authorFriends]
+        authorFriends = [(Author.objects.get(pk=getUUID(friend["following"]["id"]))) for friend in authorFriends]
         friendsPosts = Post.objects.filter(author__in=authorFriends, visibility="FRIENDS")
 
         all_posts = json.loads(JSONRenderer().render(PostSerializer(authorPosts, many=True).data + 
@@ -89,7 +89,7 @@ class StreamPostList(generics.ListAPIView):
 
         # add source to posts and return everything
         for post in all_posts:
-            post["source"] = f"{settings.BASEHOST}/authors/{post['author']['id'].split('/')[-1]}/posts/{post['id'].split('/')[-1]}"
+            post["source"] = f"{settings.BASEHOST}/authors/{getUUID(post['author']['id'])}/posts/{getUUID(post['id'])}"
         page = self.paginate_queryset(all_posts)
         return self.get_paginated_response(page)
 

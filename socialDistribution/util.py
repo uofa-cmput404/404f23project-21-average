@@ -1,9 +1,7 @@
 from .models import Inbox, Author
 import json
 from requests_toolbelt import sessions
-from requests.auth import HTTPBasicAuth
 import base64
-import uuid
 from socialDistribution.serializers import AuthorSerializer
 
 team1 = sessions.BaseUrlSession(base_url='https://vibely-23b7dc4c736d.herokuapp.com/api/')
@@ -23,7 +21,7 @@ nodeDict = {
 
 def addToInbox(author, data):
     if author.type == "NodeAuthor":
-        team1.post(f"authors/{author.id}/inbox/", json={"items":data})
+        team2.post(f"authors/{author.id}/inbox/", json=data)
     else:
         inbox = Inbox.objects.get(author=author)
         items = json.loads(inbox.items)
@@ -58,6 +56,12 @@ def sendToFriendsInbox(author, data):
     for friend in result:
         addToInbox(friend, data)
 
+
+def getUUID(url):
+    components = url.split('/')
+    if components[-1] == "":
+        return components[-2]
+    return components[-1]
 
 def isFriend(author, foreign_author):
     if author.id == foreign_author.id:

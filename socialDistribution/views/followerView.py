@@ -5,7 +5,7 @@ from socialDistribution.serializers import AuthorSerializer, FollowSerializer, F
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
-from ..util import team1, team2, team3, addToInbox, serializeTeam1Author, serializeTeam3Author
+from ..util import team1, team2, team3, addToInbox, serializeTeam1Author, serializeTeam3Author, getUUID
 from drf_spectacular.utils import extend_schema
 from ..pagination import JsonObjectPaginator
 from django.conf import settings
@@ -54,7 +54,7 @@ class FollowViewSet(generics.ListAPIView):
                         authors.append(serializeTeam3Author(follower))
         
         if not authors:
-            return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'No followers'}, status=status.HTTP_200_OK)
         page = self.paginate_queryset(authors)
         return self.get_paginated_response(page)
 
@@ -157,8 +157,7 @@ class FollowDetailViewSet(generics.GenericAPIView):
                     "actor": AuthorSerializer(author).data,
                     "object": remoteAuthor,
                 }
-                print(remoteAuthor['id'].split('/')[-1])
-                response = team2.post(f"authors/{remoteAuthor['id'].split('/')[-1]}/inbox", json=payload)
+                response = team2.post(f"authors/{getUUID(remoteAuthor['id'])}/inbox", json=payload)
                 print(response.url)
                 print(response, response.text)
             
