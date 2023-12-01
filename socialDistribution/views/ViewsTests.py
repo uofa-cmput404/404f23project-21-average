@@ -329,3 +329,23 @@ class ShareViewTestCase(APITestCase):
         response = self.client.post(f'/share/{self.post.id}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'message': 'Post shared'})
+
+
+# Tests for Stream Posts View
+
+class StreamPostListTestCase(APITestCase):
+    def setUp(self):
+        # Set up a user and author for testing
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.author = Author.objects.create(user=self.user)
+        
+        # Set Up Test Post
+        self.post_data = {
+            'title': 'Test Post',
+            'content': 'Test Content',
+            'visibility': 'PUBLIC',
+        }
+        self.post = Post.objects.create(author=self.author, **self.post_data)
+
+
+    
