@@ -271,3 +271,11 @@ class PostViewTestCase(APITestCase):
         post = Post.objects.create(author=self.author, title='Test Post', content='Test Content', visibility='PUBLIC')
         response = self.client.get(f'/authors/{self.author.id}/posts/{post.id}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_update_post(self):
+        # Test updating the details of a post
+        post = Post.objects.create(author=self.author, title='Test Post', content='Test Content', visibility='PUBLIC')
+        updated_data = {'title': 'Updated Title'}
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post(f'/authors/{self.author.id}/posts/{post.id}/', data=updated_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
