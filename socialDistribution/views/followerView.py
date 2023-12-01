@@ -37,6 +37,13 @@ class FollowViewSet(generics.ListAPIView):
                     for follower in team1AuthorFollowers.json()["items"]:
                         authors.append(serializeTeam1Author(follower["follower"]))
             
+            team2RemoteAuthor = team2.get(f"authors/{author_pk}")
+            if team2RemoteAuthor.status_code == 200:
+                team2AuthorFollowers = team2.get(f"authors/{author_pk}/followers/")
+                if team2AuthorFollowers.status_code == 200:
+                    for follower in team2AuthorFollowers.json()["items"]:
+                        authors.append(serializeTeam1Author(follower["follower"]))
+
             # try to find the author on team3
             team3RemoteAuthor = team3.get(f"authors/{author_pk}")
             if team3RemoteAuthor.status_code == 200:
@@ -89,7 +96,7 @@ class FollowingViewSet(generics.ListAPIView):
 
 class FollowDetailViewSet(generics.GenericAPIView):
     queryset = Follow.objects.all()
-    # serializer_class = FollowSerializer
+    serializer_class = FollowSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = Pagination
     
@@ -99,6 +106,7 @@ class FollowDetailViewSet(generics.GenericAPIView):
     )
     def get(self, request, author_pk, foreign_author_pk, format=None):
         # return true if foreign_author is a follower of author
+        # TODO: check if this makes sense for cross server??
         author = Author.objects.get(pk=author_pk)
         try:
             foreign_author = Author.objects.get(pk=foreign_author_pk)
@@ -130,7 +138,6 @@ class FollowDetailViewSet(generics.GenericAPIView):
         description='Send FOREIGN_AUTHOR_ID a follow request from AUTHOR_ID (must be authenticated)'
     )
     def put(self, request, author_pk, foreign_author_pk, format=None):
-        # PUT http://127.0.0.1:8000/api/authors/2c4733b5-235a-410a-975e-d8422aa19609/followers/87aac38e-48d4-489e-9da9-9f1364baa812/
         author = Author.objects.get(pk=author_pk)
         try:
             foreign_author = Author.objects.get(pk=foreign_author_pk, type="author")

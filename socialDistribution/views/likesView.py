@@ -5,7 +5,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import permissions
 from socialDistribution.models import Author, Comment, CommentLike, Post, PostLike
 from socialDistribution.pagination import Pagination
-from ..util import isFrontendRequest, team1, serializeTeam1Post, serializeTeam1Author, isFriend
+from ..util import isFrontendRequest, team1, serializeTeam1Post, serializeTeam1Author, isFriend, team2, team3, serializeTeam3Author
 from socialDistribution.serializers import CommentLikeSerializer, PostLikeSerializer
 from socialDistribution.util import addToInbox
 from ..pagination import JsonObjectPaginator
@@ -29,41 +29,44 @@ class AddLikeToPostView(generics.ListCreateAPIView):
         except:
             # if isFrontendRequest(request):
             #     if not likes:
-                    # TODO: check that this works
-                    team1Likes = team1.get(f"authors/{author_pk}/posts/{post_pk}/likes/")
-                    if team1Likes.status_code == 200:
-                        for like in team1Likes.json()["items"]:
-                            likes.append({
-                                "object": like["object"],
-                                "author": serializeTeam1Author(like["author"]),
-                                "post": post_pk,
-                                # "published": like["published"],
-                                "type": like["type"],
-                                "context": like["context"],
-                                "summary": like["summary"],
-                            })
-                    # team3Likes = team3.get(f"authors/{author_pk}/posts/{post_pk}/likes/")
-                    # if team3Likes.status_code == 200:
-                    #     for like in team3Likes.json()["items"]:
-                    #         likes.append({
-                    #             "object": like["object"],
-                    #             "author": serializeTeam1Author(like["author"]),
-                    #             "post": post_pk,
-                    #             # "published": like["published"],
-                    #             "type": like["type"],
-                    #             "context": like["context"],
-                    #             "summary": like["summary"],
-                    #         })
-                    # team2_likes = team2.get(f"authors/{author_pk}/posts/{post_pk}/likes")
-                    # if team2_likes.status_code == 200:
-                    #     for like in team2_likes.json()["likes"]:
-                    #         likes.append({
-                    #             "id": like["id"],
-                    #             "author": serializeTeam1Author(like["author"]),
-                    #             "post": serializeTeam1Post(like["post"]),
-                    #             "published": like["published"],
-                    #             "type": like["type"],
-                    #         })
+            # TODO: check that this works
+            team1Likes = team1.get(f"authors/{author_pk}/posts/{post_pk}/likes/")
+            if team1Likes.status_code == 200:
+                for like in team1Likes.json()["items"]:
+                    likes.append({
+                        "object": like["object"],
+                        "author": serializeTeam1Author(like["author"]),
+                        "post": post_pk,
+                        # "published": like["published"],
+                        "type": like["type"],
+                        "context": like["context"],
+                        "summary": like["summary"],
+                    })
+            
+            team2Likes = team2.get(f"authors/{author_pk}/posts/{post_pk}/likes")
+            if team2Likes.status_code == 200:
+                for like in team2Likes.json()["likes"]:
+                    likes.append({
+                        "id": like["id"],
+                        "author": serializeTeam1Author(like["author"]),
+                        "post": serializeTeam1Post(like["post"]),
+                        "published": like["published"],
+                        "type": like["type"],
+                    })
+
+            # team3Likes = team3.get(f"authors/{author_pk}/posts/{post_pk}/likes/")
+            # if team3Likes.status_code == 200:
+            #     for like in team3Likes.json()["items"]:
+            #         likes.append({
+            #             "object": like["object"],
+            #             "author": serializeTeam1Author(like["author"]),
+            #             "post": post_pk,
+            #             # "published": like["published"],
+            #             "type": like["type"],
+            #             "context": like["context"],
+            #             "summary": like["summary"],
+            #         })
+
         page = self.paginate_queryset(likes)
         return self.get_paginated_response(page)
 
@@ -131,12 +134,23 @@ class AddLikeToCommentView(generics.ListCreateAPIView):
     )
     def get(self, request, author_pk, post_pk, comment_pk, format=None):
         # TODO: check how it exactly works with remote authors
-        comment = Comment.objects.get(pk=comment_pk)
-        likes = CommentLike.objects.filter(comment=comment)
+        try:
+            comment = Comment.objects.get(pk=comment_pk)
+            likes = CommentLike.objects.filter(comment=comment)
+        except:
+            team1Likes = team1.get(f"authors/{author_pk}/posts/{post_pk}/comments/{comment_pk}/likes")
+            if team1Likes.status_code == 200:
+                likes = team1Likes.json()["likes"]
+            team2Likes = team2.get(f"authors/{author_pk}/posts/{post_pk}/comments/{comment_pk}/likes")
+            if team2Likes.status_code == 200:
+                likes = team2Likes.json()["likes"]
+            # team3Likes = team3.get(f"authors/{author_pk}/posts/{post_pk}/comments/{comment_pk}/likes")
+            # if team3Likes.status_code == 200:
+            #     likes = team3Likes.json()["likes"]
 
         page = self.paginate_queryset(likes)
-        serializer = CommentLikeSerializer(likes, many=True)
-        return self.get_paginated_response(serializer.data)
+        # serializer = CommentLikeSerializer(likes, many=True)
+        return self.get_paginated_response(page)
 
 
 class GetAllAuthorLikes(generics.ListAPIView):
@@ -168,11 +182,11 @@ class GetAllAuthorLikes(generics.ListAPIView):
             #     if likes.status_code == 200:
             #         return Response(likes.json())
             # try to find the author on team2
-            # team1RemoteAuthor = team2.get(f"authors/{author_pk}")
-            # if team1RemoteAuthor.status_code == 200:
-            #     likes = team2.get(f"authors/{author_pk}/liked/")
-            #     if likes.status_code == 200:
-            #         return Response(likes.json())
+            team2RemoteAuthor = team2.get(f"authors/{author_pk}")
+            if team2RemoteAuthor.status_code == 200:
+                likes = team2.get(f"authors/{author_pk}/liked/")
+                if likes.status_code == 200:
+                    return Response(likes.json())
             return Response({"message": "author not found"}, status=status.HTTP_404_NOT_FOUND)
 
         postLikes = PostLike.objects.filter(author_id=author_pk, post__visibility='PUBLIC')

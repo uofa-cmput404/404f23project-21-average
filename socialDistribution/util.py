@@ -9,8 +9,8 @@ CONNECTED = ["vibely", "CtrlAltDefeat"]
 team1 = sessions.BaseUrlSession(base_url='https://vibely-23b7dc4c736d.herokuapp.com/api/')
 team1.headers['Authorization'] = f"Basic {base64.b64encode('vibely:vibely'.encode('utf - 8')).decode('utf - 8')}"
 
-# team2 = sessions.BaseUrlSession(base_url='https://social-distribution-backend-f20f02be801f.herokuapp.com/service/')
-# team2.headers['Authorization'] = 'Basic Y3VycmVudFNlcnZlcjox'
+team2 = sessions.BaseUrlSession(base_url='https://socialsync-404-project-6469dd163e44.herokuapp.com/')
+team2.headers['Authorization'] = f"Basic {base64.b64encode('21average:bigPass'.encode('utf - 8')).decode('utf - 8')}"
 
 team3 = sessions.BaseUrlSession(base_url='https://cmput404-ctrl-alt-defeat-api-12dfa609f364.herokuapp.com/api/')
 team3.headers['Authorization'] = 'Basic MjFBdmVyYWdlOnBhc3N3b3Jk'
@@ -106,6 +106,27 @@ def serializeTeam1Post(post):
     }
 
 
+def serializeTeam2Post(post):
+    return {
+        "id": post["id"],
+        "title": "",
+        "type": "post",
+        "source": post["source"],
+        "origin": post["origin"],
+        "description": post["description"],
+        "contentType": post["contentType"],
+        "visibility": post["visibility"],
+        "unlisted": post["unlisted"],
+        "content": post["content"],
+        "published": post["published"],
+        "author": serializeTeam1Author(post["author"]),
+        "categories": post["categories"],
+        "comments": post["comments"],
+        "image_link": None,
+        "image": None,
+        "imageOnlyPost": None,
+        "count": 0,
+    }
 def serializeTeam3Post(post):
     return {
         "id": post["id"],

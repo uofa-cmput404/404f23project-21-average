@@ -16,7 +16,7 @@ import base64
 from io import BytesIO
 from PIL import Image
 from django.http import HttpResponse
-from ..util import isFrontendRequest, team1, team3, serializeTeam1Post, sendToEveryonesInbox, serializeTeam3Post
+from ..util import isFrontendRequest, team1, team2, team3, serializeTeam1Post, sendToEveryonesInbox, serializeTeam3Post, serializeTeam2Post
 import json
 import uuid
 from rest_framework.renderers import JSONRenderer
@@ -33,13 +33,25 @@ def getPostsFromAuthors():
                 for post in team1Posts.json()["items"]:
                     res.append(serializeTeam1Post(post))
 
-    team2Authors = team3.get("authors/")
+    team2Authors = team2.get("authors/")
+    # TODO: fix this
     if team2Authors.status_code == 200:
         for author in team2Authors.json()["items"]:
             author2 = serializeTeam1Author(author)
-            team2Posts = team3.get(f"authors/{author2['id'].split('/')[-1]}/posts/")
+            team2Posts = team2.get(f"authors/{author2['id'].split('/')[-1]}/posts")
+            print(team2Posts.json())
             if team2Posts.status_code == 200:
                 for post in team2Posts.json()["items"]:
+                    # print(post)
+                    res.append(serializeTeam3Post(post))
+
+    team3Authors = team3.get("authors/")
+    if team3Authors.status_code == 200:
+        for author in team3Authors.json()["items"]:
+            author3 = serializeTeam1Author(author)
+            team3Posts = team3.get(f"authors/{author3['id'].split('/')[-1]}/posts/")
+            if team3Posts.status_code == 200:
+                for post in team3Posts.json()["items"]:
                     res.append(serializeTeam3Post(post))
     return res
 
@@ -116,7 +128,19 @@ class StreamComments(generics.ListAPIView):
                     "contentType": comment["contentType"],
                     "published": comment["published"],
                     "type": "NodeComment",
-                    # "post": comment["post"],
+                    "post": post_pk,
+                })
+        team2Comments = team2.get(f"authors/{author_pk}/posts/{post_pk}/comments")
+        if team2Comments.status_code == 200:
+            for comment in team2Comments.json()["comments"]:
+                allComments.append({
+                    "id": comment["id"],
+                    "author": serializeTeam1Author(comment["author"]),
+                    "comment": comment["comment"],
+                    "contentType": comment["contentType"],
+                    "published": comment["published"],
+                    "type": "NodeComment",
+                    "post": post_pk,
                 })
         # team2_comments = team3.get(f"authors/{author_pk}/posts/{post_pk}/comments")
         # if team2_comments.status_code == 200:
