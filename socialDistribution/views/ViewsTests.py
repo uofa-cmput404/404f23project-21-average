@@ -315,3 +315,17 @@ class ShareViewTestCase(APITestCase):
         response = self.client.post(f'/share/{self.post.id}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'message': 'Post shared'})
+
+    def test_share_friends_post(self):
+        # Test sharing a friends-only post
+        self.post.visibility = 'FRIENDS'
+        self.post.save()
+        
+        friend_user = User.objects.create_user(username='frienduser', password='friendpassword')
+        friend_author = Author.objects.create(user=friend_user)
+        self.author.friends.add(friend_author)
+
+        self.client.force_authenticate(user=friend_user)
+        response = self.client.post(f'/share/{self.post.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {'message': 'Post shared'})
