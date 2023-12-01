@@ -101,3 +101,10 @@ class CommentViewsTest(TestCase):
 
 # Tests for followerView.py
 
+class FollowViewsTest(TestCase):
+    def setUp(self):
+        # Set up any necessary test data
+        self.client = APIClient()
+        # Create test authors
+        self.author1 = Author.objects.create(username='follower_user')
+        self.author2 = Author.objects.create(username='followed_user')
