@@ -187,3 +187,9 @@ class InboxItemViewTest(TestCase):
         self.author = Author.objects.create(username='test_author')
         # Create an inbox for the test author
         Inbox.objects.create(author=self.author, items='[]')
+
+    def test_get_inbox_items(self):
+        # Test getting inbox items for the current user
+        url = reverse('inbox', args=[self.author.pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
