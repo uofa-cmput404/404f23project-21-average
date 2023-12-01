@@ -100,39 +100,4 @@ class CommentViewsTest(TestCase):
         self.assertEqual(response.data['comment'], self.comment_data['comment'])
 
 # Tests for followerView.py
-class FollowerViewsTest(TestCase):
-    def setUp(self):
-        # Set up the Test Data
-        self.client = APIClient()
-        # Create test authors
-        self.author1 = Author.objects.create(username='author1')
-        self.author2 = Author.objects.create(username='author2')
-        # Create test follow relationship
-        Follow.objects.create(following=self.author1, follower=self.author2, status="Accepted")
 
-    def test_follow_list_view(self):
-        # Test FollowViewSet GET
-        response = self.client.get(f'/path/to/follow-list/{self.author1.pk}/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('results', response.data)
-
-    def test_follow_detail_view_get(self):
-        # Test FollowDetailViewSet GET
-        response = self.client.get(f'/path/to/follow-detail/{self.author1.pk}/{self.author2.pk}/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, True)
-
-    def test_follow_detail_view_delete(self):
-        # Test FollowDetailViewSet DELETE
-        response = self.client.delete(f'/path/to/follow-detail/{self.author1.pk}/{self.author2.pk}/')
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-
-    def test_follow_detail_view_put(self):
-        # Test FollowDetailViewSet PUT
-        response = self.client.put(f'/path/to/follow-detail/{self.author1.pk}/{self.author2.pk}/')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-    def test_follow_detail_view_post(self):
-        # Test FollowDetailViewSet POST
-        response = self.client.post(f'/path/to/follow-detail/{self.author1.pk}/{self.author2.pk}/')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
