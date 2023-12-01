@@ -260,4 +260,10 @@ class PostViewTestCase(APITestCase):
         response = self.client.post(f'/authors/{self.author.id}/posts/', data=self.post_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    def test_get_posts(self):
+        # Test getting a list of posts
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(f'/authors/{self.author.id}/posts/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     
