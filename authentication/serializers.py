@@ -20,6 +20,7 @@ class CustomRegisterSerializer(RegisterSerializer):
         user.github = self.validated_data.get('github', '')
         user.first_name = self.validated_data.get('first_name', '')
         user.last_name = self.validated_data.get('last_name', '')
+        user.displayName = self.falidated_data.get('username', '')
         user.host = settings.BASEHOST
         user.save()
         return user
