@@ -13,34 +13,11 @@ from ..util import isFrontendRequest, serializeTeam1Post, serializeTeam1Author, 
 def handlePostItem(newItem):
     # TODO: maybe dont need to save post on db???
     post = serializeTeam1Post(newItem)
-    # authorJson = serializeTeam1Author(newItem["author"])
-    # authorJson["type"] = "NodeAuthor"
-    # author = Author.objects.get_or_create(**authorJson)
-    # # create the post object
-    # newPost = Post.objects.get_or_create(
-    #     id=post["id"],
-    #     title=post["title"],
-    #     source=post["source"],
-    #     type="NodePost",
-    #     origin=post["origin"],
-    #     description=post["description"],
-    #     contentType=post["contentType"],
-    #     content=post["content"],
-    #     author=author[0],
-    #     categories=','.join(post["categories"]),
-    #     count=post["count"],
-    #     visibility=post["visibility"],
-    #     unlisted=post["unlisted"],
-    #     published=post["published"],
-    # )
     return post
-    # return PostSerializer(newItem).data
 
 
 def handleCommentItem(newItem):
     authorJson = serializeTeam1Author(newItem["author"])
-    # authorJson["type"] = "NodeAuthor"
-    # author = Author.objects.get_or_create(**authorJson)
     comment = {
         "id": newItem["id"].split("/")[-1],
         "author": authorJson,
@@ -50,8 +27,6 @@ def handleCommentItem(newItem):
         "type": "NodeComment",
         # "post": comment["post"],
     }
-    # newComment = Comment.objects.get_or_create(**comment)
-    # return CommentSerializer(newComment[0]).data
     return comment
 
 
@@ -63,9 +38,9 @@ def handleFollowItem(newItem):
     actorJson["type"] = "NodeAuthor"
     actorJson["id"] = getUUID(newItem["actor"]["id"])
     try:
-        author = Author.objects.get(pk=actorJson["id"])
+        actingAuthor = Author.objects.get(pk=actorJson["id"])
     except:
-        author = Author.objects.create(**actorJson)
+        actingAuthor = Author.objects.create(**actorJson)
     
     try:
         foreign_author = Author.objects.get(pk=getUUID(newItem["object"]["id"]))
@@ -74,38 +49,16 @@ def handleFollowItem(newItem):
 
     # author is requesting to follow foreign_author
     follow = {
-        "follower": author,
-        "following": foreign_author,
-        "status": "Pending",
-        "summary": newItem["summary"],
+        "type": "follow",
+        "summary": f"{actingAuthor.username} wants to follow {foreign_author.username}",
+        "actor": AuthorSerializer(foreign_author).data,
+        "object": AuthorSerializer(actingAuthor).data,
     }
-    newFollow = Follow.objects.get_or_create(**follow)
-    return FollowSerializer(newFollow[0]).data
+    return follow
 
 
 def handleLikeItem(newItem):
     authorJson = serializeTeam1Author(newItem["author"])
-    # authorJson["type"] = "NodeAuthor"
-    # author = Author.objects.get_or_create(**authorJson)
-    
-    # if newItem["summary"].split()[-1] == "post":
-    #     like = {
-    #     "context": newItem["context"],
-    #     "author": author[0],
-    #     "object": newItem["object"],
-    #     "type": "NodePostLike",
-    #     "summary": newItem["summary"],
-    #     }
-    #     newLike = PostLike.objects.get_or_create(**like)
-    # elif newItem["summary"].split()[-1] == 'comment':
-    #     like = {
-    #     "context": newItem["context"],
-    #     "author": author[0],
-    #     "object": newItem["object"],
-    #     "type": "NodeCommentLike",
-    #     "summary": newItem["summary"],
-    #     }
-    #     newLike = CommentLike.objects.get_or_create(**like)
     likeJson = {
         # "id": newItem["id"].split("/")[-1],
         "author": authorJson,

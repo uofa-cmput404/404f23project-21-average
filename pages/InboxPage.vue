@@ -77,6 +77,7 @@ export default {
           response = await axios.delete(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + await authorStore.getIDFromURL(this.id) + '/');
         } else {
           // Call the follow API
+          console.log(notification.object.id)
           response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + await authorStore.getIDFromURL(notification.object.id) + '/');
           console.log('Following', this.username);
         }
