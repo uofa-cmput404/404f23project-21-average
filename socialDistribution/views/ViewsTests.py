@@ -348,4 +348,8 @@ class StreamPostListTestCase(APITestCase):
         self.post = Post.objects.create(author=self.author, **self.post_data)
 
 
-    
+    def test_get_stream_posts(self):
+        # Test getting stream posts
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(f'/authors/{self.author.id}/posts/allposts/stream/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
