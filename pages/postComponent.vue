@@ -105,7 +105,8 @@ export default {
       postImage: this.postImage,
       isPublic: this.isPublic,
       showSharePopup: false,
-      userList: [{ id: 1, name: 'User 1' }, { id: 2, name: 'User 2' }] 
+      userList: [{ id: 1, name: 'User 1' }, { id: 2, name: 'User 2' }],
+      postid: String
       
 
     };
@@ -132,7 +133,7 @@ export default {
 
   async created() {
     const authorStore = useAuthorStore();
-    this.postID = await(authorStore.getIDFromURL(this.postID) )
+    this.postid = await (authorStore.getIDFromURL(this.postID) )
     try {
       axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
       const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
@@ -154,13 +155,13 @@ export default {
   methods: {
     async getLikes() {
       const authorStore = useAuthorStore();
-      this.postID = await(authorStore.getIDFromURL(this.postID) )
+      this.postid = await (authorStore.getIDFromURL(this.postID) )
       // Implement the logic to get likes
       // Example:
       try {
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
         if (!this.remotePost) {
-          const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + 'likes/');
+          const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postid + '/likes/');
           if (response.status === 200) {
             this.likeCount = response.data.count;
             this.liked = response.data.userLiked; // Assuming the API returns if the current user liked the post
@@ -173,17 +174,17 @@ export default {
     },
     async toggleLike() {
       const authorStore = useAuthorStore();
-      this.postID = await(authorStore.getIDFromURL(this.postID) )
+      this.postid = await (authorStore.getIDFromURL(this.postID) )
       try {
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
         if (this.liked) {
           // Logic to unlike the post
-          await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + 'likes/');
+          await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postid + '/likes/');
           this.likeCount -= 1;
         } else {
           // Logic to like the post
           console.log(this.postID)
-          await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + 'likes/');
+          await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postid + '/likes/');
           this.likeCount += 1;
         }
         this.liked = !this.liked;
@@ -224,17 +225,17 @@ export default {
         formData.append('image', this.postImage);
       }
       axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-      const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postID + "/", formData);
+      const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postid + "/", formData);
     },
     async deletePost() {
       const authorStore = useAuthorStore();
-      this.postID = await(authorStore.getIDFromURL(this.postID) )
+      this.postid = await (authorStore.getIDFromURL(this.postID) )
       const authorId = authorStore.getAuthorId; // Replace with actual way to get author_id
       const postId = this.postID; // Assuming this is a prop or data property
 
       try {
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-        const response = await axios.delete(`${authorStore.BASE_URL}/authors/${authorId}/posts/${postId}`);
+        const response = await axios.delete(`${authorStore.BASE_URL}/authors/${authorId}/posts/${this.postid}`);
 
         if (response.status === 200 || response.status === 204) {
           // Handle successful deletion, like updating UI or redirecting
