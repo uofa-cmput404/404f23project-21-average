@@ -1,12 +1,12 @@
 {
-  "date": "2023-11-27T21:59:47.731Z",
+  "date": "2023-12-02T21:06:24.476Z",
   "preset": "node-server",
   "framework": {
     "name": "nuxt",
     "version": "3.8.2"
   },
   "versions": {
-    "nitro": "2.8.0"
+    "nitro": "2.8.1"
   },
   "commands": {
     "preview": "node ./server/index.mjs"
