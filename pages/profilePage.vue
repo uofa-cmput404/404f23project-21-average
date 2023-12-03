@@ -141,6 +141,7 @@ export default {
           this.profilePhoto = e.target.result;
         };
         reader.readAsDataURL(file);
+
       }
     },
     async fetchFollowers() {

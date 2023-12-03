@@ -132,7 +132,6 @@ export default {
 
   async created() {
     const authorStore = useAuthorStore();
-    this.commentid = await (authorStore.getIDFromURL(commentId) )
     this.postid = await (authorStore.getIDFromURL(this.postID) )
     try {
       axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;

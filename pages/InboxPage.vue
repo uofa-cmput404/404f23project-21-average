@@ -26,7 +26,6 @@
               <h3>{{ notification.author.username }} commented "{{ notification.comment }}" on your post</h3>
             </div>
           </div>
-          <h4 v-if="notification.type === 'post'" class="notification-type">{{ notification.type.toUpperCase() }}</h4>
         </div>
       </div>
     </div>
@@ -49,6 +48,7 @@ export default {
       notifications: [], // This will hold the fetched notifications
       isAccepted: false,
       foreignId: '',
+      isAFollower: false
     };
   },
 
@@ -63,8 +63,23 @@ export default {
     } catch (error) {
       console.error('Error fetching inbox items:', error);
     }
+    this.checkFollower(this.notifications)
   },
   methods: {
+
+    async checkFollower(notifications){
+      for(let notification of notifications){
+        if(notification.type.toLowerCase() === 'follow'){
+          const authorStore = useAuthorStore();
+          axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
+          let response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + await authorStore.getIDFromURL(notification.object.id) + '/');
+          if (response.data === true){
+            this.isAfollower = true
+          }
+
+        }
+      }
+    },
 
     async toggleAccept(index) {
       const notification = this.notifications[index];
