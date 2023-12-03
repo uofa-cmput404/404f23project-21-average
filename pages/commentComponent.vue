@@ -80,11 +80,11 @@ export default {
 
     async likeComment(commentId) {
       const authorStore = useAuthorStore();
-      commentid = await (authorStore.getIDFromURL(this.commentId) )
+      this.commentid = await (authorStore.getIDFromURL(commentId) )
       try {
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
         console.log(this.commentId)
-        await axios.post(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postid}/comments/${commentid}/likes/`);
+        await axios.post(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postid}/comments/${this.commentid}/likes/`);
         await this.fetchComments(); // Update comments to reflect new like count
       } catch (error) {
         console.error('Error while liking comment:', error);
