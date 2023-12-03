@@ -270,6 +270,11 @@ class LikeViewTests(APITestCase):
         response = self.client.post(f'/authors/{self.author.id}/posts/{self.post.id}/comments/{self.comment.id}/likes/')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    def test_get_all_author_likes_view(self):
+        # Test GetAllAuthorLikes
+        response = self.client.get(f'/posts/{self.author.id}/liked/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 # Tests for Post View
 
