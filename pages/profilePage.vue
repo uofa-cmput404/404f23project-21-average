@@ -146,9 +146,13 @@ export default {
           profileImage: file
         }
         const authorStore = useAuthorStore();
+        let formData = new FormData();
+        formData.append('profileImage', this.profilePhoto)
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-        const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/',imagePayload);
-
+        const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/',formData,
+        {headers: {
+            'Content-Type': 'multipart/form-data'
+          }});
       }
     },
     async fetchFollowers() {
