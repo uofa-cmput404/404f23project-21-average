@@ -118,9 +118,8 @@ export default {
       this.username = profileResponse.data.username; // Update this line to match your API response structure
       
       // Set profile photo if available
-      console.log(profileResponse.data.profileImage)
-      if (profileResponse.data.profilePicture) {
-        this.profilePhoto = authorStore.BASE_URL.split('/api')[0] + this.profilePhoto;
+      if (profileResponse.data.profileImage) {
+        this.profilePhoto = authorStore.BASE_URL.split('/api')[0] + profileResponse.data.profileImage;
         console.log(this.profilePhoto)
       }
 
@@ -129,6 +128,22 @@ export default {
 
     } catch (error) {
       console.error('Error while fetching data:', error);
+    }
+    try {
+      axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
+      const author = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/');
+      console.log(author.data)
+      const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
+      console.log(response)
+      if (response.status === 200) {
+        this.posts = response.data.items; // Update the posts data property with the fetched posts
+        this.author = author.data;
+        // console.log((await this).profileImage, (await this).author)
+      } else {
+        console.error('Error fetching posts:', response);
+      }
+    } catch (error) {
+      console.error('Error while fetching posts:', error);
     }
   },
   
@@ -141,7 +156,7 @@ export default {
       if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
-         
+          this.profilePhoto = e.target.result;
         };
         reader.readAsDataURL(file);
         const authorStore = useAuthorStore();
@@ -199,25 +214,7 @@ export default {
   
   async created() {
 
-    const authorStore = useAuthorStore();
-    try {
-      axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-      const author = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/');
-      console.log(author.data)
-      const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
-      console.log(response)
-      if (response.status === 200) {
-        this.posts = response.data.items; // Update the posts data property with the fetched posts
-        this.author = author.data;
-        this.profileImage = author.data.image;
-        console.log(author.data)
-        // console.log((await this).profileImage, (await this).author)
-      } else {
-        console.error('Error fetching posts:', response);
-      }
-    } catch (error) {
-      console.error('Error while fetching posts:', error);
-    }
+    
     
   },
 };
