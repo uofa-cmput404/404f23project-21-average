@@ -240,6 +240,26 @@ class InboxItemViewTest(TestCase):
 
 # Tests for Likes View
 
+class LikeViewTests(APITestCase):
+    def setUp(self):
+        # Set up a user and author for testing
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.author = Author.objects.create(user=self.user)
+        
+        # Set up a test post and comment
+        self.post_data = {
+            'title': 'Test Post',
+            'content': 'Test Content',
+            'visibility': 'PUBLIC',
+        }
+        self.post = Post.objects.create(author=self.author, **self.post_data)
+
+        self.comment_data = {
+            'comment': 'Test Comment',
+            'content_type': 'text/plain',
+        }
+        self.comment = Comment.objects.create(author=self.author, post=self.post, **self.comment_data)
+
 # Tests for Post View
 
 class PostViewTestCase(APITestCase):
