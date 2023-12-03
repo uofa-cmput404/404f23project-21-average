@@ -260,6 +260,14 @@ class LikeViewTests(APITestCase):
         }
         self.comment = Comment.objects.create(author=self.author, post=self.post, **self.comment_data)
 
+    def test_add_like_to_post_view(self):
+        # Test AddLikeToPostView
+        response = self.client.post(f'/authors/{self.author.id}/posts/{self.post.id}/likes/')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    
+
+
 # Tests for Post View
 
 class PostViewTestCase(APITestCase):
