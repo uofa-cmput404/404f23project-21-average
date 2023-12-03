@@ -7,10 +7,10 @@ from socialDistribution.serializers import AuthorSerializer
 from ..models import Author
 from rest_framework import generics
 from drf_spectacular.utils import extend_schema
-from socialDistribution.util import team1, team3, team2
+from socialDistribution.util import vibely, ctrlAltDelete, socialSync
 import json
 from rest_framework.renderers import JSONRenderer
-from ..util import isFrontendRequest, serializeTeam1Author
+from ..util import isFrontendRequest, serializeVibelyAuthor
 from rest_framework import status
 
 
@@ -30,18 +30,21 @@ class AuthorListViewSet(generics.ListAPIView):
         # check request origin
         all_authors = json.loads(JSONRenderer().render(AuthorSerializer(authors, many=True).data).decode('utf-8'))
         if isFrontendRequest(request):
-            team1RemoteAuthors = team1.get("authors/")
+            vibelyRemoteAuthors = vibely.get("authors/")
+            if vibelyRemoteAuthors.status_code == 200:
+                for author in vibelyRemoteAuthors.json()["items"]:
+                    all_authors.append(serializeVibelyAuthor(author))
             
-            for author in team1RemoteAuthors.json()["items"]:
-                all_authors.append(serializeTeam1Author(author))
-            
-            team2RemoteAuthors = team2.get("authors/")
-            for author in team2RemoteAuthors.json()["items"]:
-                all_authors.append(serializeTeam1Author(author))
+            socialSyncRemoteAuthors = socialSync.get("authors/")
+            if socialSyncRemoteAuthors.status_code == 200:
+                for author in socialSyncRemoteAuthors.json()["items"]:
+                    all_authors.append(serializeVibelyAuthor(author))
 
-            team3RemoteAuthors = team3.get("authors/")
-            for author in team3RemoteAuthors.json()["items"]:
-                all_authors.append(serializeTeam1Author(author))
+            ctrlAltDeleteRemoteAuthors = ctrlAltDelete.get("authors/")
+            print(ctrlAltDeleteRemoteAuthors.text)
+            if ctrlAltDeleteRemoteAuthors.status_code == 200 and ctrlAltDeleteRemoteAuthors.text != "error\n":
+                for author in ctrlAltDeleteRemoteAuthors.json()["items"] :
+                    all_authors.append(serializeVibelyAuthor(author))
 
         page = self.paginate_queryset(all_authors)
         return self.get_paginated_response(page)
@@ -61,20 +64,20 @@ class AuthorDetailView(APIView):
             author = Author.objects.get(pk=author_pk)
         except:
             if isFrontendRequest(request):
-                team1RemoteAuthor = team1.get(f"authors/{author_pk}")
-                if team1RemoteAuthor.status_code == 200:
-                    author = team1RemoteAuthor.json()
-                    return Response(serializeTeam1Author(author))
+                vibelyRemoteAuthor = vibely.get(f"authors/{author_pk}")
+                if vibelyRemoteAuthor.status_code == 200:
+                    author = vibelyRemoteAuthor.json()
+                    return Response(serializeVibelyAuthor(author))
                 
-                team2RemoteAuthor = team2.get(f"authors/{author_pk}")
-                if team2RemoteAuthor.status_code == 200:
-                    author = team2RemoteAuthor.json()
-                    return Response(serializeTeam1Author(author))
+                socialSyncRemoteAuthor = socialSync.get(f"authors/{author_pk}")
+                if socialSyncRemoteAuthor.status_code == 200:
+                    author = socialSyncRemoteAuthor.json()
+                    return Response(serializeVibelyAuthor(author))
 
-                team3RemoteAuthor = team3.get(f"authors/{author_pk}")
-                if team3RemoteAuthor.status_code == 200:
-                    author = team3RemoteAuthor.json()
-                    return Response(serializeTeam1Author(author))
+                ctrlAltDeleteRemoteAuthor = ctrlAltDelete.get(f"authors/{author_pk}")
+                if ctrlAltDeleteRemoteAuthor.status_code == 200:
+                    author = ctrlAltDeleteRemoteAuthor.json()
+                    return Response(serializeVibelyAuthor(author))
                 
             return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
         serializer = AuthorSerializer(author)

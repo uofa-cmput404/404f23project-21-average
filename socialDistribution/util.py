@@ -4,24 +4,19 @@ from requests_toolbelt import sessions
 import base64
 from socialDistribution.serializers import AuthorSerializer
 
-team1 = sessions.BaseUrlSession(base_url='https://vibely-23b7dc4c736d.herokuapp.com/api/')
-team1.headers['Authorization'] = f"Basic {base64.b64encode('vibely:vibely'.encode('utf - 8')).decode('utf - 8')}"
+vibely = sessions.BaseUrlSession(base_url='https://vibely-23b7dc4c736d.herokuapp.com/api/')
+vibely.headers['Authorization'] = f"Basic {base64.b64encode('vibely:vibely'.encode('utf - 8')).decode('utf - 8')}"
 
-team2 = sessions.BaseUrlSession(base_url='https://socialsync-404-project-6469dd163e44.herokuapp.com/')
-team2.headers['Authorization'] = f"Basic {base64.b64encode('21average:bigPass'.encode('utf - 8')).decode('utf - 8')}"
+socialSync = sessions.BaseUrlSession(base_url='https://socialsync-404-project-6469dd163e44.herokuapp.com/')
+socialSync.headers['Authorization'] = f"Basic {base64.b64encode('21average:bigPass'.encode('utf - 8')).decode('utf - 8')}"
 
-team3 = sessions.BaseUrlSession(base_url='https://cmput404-ctrl-alt-defeat-api-12dfa609f364.herokuapp.com/api/')
-team3.headers['Authorization'] = 'Basic MjFBdmVyYWdlOnBhc3N3b3Jk'
+ctrlAltDelete = sessions.BaseUrlSession(base_url='https://cmput404-ctrl-alt-defeat-api-12dfa609f364.herokuapp.com/api/')
+ctrlAltDelete.headers['Authorization'] = 'Basic MjFBdmVyYWdlOnBhc3N3b3Jk'
 
-nodeDict = {
-    "vibely": team1,
-    "CtrlAltDefeat": team3,
-    "socialSync": team2
-}
 
 def addToInbox(author, data):
     if author.type == "NodeAuthor":
-        team2.post(f"authors/{author.id}/inbox/", json=data)
+        socialSync.post(f"authors/{author.id}/inbox/", json=data)
     else:
         inbox = Inbox.objects.get(author=author)
         items = json.loads(inbox.items)
@@ -79,7 +74,7 @@ def isFrontendRequest(request):
     return True
 
 
-def serializeTeam1Author(author):
+def serializeVibelyAuthor(author):
     return {
         "id": author["id"],
         "host": author["host"],
@@ -94,7 +89,7 @@ def serializeTeam1Author(author):
     }
 
 
-def serializeTeam1Post(post):
+def serializeVibelyPost(post):
     return {
         "id": post["id"],
         "title": post["title"],
@@ -107,7 +102,7 @@ def serializeTeam1Post(post):
         "unlisted": post["unlisted"],
         "content": post["content"],
         "published": post["published"],
-        "author": serializeTeam1Author(post["author"]),
+        "author": serializeVibelyAuthor(post["author"]),
         "categories": post["categories"],
         "image_link": None,
         "image": None,
@@ -117,7 +112,7 @@ def serializeTeam1Post(post):
     }
 
 
-def serializeTeam2Post(post):
+def serializeSocialSyncPost(post):
     return {
         "id": post["id"],
         "title": "",
@@ -130,7 +125,7 @@ def serializeTeam2Post(post):
         "unlisted": post["unlisted"],
         "content": post["content"],
         "published": post["published"],
-        "author": serializeTeam1Author(post["author"]),
+        "author": serializeVibelyAuthor(post["author"]),
         "categories": post["categories"],
         "comments": post["comments"],
         "image_link": None,
@@ -138,7 +133,7 @@ def serializeTeam2Post(post):
         "imageOnlyPost": None,
         "count": 0,
     }
-def serializeTeam3Post(post):
+def serializeCtrlAltDeletePost(post):
     return {
         "id": post["id"],
         "title": "",
@@ -151,7 +146,7 @@ def serializeTeam3Post(post):
         "unlisted": post["unlisted"],
         "content": post["content"],
         "published": post["published"],
-        "author": serializeTeam1Author(post["author"]),
+        "author": serializeVibelyAuthor(post["author"]),
         "categories": post["categories"],
         "comments": post["comments"],
         "image_link": None,
@@ -161,7 +156,7 @@ def serializeTeam3Post(post):
     }
 
 
-def serializeTeam3Author(author):
+def serializeCtrlAltDeleteAuthor(author):
     return {
         "id": author["url"],
         "host": author["host"],

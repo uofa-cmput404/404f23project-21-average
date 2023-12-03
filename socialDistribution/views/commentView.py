@@ -6,7 +6,7 @@ from socialDistribution.serializers import CommentSerializer
 from rest_framework import status
 from rest_framework import generics
 from drf_spectacular.utils import extend_schema
-from socialDistribution.util import addToInbox, team1, serializeTeam1Author, isFriend, team2, team3, serializeTeam3Author
+from socialDistribution.util import addToInbox, vibely, serializeVibelyAuthor, isFriend, socialSync, ctrlAltDelete, serializeCtrlAltDeleteAuthor
 
 
 class CommentViewSet(generics.ListCreateAPIView):
@@ -22,6 +22,7 @@ class CommentViewSet(generics.ListCreateAPIView):
     def get(self, request, author_pk, post_pk, format=None):
         # As an author, comments on friend posts are private only to me the original author.
         author = Author.objects.get(pk=author_pk)
+        allComments = []
         try:
             post = Post.objects.get(pk=post_pk)
 
@@ -35,38 +36,39 @@ class CommentViewSet(generics.ListCreateAPIView):
 
             allComments = CommentSerializer(comments, many=True).data
         except:
-            team1Comments = team1.get(f"authors/{author_pk}/posts/{post_pk}/comments")
-            if team1Comments.status_code == 200:
+            vibelyComments = vibely.get(f"authors/{author_pk}/posts/{post_pk}/comments")
+            if vibelyComments.status_code == 200:
                 allComments = []
-                for comment in team1Comments.json()["comments"]:
+                for comment in vibelyComments.json()["comments"]:
                     allComments.append({
                         "id": comment["id"],
-                        "author": serializeTeam1Author(comment["author"]),
+                        "author": serializeVibelyAuthor(comment["author"]),
                         "comment": comment["comment"],
                         "contentType": comment["contentType"],
                         "published": comment["published"],
                         "type": "comment",
                         "post": post_pk,
                     })
-            team2Comments = team2.get(f"authors/{author_pk}/posts/{post_pk}/comments")
-            if team2Comments.status_code == 200:
-                for comment in team2Comments.json()["comments"]:
+            socialSyncComments = socialSync.get(f"authors/{author_pk}/posts/{post_pk}/comments")
+            print(socialSyncComments.text)
+            if socialSyncComments.status_code == 200 and socialSyncComments.json():
+                for comment in socialSyncComments.json()["items"]:
                     allComments.append({
                         "id": comment["id"],
-                        "author": serializeTeam1Author(comment["author"]),
+                        "author": serializeVibelyAuthor(comment["author"]),
                         "comment": comment["comment"],
                         "contentType": comment["contentType"],
                         "published": comment["published"],
                         "type": "NodeComment",
                         "post": post_pk,
                     })
-            # TODO: Team3 not implemented yet
-            # team3Comments = team3.get(f"authors/{author_pk}/posts/{post_pk}/comments")
-            # if team3Comments.status_code == 200:
-            #     for comment in team3Comments.json()["comments"]:
+            # TODO: ctrlAltDelete not implemented yet
+            # ctrlAltDeleteComments = ctrlAltDelete.get(f"authors/{author_pk}/posts/{post_pk}/comments")
+            # if ctrlAltDeleteComments.status_code == 200:
+            #     for comment in ctrlAltDeleteComments.json()["comments"]:
             #         allComments.append({
             #             "id": comment["id"],
-            #             "author": serializeTeam3Author(comment["author"]),
+            #             "author": serializeCtrlAltDeleteAuthor(comment["author"]),
             #             "comment": comment["comment"],
             #             "contentType": comment["contentType"],
             #             "published": comment["published"],
@@ -74,7 +76,7 @@ class CommentViewSet(generics.ListCreateAPIView):
             #         })
         
         if not allComments:
-            return Response({'message': 'No Comments not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'No Comments found'}, status=status.HTTP_404_NOT_FOUND)
         
         page = self.paginate_queryset(allComments)
         return self.get_paginated_response(page)

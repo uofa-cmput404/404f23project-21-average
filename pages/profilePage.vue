@@ -4,44 +4,36 @@
     <SidebarComponent />
     <main class="main-content">
       <div class="user-section">
-        <input type="file" id="profilePhotoInput" ref="profilePhotoInput" @change="changeProfilePhoto" style="display: none;">
+        <input type="file" id="profilePhotoInput" ref="profilePhotoInput" @change="changeProfilePhoto"
+          style="display: none;">
         <img :src="profilePhoto" class="profile-photo" @click="triggerProfilePhotoUpload">
         <div class="username">
           <h2>{{ username }}</h2>
         </div>
         <div class="follow-info">
-          
+
           <button @click="fetchFollowers">Followers</button>
           <button @click="fetchFollowing">Following</button> <!-- New Friends button -->
-          
-          </div>
-          <UserListPopup 
-            :visible="showFollowersPopup" 
-            :users="followers" 
-            title="Followers" 
-            @update:visible="showFollowersPopup = $event" />
-          <UserListPopup 
-            :visible="showFriendsPopup" 
-            :users="friends" 
-            title="Friends" 
-            @update:visible="showFriendsPopup = $event" />
-          <UserListPopup 
-            :visible="showFollowingPopup" 
-            :users="following" 
-            title="Following" 
-            @update:visible="showFollowingPopup = $event" />
-          <!-- ... other content ... -->
-  
-        
-        
-        
+
+        </div>
+        <UserListPopup :visible="showFollowersPopup" :users="followers" title="Followers"
+          @update:visible="showFollowersPopup = $event" />
+        <UserListPopup :visible="showFriendsPopup" :users="friends" title="Friends"
+          @update:visible="showFriendsPopup = $event" />
+        <UserListPopup :visible="showFollowingPopup" :users="following" title="Following"
+          @update:visible="showFollowingPopup = $event" />
+        <!-- ... other content ... -->
+
+
+
+
         <div class="posts-section">
           <h3>MY POSTS:</h3>
           <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :userId="post.author.username"
-          :postImage="post.image" :postID="post.id" />
+            :postImage="post.image" :postID="post.id" />
         </div>
 
-        <div class = "github">
+        <div class="github">
           <h3>GITHUB STREAM</h3>
 
           <div v-for="activity in github" :key="activity.id" class="github_activity">
@@ -50,9 +42,9 @@
               <h4>Activity Repository: {{ activity.repo.name }} </h4>
               <h4>Activity Author: {{ activity.actor.login }}</h4>
             </div>
+          </div>
         </div>
       </div>
-        </div>
     </main>
   </div>
 </template>
@@ -92,14 +84,14 @@ export default {
     return {
       posts: [], // Initialize posts as an empty array
       followers: [],
-      following:[],
+      following: [],
       bio: "Write a Bio",
       editingBio: false,
       profilePhoto: defaultProfilePic, // Initialize with default image
       showFollowersPopup: false,
       showFriendsPopup: false,
       showFollowingPopup: false,
-      username : '' ,
+      username: '',
       github: [],
       formattedGithubActivities: []
     };
@@ -116,7 +108,7 @@ export default {
       // Fetch user's profile
       let profileResponse = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId);
       this.username = profileResponse.data.username; // Update this line to match your API response structure
-      
+
       // Set profile photo if available
       if (profileResponse.data.profileImage) {
         this.profilePhoto = authorStore.BASE_URL.split('/api')[0] + profileResponse.data.profileImage;
@@ -146,7 +138,7 @@ export default {
       console.error('Error while fetching posts:', error);
     }
   },
-  
+
   methods: {
     triggerProfilePhotoUpload() {
       this.$refs.profilePhotoInput.click();
@@ -155,67 +147,66 @@ export default {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
+        reader.readAsDataURL(file);
         reader.onload = (e) => {
           this.profilePhoto = e.target.result;
         };
-        reader.readAsDataURL(file);
+        console.log(reader.result)
+        console.log(this.profilePhoto)
+        // reader.readAsDataURL(file);
         const authorStore = useAuthorStore();
         let formData = new FormData();
         formData.append('profileImage', this.profilePhoto)
+        formData.append('username', this.username)
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-        const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/',formData,
-        {headers: {
-            'Content-Type': 'multipart/form-data'
-          }});
+        const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/', formData,
+          // {
+            // headers: {
+            //   'Content-Type': 'multipart/form-data'
+            // }
+          // }
+          );
+          console.log(response)
       }
     },
     async fetchFollowers() {
-    // Fetch and populate followers
-    const authorStore = useAuthorStore();
-    axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/');
-    console.log("yoyoyoyo")
-    this.followers = response.data.items
-    console.log(this.followers)
-    this.showFollowersPopup = true;
-  },
+      // Fetch and populate followers
+      const authorStore = useAuthorStore();
+      axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
+      const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/');
+      console.log("yoyoyoyo")
+      this.followers = response.data.items
+      console.log(this.followers)
+      this.showFollowersPopup = true;
+    },
 
-  async fetchFollowing() {
-    const authorStore = useAuthorStore();
-    axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/following/');
-    this.following = response.data.results;
-    console.log(this.following)
-    this.showFollowingPopup = true;
-  },
+    async fetchFollowing() {
+      const authorStore = useAuthorStore();
+      axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
+      const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/following/');
+      this.following = response.data.results;
+      console.log(this.following)
+      this.showFollowingPopup = true;
+    },
 
-  async getGithub(){
-    const authorStore = useAuthorStore();
-    axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-    const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/github/');
-    this.github = response.data
-    console.log(this.github)
-  },
-
-
-
-    
-  
-    
+    async getGithub() {
+      const authorStore = useAuthorStore();
+      axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
+      const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/github/');
+      this.github = response.data
+      console.log(this.github)
+    },
     logout() {
-    // Here you should implement the logic to clear user data and redirect
-    // For demonstration, let's just log out and redirect to a login page
-    console.log("Logging out");
-    // Clear user data (local storage/session storage)
-    // Redirect to login page
-    window.location.href = '/loginPage'; // Replace with your login page URL
-  }
+      // Here you should implement the logic to clear user data and redirect
+      // For demonstration, let's just log out and redirect to a login page
+      console.log("Logging out");
+      // Clear user data (local storage/session storage)
+      // Redirect to login page
+      window.location.href = '/loginPage'; // Replace with your login page URL
+    }
   },
-  
-  async created() {
 
-    
-    
+  async created() {
   },
 };
 </script>
@@ -233,16 +224,22 @@ export default {
 }
 
 .logout-button {
-  position: fixed; /* changed from absolute to fixed to ensure it's relative to the viewport */
-  top: 10px; /* distance from the top */
-  right: 10px; /* distance from the right, changed from left to right */
+  position: fixed;
+  /* changed from absolute to fixed to ensure it's relative to the viewport */
+  top: 10px;
+  /* distance from the top */
+  right: 10px;
+  /* distance from the right, changed from left to right */
   padding: 8px 15px;
-  background-color: black; /* background color changed to black */
-  color: white; /* text color changed to white */
+  background-color: black;
+  /* background color changed to black */
+  color: white;
+  /* text color changed to white */
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  z-index: 1000; /* high z-index to ensure it's above other elements */
+  z-index: 1000;
+  /* high z-index to ensure it's above other elements */
 }
 
 .main-content {
@@ -325,33 +322,49 @@ button {
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+  background-color: rgba(0, 0, 0, 0.6);
+  /* Semi-transparent black background */
   justify-content: center;
   align-items: center;
-  z-index: 10000; /* High z-index to make sure it's on top */
+  z-index: 10000;
+  /* High z-index to make sure it's on top */
 }
 
 .popup-content {
-  background-color: grey; /* Black background for the content */
-  color: white; /* White text */
-  padding: 40px; /* Increased padding for more space inside */
+  background-color: grey;
+  /* Black background for the content */
+  color: white;
+  /* White text */
+  padding: 40px;
+  /* Increased padding for more space inside */
   border-radius: 5px;
-  width: 70%; /* Increase the width as needed */
-  max-width: 400px; /* Adjust max-width as needed */
-  min-height: 400px; /* Add a minimum height if needed */
-  z-index: 10001; /* Ensure content is above the semi-transparent background */
-  position: relative; /* Needed for absolute positioning of the close button */
-  box-sizing: border-box; /* Ensure padding is included in width calculation */
-  overflow-y: auto; /* Add scroll for content overflow */
+  width: 70%;
+  /* Increase the width as needed */
+  max-width: 400px;
+  /* Adjust max-width as needed */
+  min-height: 400px;
+  /* Add a minimum height if needed */
+  z-index: 10001;
+  /* Ensure content is above the semi-transparent background */
+  position: relative;
+  /* Needed for absolute positioning of the close button */
+  box-sizing: border-box;
+  /* Ensure padding is included in width calculation */
+  overflow-y: auto;
+  /* Add scroll for content overflow */
   overflow-x: auto;
   align-items: center;
   text-align: center;
 
 }
+
 .popup-content h3 {
-  font-size: 24px; /* Increase the font size as needed */
-  color: white; /* Optional: specify the color if different from the default */
-  margin-bottom: 20px; /* Optional: add some space below the heading */
+  font-size: 24px;
+  /* Increase the font size as needed */
+  color: white;
+  /* Optional: specify the color if different from the default */
+  margin-bottom: 20px;
+  /* Optional: add some space below the heading */
   /* Additional styling like font-weight, letter-spacing, etc., can be added here */
 }
 
@@ -368,7 +381,8 @@ button {
 
 .close:hover {
   color: #ccc;
-  text-decoration: none; /* Removes underline text on hover */
+  text-decoration: none;
+  /* Removes underline text on hover */
 }
 
 ul {
@@ -377,7 +391,8 @@ ul {
 }
 
 li {
-  padding: 5px 0; /* Spacing between list items */
+  padding: 5px 0;
+  /* Spacing between list items */
 }
 
 .close {
@@ -393,7 +408,8 @@ li {
 .edit {
   margin-left: auto;
   margin-right: auto;
-  margin-top: 20px; /* Add top margin to the edit button for space */
+  margin-top: 20px;
+  /* Add top margin to the edit button for space */
   display: block;
   /* To enable margin auto to work for horizontal centering */
   font-size: 10px;
@@ -403,7 +419,7 @@ li {
 
 }
 
-.github_activity{
+.github_activity {
   display: flex;
   justify-content: space-between;
   align-items: start;
@@ -415,8 +431,8 @@ li {
   border: 1px solid #00C58E;
 }
 
-h4{
-  color:white
+h4 {
+  color: white
 }
 </style>
  
