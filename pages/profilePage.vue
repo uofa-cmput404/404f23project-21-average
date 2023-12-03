@@ -118,8 +118,10 @@ export default {
       this.username = profileResponse.data.username; // Update this line to match your API response structure
       
       // Set profile photo if available
+      console.log(profileResponse.data.profileImage)
       if (profileResponse.data.profilePicture) {
         this.profilePhoto = authorStore.BASE_URL.split('/api')[0] + this.profilePhoto;
+        console.log(this.profilePhoto)
       }
 
       // fetch github
