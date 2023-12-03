@@ -29,17 +29,10 @@
         <div class="post-actions">
           <button @click="toggleLike">{{ liked ? 'Unlike' : 'Like' }}</button>
           <button @click="toggleCommentBox">Comment</button>
-          <button @click="toggleSharePopup">Share</button> 
+          <button @click="sharePostWithUser">Share</button> 
         </div>
         <div v-if="showCommentBox">
           <comment-component v-if="showCommentBox" :postId="postID"></comment-component>
-        </div>
-        <div v-if="showSharePopup" class="share-popup">
-          <ul>
-            <li v-for="user in userList" :key="user.id">
-              <button @click="sharePostWithUser(user)">{{ user.username}}</button>
-            </li>
-          </ul>
         </div>
       </div>
     </div>
@@ -104,7 +97,6 @@ export default {
       editedPostContent: '',  // initialized from the prop
       postImage: this.postImage,
       isPublic: this.isPublic,
-      showSharePopup: false,
       userList: [{ id: 1, name: 'User 1' }, { id: 2, name: 'User 2' }],
       postid: String
       
@@ -245,17 +237,11 @@ export default {
       }
     },
 
-    async toggleSharePopup() {
-    this.showSharePopup = !this.showSharePopup;
-    const authorStore = useAuthorStore();
-    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/');
-    this.userList = response.data.items
-    console.log(this.userList)
-    },
-    sharePostWithUser(userId) {
-      console.log('Sharing post with user:', userId);
-      // Implement the logic to share the post with the selected user
-      this.showSharePopup = false; // Close the popup after sharing
+
+    async sharePostWithUser() {
+      console.log('Sharing post with users');
+      const authorStore = useAuthorStore();
+      const response = await axios.post(authorStore.BASE_URL + '/share/' + this.postid + '/');
     }
 
   }
