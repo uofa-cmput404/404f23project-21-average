@@ -119,7 +119,7 @@ export default {
       
       // Set profile photo if available
       if (profileResponse.data.profilePicture) {
-        this.profilePhoto = profileResponse.data.profilePicture;
+        this.profilePhoto = authorStore.BASE_URL.split('/api')[0] + this.profilePhoto;
       }
 
       // fetch github
@@ -139,12 +139,9 @@ export default {
       if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
-          this.profilePhoto = e.target.result;
+         
         };
         reader.readAsDataURL(file);
-        let imagePayload = {
-          profileImage: file
-        }
         const authorStore = useAuthorStore();
         let formData = new FormData();
         formData.append('profileImage', this.profilePhoto)
