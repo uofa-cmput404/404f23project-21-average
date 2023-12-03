@@ -165,7 +165,6 @@ export default {
             this.liked = response.data.userLiked; // Assuming the API returns if the current user liked the post
           }
         }
-
       } catch (error) {
         console.error('Error while fetching likes:', error);
       }

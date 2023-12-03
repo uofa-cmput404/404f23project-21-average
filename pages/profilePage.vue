@@ -134,7 +134,7 @@ export default {
     triggerProfilePhotoUpload() {
       this.$refs.profilePhotoInput.click();
     },
-    changeProfilePhoto(event) {
+    async changeProfilePhoto(event) {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
@@ -142,6 +142,12 @@ export default {
           this.profilePhoto = e.target.result;
         };
         reader.readAsDataURL(file);
+        let imagePayload = {
+          profileImage: file
+        }
+        const authorStore = useAuthorStore();
+        axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
+        const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/',imagePayload);
 
       }
     },
@@ -155,10 +161,7 @@ export default {
     console.log(this.followers)
     this.showFollowersPopup = true;
   },
-  fetchFriends() {
-    // Fetch and populate friends
-    this.showFriendsPopup = true;
-  },
+
   async fetchFollowing() {
     const authorStore = useAuthorStore();
     axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
@@ -195,6 +198,7 @@ export default {
 
     const authorStore = useAuthorStore();
     try {
+      axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
       const author = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/');
       console.log(author.data)
       const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
@@ -203,6 +207,7 @@ export default {
         this.posts = response.data.items; // Update the posts data property with the fetched posts
         this.author = author.data;
         this.profileImage = author.data.image;
+        console.log(author.data)
         // console.log((await this).profileImage, (await this).author)
       } else {
         console.error('Error fetching posts:', response);
