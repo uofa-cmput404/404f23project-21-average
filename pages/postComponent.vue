@@ -137,7 +137,6 @@ export default {
     try {
       axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
       const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
-      this.postMainContent = response.data.results['content'] // Updat
       // Fetch post details
       if (response.status === 200) {
         this.post = response.data;

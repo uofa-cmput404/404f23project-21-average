@@ -31,6 +31,8 @@ export default {
     return {
       comments: [],
       newComment: '',
+      postid:"",
+      commentid: ""
     };
   },
   async created() {
@@ -38,11 +40,15 @@ export default {
   },
   methods: {
     async fetchComments() {
+      console.log(this.postId)
       const authorStore = useAuthorStore();
+      this.postid = await (authorStore.getIDFromURL(this.postId) )
+      console.log(this.postid)
       try {
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-        const response = await axios.get(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postId}/comments/`);
-        console.log('40', response.data)
+        console.log(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postid}/comments/`)
+        const response = await axios.get(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postid}/comments/`);
+        console.log(this.postid)
         this.comments = response.data.items;
         console.log("jjkkkjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj")
         console.log(response.data.items[0].id)
@@ -53,13 +59,15 @@ export default {
     async submitComment() {
       if (this.newComment.trim() !== '') {
         const authorStore = useAuthorStore();
+        this.postid = await (authorStore.getIDFromURL(this.postId) )
+        console.log(this.postid)
         try {
           const payload = {
             comment: this.newComment,
             contentType: 'string',
           };
           axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-          await axios.post(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postId}/comments/`, payload);
+          await axios.post(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postid}/comments/`, payload);
           console.log(payload)
           this.newComment = '';
           await this.fetchComments(); // Fetch comments again to update the list
@@ -72,9 +80,11 @@ export default {
 
     async likeComment(commentId) {
       const authorStore = useAuthorStore();
+      commentid = await (authorStore.getIDFromURL(this.commentId) )
       try {
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-        await axios.post(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postId}/comments/${commentId}/likes/`);
+        console.log(this.commentId)
+        await axios.post(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postid}/comments/${commentid}/likes/`);
         await this.fetchComments(); // Update comments to reflect new like count
       } catch (error) {
         console.error('Error while liking comment:', error);
