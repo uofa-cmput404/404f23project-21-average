@@ -107,6 +107,7 @@ export default {
   },
   async mounted() {
     const authorStore = useAuthorStore();
+    axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
     try {
       // Fetch user's posts
       let postsResponse = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
@@ -147,6 +148,7 @@ export default {
     async fetchFollowers() {
     // Fetch and populate followers
     const authorStore = useAuthorStore();
+    axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
     const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/');
     console.log("yoyoyoyo")
     this.followers = response.data.items
@@ -159,14 +161,16 @@ export default {
   },
   async fetchFollowing() {
     const authorStore = useAuthorStore();
+    axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
     const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/following/');
-    this.following = response.data.items;
+    this.following = response.data.results;
     console.log(this.following)
     this.showFollowingPopup = true;
   },
 
   async getGithub(){
     const authorStore = useAuthorStore();
+    axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
     const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/github/');
     this.github = response.data
     console.log(this.github)

@@ -17,8 +17,8 @@
             <div v-if="notification.type.toLowerCase() === 'follow'">
               <h3>{{ notification.summary }}</h3>
               <div class="button-group">
-                <button @click="toggleAccept(index)">
-                  {{ isAccepted ? 'Remove Follower' : 'Accept' }}
+                <button @click="toggleAccept(notification, index)">
+                  {{ notification.isFollower ? 'Remove Follower' : 'Accept' }}
                 </button>
               </div>
             </div>
@@ -64,46 +64,44 @@ export default {
       console.error('Error fetching inbox items:', error);
     }
     this.checkFollower(this.notifications)
+    console.log(this.isAFollower)
   },
   methods: {
 
-    async checkFollower(notifications){
-      for(let notification of notifications){
-        if(notification.type.toLowerCase() === 'follow'){
-          const authorStore = useAuthorStore();
-          axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-          let response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + await authorStore.getIDFromURL(notification.object.id) + '/');
-          if (response.data === true){
-            this.isAfollower = true
-          }
+    async checkFollower(notifications) {
+      const authorStore = useAuthorStore();
+      axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
 
+      for (let notification of notifications) {
+        if (notification.type.toLowerCase() === 'follow') {
+          let response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + await authorStore.getIDFromURL(notification.object.id) + '/');
+          notification.isFollower = response.data === true;
         }
       }
     },
 
-    async toggleAccept(index) {
-      const notification = this.notifications[index];
-      const authorStore = useAuthorStore();
-      axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-      try {
-        let response;
-        if (this.isAccept) {
-          // Call the unfollow API
-          response = await axios.delete(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + await authorStore.getIDFromURL(this.id) + '/');
-        } else {
-          // Call the follow API
-          console.log(notification.object.id)
-          response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + await authorStore.getIDFromURL(notification.object.id) + '/');
-          console.log('Following', this.username);
-        }
-        if (!(response.status === 400 || response.status === 401)) {
-          this.isFollowing = !this.isFollowing;
-        }
-      } catch (error) {
-        console.error('Error while toggling follow:', error);
-      }
+
+    async toggleAccept(notification, index) {
+  const authorStore = useAuthorStore();
+  axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
+  try {
+    let response;
+    if (notification.isFollower) {
+      // Call the unfollow API
+      response = await axios.delete(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + await authorStore.getIDFromURL(notification.object.id) + '/');
+    } else {
+      // Call the follow API
+      response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + await authorStore.getIDFromURL(notification.object.id) + '/');
     }
+    if (response && (response.status === 200 || response.status === 204)) {
+      this.notifications[index].isFollower = !this.notifications[index].isFollower;
+    }
+  } catch (error) {
+    console.error('Error while toggling follow:', error);
   }
+},
+}
+
 };
 </script>
 
