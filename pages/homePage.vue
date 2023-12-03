@@ -154,6 +154,7 @@ export default {
         console.error('Error while fetching posts:', error);
       }
     },
+    
 
   }
 };

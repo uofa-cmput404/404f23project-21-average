@@ -4,7 +4,7 @@
       <div class="comment-author">{{ comment.author.username }}</div>
       <div class="comment-content">{{ comment.comment }}</div>
       <div class="comment-actions">
-        <button @click="likeComment(comment.id)">Like</button>
+        <button @click="likeComment(comment.id)">{{ liked ? 'Unlike' : 'Like' }}</button>
       </div>
     </div>
 
@@ -32,11 +32,31 @@ export default {
       comments: [],
       newComment: '',
       postid:"",
-      commentid: ""
+      commentid: "",
+      liked: false,
     };
   },
+
   async created() {
     await this.fetchComments();
+    console.log(this.comments)
+    const authorStore = useAuthorStore();
+    const response = await axios.get(authorStore.BASE_URL + '/posts/' + authorStore.getAuthorId + '/liked/')
+    for(let comment of this.comments){
+      console.log(comment.id)
+      this.commentid = await (authorStore.getIDFromURL(comment.id) )
+      for (let i = 0; i < response.data.items.length; i++) {
+        if (response.data.items[i].comment === undefined){
+          continue
+        }
+        else{
+        if (response.data.items[i].comment === this.commentid) {
+          console.log("ylol")
+          this.liked = true
+        }
+      }
+    }
+    }
   },
   methods: {
     async fetchComments() {
@@ -79,11 +99,12 @@ export default {
     },
 
     async likeComment(commentId) {
+      console.log(commentId)
       const authorStore = useAuthorStore();
       this.commentid = await (authorStore.getIDFromURL(commentId) )
       try {
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-        console.log(this.commentId)
+        console.log(commentId)
         await axios.post(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postid}/comments/${this.commentid}/likes/`);
         await this.fetchComments(); // Update comments to reflect new like count
       } catch (error) {

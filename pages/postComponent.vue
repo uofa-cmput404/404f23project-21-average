@@ -98,7 +98,7 @@ export default {
       postImage: this.postImage,
       isPublic: this.isPublic,
       userList: [{ id: 1, name: 'User 1' }, { id: 2, name: 'User 2' }],
-      postid: String
+      postid: String,
       
 
     };
@@ -114,17 +114,25 @@ export default {
   },
   async mounted() {
     const authorStore = useAuthorStore();
+    this.postid = await (authorStore.getIDFromURL(this.postID) )
     this.postImage = authorStore.BASE_URL.split('/api')[0] + this.postImage;
     const response = await axios.get(authorStore.BASE_URL + '/posts/' + authorStore.getAuthorId + '/liked/')
-    for (let i = 0; i < response.length; i++) {
-      if (response.data[i] === postID) {
-        liked = true
+    for (let i = 0; i < response.data.items.length; i++) {
+      if (response.data.items[i].comment !== undefined){
+        continue
+      }
+      else{
+      if (response.data.items[i].post === this.postid) {
+        console.log("lol")
+        this.liked = true
       }
     }
+  }
   },
 
   async created() {
     const authorStore = useAuthorStore();
+    this.commentid = await (authorStore.getIDFromURL(commentId) )
     this.postid = await (authorStore.getIDFromURL(this.postID) )
     try {
       axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
