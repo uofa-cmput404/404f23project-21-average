@@ -74,7 +74,7 @@ class CommentViewSet(generics.ListCreateAPIView):
             #         })
         
         if not allComments:
-            return Response({'message': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'No Comments not found'}, status=status.HTTP_404_NOT_FOUND)
         
         page = self.paginate_queryset(allComments)
         return self.get_paginated_response(page)

@@ -48,7 +48,10 @@ def getPostsFromAuthors():
     if team3Authors.status_code == 200:
         for author in team3Authors.json()["items"]:
             author3 = serializeTeam1Author(author)
+            print(author3)
             team3Posts = team3.get(f"authors/{getUUID(author3['id'])}/posts/")
+            print(team3Posts.url)
+            print(team3Posts.text, team3Posts.status_code, team3Posts.url)
             if team3Posts.status_code == 200:
                 for post in team3Posts.json()["items"]:
                     res.append(serializeTeam3Post(post))
