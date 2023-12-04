@@ -166,8 +166,7 @@ export default {
       console.error('Error while updating profile photo:', error);
       // Handle the error appropriately
     }
-  }
-},
+  },
 
     async fetchFollowers() {
       // Fetch and populate followers
@@ -204,7 +203,7 @@ export default {
       // Redirect to login page
       window.location.href = '/loginPage'; // Replace with your login page URL
     }
-};
+}};
 </script>
 
 

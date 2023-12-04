@@ -98,6 +98,7 @@ export default {
       isPublic: this.isPublic,
       userList: [{ id: 1, name: 'User 1' }, { id: 2, name: 'User 2' }],
       postid: String,
+      imageUrl: String
       
 
     };
@@ -123,7 +124,6 @@ export default {
       }
       else{
       if (response.data.items[i].post === this.postid) {
-        console.log("lol")
         this.liked = true
       }
     }
@@ -140,6 +140,11 @@ export default {
       if (response.status === 200) {
         this.post = response.data;
         this.postImageUrl = this.post.image;
+        if (this.post.image_link){
+          console.log("lssss")
+          let img = new Image();
+          img.src = this.post.image_link;
+          this.postImageUrl = img;}
         // Fetch likes
         this.getLikes();
       } else {
@@ -169,6 +174,7 @@ export default {
         console.error('Error while fetching likes:', error);
       }
     },
+
     async toggleLike() {
       const authorStore = useAuthorStore();
       this.postid = await (authorStore.getIDFromURL(this.postID) )
@@ -180,7 +186,6 @@ export default {
           this.likeCount -= 1;
         } else {
           // Logic to like the post
-          console.log(this.postID)
           await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postid + '/likes/');
           this.likeCount += 1;
         }
@@ -245,7 +250,6 @@ export default {
 
 
     async sharePostWithUser() {
-      console.log('Sharing post with users');
       const authorStore = useAuthorStore();
       const response = await axios.post(authorStore.BASE_URL + '/share/' + this.postid + '/');
     }
