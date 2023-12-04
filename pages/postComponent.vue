@@ -7,7 +7,6 @@
         <i v-else class="bi bi-lock-fill"></i> <!-- Private Icon -->
       </div>
       <div class="user-info">
-        <img :src="profilePicture" alt="User Profile Picture" class="profile-pic" />
         <span class="user-id">{{ userId }}</span>
       </div>
 
@@ -115,6 +114,7 @@ export default {
     this.postid = await (authorStore.getIDFromURL(this.postID) )
     this.postImage = authorStore.BASE_URL.split('/api')[0] + this.postImage;
     const response = await axios.get(authorStore.BASE_URL + '/posts/' + authorStore.getAuthorId + '/liked/')
+
     for (let i = 0; i < response.data.items.length; i++) {
       if (response.data.items[i].comment !== undefined){
         continue

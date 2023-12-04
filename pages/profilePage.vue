@@ -110,6 +110,7 @@ export default {
       this.username = profileResponse.data.username; // Update this line to match your API response structure
 
       // Set profile photo if available
+      console.log(profileResponse.data.profileImage)
       if (profileResponse.data.profileImage) {
         this.profilePhoto = authorStore.BASE_URL.split('/api')[0] + profileResponse.data.profileImage;
         console.log(this.profilePhoto)
@@ -144,31 +145,30 @@ export default {
       this.$refs.profilePhotoInput.click();
     },
     async changeProfilePhoto(event) {
+      try{
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.readAsDataURL(file);
         reader.onload = (e) => {
           this.profilePhoto = e.target.result;
         };
-        console.log(reader.result)
-        console.log(this.profilePhoto)
-        // reader.readAsDataURL(file);
+        reader.readAsDataURL(file);
         const authorStore = useAuthorStore();
         let formData = new FormData();
         formData.append('profileImage', this.profilePhoto)
-        formData.append('username', this.username)
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-        const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/', formData,
-          // {
-            // headers: {
-            //   'Content-Type': 'multipart/form-data'
-            // }
-          // }
-          );
-          console.log(response)
+        const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/',formData,
+        {headers: {
+            'Content-Type': 'multipart/form-data'
+          }});
       }
-    },
+    } catch (error) {
+      console.error('Error while updating profile photo:', error);
+      // Handle the error appropriately
+    }
+  }
+},
+
     async fetchFollowers() {
       // Fetch and populate followers
       const authorStore = useAuthorStore();
@@ -204,10 +204,6 @@ export default {
       // Redirect to login page
       window.location.href = '/loginPage'; // Replace with your login page URL
     }
-  },
-
-  async created() {
-  },
 };
 </script>
 
