@@ -58,15 +58,12 @@ def handleFollowItem(newItem):
     actorJson["id"] = getUUID(newItem["actor"]["id"])
     try:
         actingAuthor = Author.objects.get(pk=actorJson["id"])
-        print("ACTING AUTHOR FOUND")
     except:
         actingAuthor = Author.objects.create(**actorJson)
-        print("ACTING AUTHOR CREATED")
     
     try:
         foreignAthorID = getUUID(newItem["object"]["id"])
         foreign_author = Author.objects.filter(pk=foreignAthorID)[0]
-        print(foreign_author)
     except:
         raise Exception("Object Author not found")
 
@@ -148,7 +145,7 @@ class InboxItemView(generics.GenericAPIView):
                     items.append(json.dumps(handleFollowItem(newItem), default=str))
                 except Exception as e:
                     print(e)
-                    return Response({"message": "Object Author not found", 'id': getUUID(newItem["object"]["id"]), "author": newItem}, status=status.HTTP_404_NOT_FOUND)
+                    return Response({"message": "Object Author not found"}, status=status.HTTP_404_NOT_FOUND)
             elif newItem["type"].lower() == "like":
                 items.append(json.dumps(handleLikeItem(newItem), default=str))
             elif newItem["type"].lower() == "comment":
