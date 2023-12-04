@@ -51,7 +51,7 @@ const username = ref('')
 const password = ref('')
 const firstName = ref('')
 const lastName = ref('')
-const githubId = ref('')
+const githubId = ref(undefined)
 const register = async () => {
 
   try {
@@ -63,7 +63,6 @@ const register = async () => {
 
     }
     const registerData = {
-      displayName: username.value,
       github: githubId.value,
       first_name: firstName.value,
       last_name: lastName.value,
@@ -74,7 +73,7 @@ const register = async () => {
       is_active: true
     }
     try {
-      console.log(data)
+      console.log(registerData)
       const response = await axios.post(authorStore.BASE_URL + '/auth/register/', registerData)
       // axios.defaults.headers.common['Authorization'] = 'Token ' + response.data.key;
       authorStore.setAuthToken(btoa(`${data.username}:${data.password1}`))

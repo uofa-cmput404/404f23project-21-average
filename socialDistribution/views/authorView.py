@@ -7,10 +7,11 @@ from socialDistribution.serializers import AuthorSerializer
 from ..models import Author
 from rest_framework import generics
 from drf_spectacular.utils import extend_schema
-from socialDistribution.util import team1, team2, secondInstance
+from socialDistribution.util import vibely, ctrlAltDelete, socialSync
 import json
 from rest_framework.renderers import JSONRenderer
-from ..util import isFrontendRequest, serializeTeam1Author
+from ..util import isFrontendRequest, serializeVibelyAuthor
+from rest_framework import status
 
 
 class AuthorListViewSet(generics.ListAPIView):
@@ -29,34 +30,23 @@ class AuthorListViewSet(generics.ListAPIView):
         # check request origin
         all_authors = json.loads(JSONRenderer().render(AuthorSerializer(authors, many=True).data).decode('utf-8'))
         if isFrontendRequest(request):
-            # remote_authors = team1.get("authors/")
-            # for author in remote_authors.json()["items"]:
-            #     all_authors.append(serializeTeam1Author(author))
+            vibelyRemoteAuthors = vibely.get("authors/")
+            # print(vibelyRemoteAuthors.text)
+            if vibelyRemoteAuthors.status_code == 200:
+                for author in vibelyRemoteAuthors.json()["items"]:
+                    all_authors.append(serializeVibelyAuthor(author))
             
-            remote_authors1 = secondInstance.get("authors/")
-            for author in remote_authors1.json()["results"]:
-                # author["github"] = ""
-                all_authors.append(AuthorSerializer(author).data)
-        page = self.paginate_queryset(all_authors)
-        return self.get_paginated_response(page)
+            socialSyncRemoteAuthors = socialSync.get("authors/")
+            if socialSyncRemoteAuthors.status_code == 200:
+                for author in socialSyncRemoteAuthors.json()["items"]:
+                    all_authors.append(serializeVibelyAuthor(author))
 
+            ctrlAltDeleteRemoteAuthors = ctrlAltDelete.get("authors/")
+            print(ctrlAltDeleteRemoteAuthors.text)
+            if ctrlAltDeleteRemoteAuthors.status_code == 200 and ctrlAltDeleteRemoteAuthors.text != "error\n":
+                for author in ctrlAltDeleteRemoteAuthors.json()["items"] :
+                    all_authors.append(serializeVibelyAuthor(author))
 
-class NodeListViewSet(generics.ListAPIView):
-    queryset = Author.objects.all()
-    serializer_class = AuthorSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    pagination_class = JsonObjectPaginator
-    paginate_by_param = 'page_size'
-    
-    @extend_schema(
-        tags=['Authors'],
-        description='Get the list of connected nodes'
-    )
-    def get(self, request, *args, **kwargs):
-        authors = Author.objects.filter(type="node").all()
-        # check request origin
-        all_authors = json.loads(JSONRenderer().render(AuthorSerializer(authors, many=True).data).decode('utf-8'))
-        
         page = self.paginate_queryset(all_authors)
         return self.get_paginated_response(page)
 
@@ -71,25 +61,27 @@ class AuthorDetailView(APIView):
         tags=['Authors'],
     )
     def get(self, request, author_pk, format=None):
-        if isFrontendRequest(request):
-            # remote_author = team1.get(f"authors/{author_pk}")
-            # if remote_author.status_code == 200:
-            #         author = remote_author.json()
-            #         return Response(serializeTeam1Author(author))
-            remote_author1 = secondInstance.get("authors/")
-            if remote_author1.status_code == 200:
-                return Response(AuthorSerializer(remote_author1).data)
+        try:
+            author = Author.objects.get(pk=author_pk)
+        except:
+            if isFrontendRequest(request):
+                vibelyRemoteAuthor = vibely.get(f"authors/{author_pk}")
+                if vibelyRemoteAuthor.status_code == 200:
+                    author = vibelyRemoteAuthor.json()
+                    return Response(serializeVibelyAuthor(author))
+                
+                socialSyncRemoteAuthor = socialSync.get(f"authors/{author_pk}")
+                if socialSyncRemoteAuthor.status_code == 200:
+                    author = socialSyncRemoteAuthor.json()
+                    return Response(serializeVibelyAuthor(author))
 
-            # remote_author1 = team2.get(f"authors/{author_pk}/")
-            # if remote_author1.status_code == 200:
-            #     author = remote_author1.json()
-            #     author["github"] = ""
-            #     return Response(serializeTeam1Author(author))
-        author = get_object_or_404(Author, pk=author_pk)
-        serializer_context = {
-            'request': request,
-        }
-        serializer = AuthorSerializer(author, context=serializer_context)
+                ctrlAltDeleteRemoteAuthor = ctrlAltDelete.get(f"authors/{author_pk}")
+                if ctrlAltDeleteRemoteAuthor.status_code == 200:
+                    author = ctrlAltDeleteRemoteAuthor.json()
+                    return Response(serializeVibelyAuthor(author))
+                
+            return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = AuthorSerializer(author)
         return Response(serializer.data)
 
     @extend_schema(
@@ -113,3 +105,23 @@ class AuthorDetailView(APIView):
         # delete the author from the database
         author.delete()
         return Response(status=204)
+
+
+class NodeListViewSet(generics.ListAPIView):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = JsonObjectPaginator
+    paginate_by_param = 'page_size'
+    
+    @extend_schema(
+        tags=['Authors'],
+        description='Get the list of connected nodes'
+    )
+    def get(self, request, *args, **kwargs):
+        authors = Author.objects.filter(type="node").all()
+        # check request origin
+        all_authors = json.loads(JSONRenderer().render(AuthorSerializer(authors, many=True).data).decode('utf-8'))
+        
+        page = self.paginate_queryset(all_authors)
+        return self.get_paginated_response(page)

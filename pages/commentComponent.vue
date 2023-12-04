@@ -4,7 +4,7 @@
       <div class="comment-author">{{ comment.author.username }}</div>
       <div class="comment-content">{{ comment.comment }}</div>
       <div class="comment-actions">
-        <button @click="likeComment(comment.id)">Like</button>
+        <button @click="likeComment(comment.id)">{{ liked ? 'Unlike' : 'Like' }}</button>
       </div>
     </div>
 
@@ -31,21 +31,47 @@ export default {
     return {
       comments: [],
       newComment: '',
+      postid:"",
+      commentid: "",
+      liked: false,
     };
   },
+
   async created() {
     await this.fetchComments();
+    console.log(this.comments)
+    const authorStore = useAuthorStore();
+    const response = await axios.get(authorStore.BASE_URL + '/posts/' + authorStore.getAuthorId + '/liked/')
+    for(let comment of this.comments){
+      console.log(comment.id)
+      this.commentid = await (authorStore.getIDFromURL(comment.id) )
+      for (let i = 0; i < response.data.items.length; i++) {
+        if (response.data.items[i].comment === undefined){
+          continue
+        }
+        else{
+        if (response.data.items[i].comment === this.commentid) {
+          console.log("ylol")
+          this.liked = true
+        }
+      }
+    }
+    }
   },
   methods: {
     async fetchComments() {
+      console.log(this.postId)
       const authorStore = useAuthorStore();
+      this.postid = await (authorStore.getIDFromURL(this.postId) )
+      console.log(this.postid)
       try {
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-        const response = await axios.get(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postId}/comments/`);
-        console.log('40', response.data)
-        this.comments = response.data.results;
+        console.log(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postid}/comments/`)
+        const response = await axios.get(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postid}/comments/`);
+        console.log(this.postid)
+        this.comments = response.data.items;
         console.log("jjkkkjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj")
-        console.log(response.data.results[0].id)
+        console.log(response.data.items[0].id)
       } catch (error) {
         console.error('Error while fetching comments:', error);
       }
@@ -53,13 +79,16 @@ export default {
     async submitComment() {
       if (this.newComment.trim() !== '') {
         const authorStore = useAuthorStore();
+        this.postid = await (authorStore.getIDFromURL(this.postId) )
+        console.log(this.postid)
         try {
           const payload = {
             comment: this.newComment,
-            contentType: 'string',
+            contentType: 'text/plain',
+            post: this.postId
           };
           axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-          await axios.post(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postId}/comments/`, payload);
+          await axios.post(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postid}/comments/`, payload);
           console.log(payload)
           this.newComment = '';
           await this.fetchComments(); // Fetch comments again to update the list
@@ -71,10 +100,13 @@ export default {
     },
 
     async likeComment(commentId) {
+      console.log(commentId)
       const authorStore = useAuthorStore();
+      this.commentid = await (authorStore.getIDFromURL(commentId) )
       try {
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-        await axios.post(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postId}/comments/${commentId}/likes/`);
+        console.log(commentId)
+        await axios.post(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postid}/comments/${this.commentid}/likes/`);
         await this.fetchComments(); // Update comments to reflect new like count
       } catch (error) {
         console.error('Error while liking comment:', error);

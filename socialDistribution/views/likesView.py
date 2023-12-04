@@ -4,51 +4,117 @@ from rest_framework import generics
 from drf_spectacular.utils import extend_schema
 from rest_framework import permissions
 from socialDistribution.models import Author, Comment, CommentLike, Post, PostLike
-from socialDistribution.pagination import Pagination
-from ..util import isFrontendRequest, team1, team2, serializeTeam1Post, serializeTeam1Author, isFriend
-from socialDistribution.serializers import CommentLikeSerializer, PostLikeSerializer
+from ..util import vibely, serializeVibelyPost, serializeVibelyAuthor, socialSync, ctrlAltDelete, isFrontendRequest
+from socialDistribution.serializers import CommentLikeSerializer, PostLikeSerializer, RemoteLikeSerializer,\
+    AuthorSerializer
 from socialDistribution.util import addToInbox
+from ..pagination import JsonObjectPaginator
+import json
+from rest_framework.renderers import JSONRenderer
+from django.conf import settings
+
+
+def sendForeignLikeToInbox(request, author):
+    print(request.data["postId"])
+    if 'socialsync' in request.data["postId"]:
+        originList = request.data["postId"].split("/")
+        print(originList)
+        response = socialSync.post(f"authors/{originList[5]}/inbox", json={
+            "type": "like",
+            "author": AuthorSerializer(author).data,
+            "object": request.data['postId'], # double check??
+            "summary": f"{author.displayName} likes your post",
+            "context": "https://www.w3.org/ns/activitystreams",
+        })
+        if response.status_code == 200:
+            return Response({"message": "liked post"}, status=status.HTTP_201_CREATED)
+        else:
+            print(response.text)
+            return Response({"message": "cannot like post", "data": response}, status=status.HTTP_403_FORBIDDEN)
+    elif 'vibely' in request.data["postId"]:
+        originList = request.data["postId"].split("/")
+        response = vibely.post(f"authors/{originList[5]}/inbox/", json={
+            "type": "like",
+            "author": AuthorSerializer(author).data,
+            "object": f"{settings.BASEHOST}/authors/{author.id}/posts/{originList[-1]}/",
+            "summary": f"{author.displayName} likes your post",
+            "context": "https://www.w3.org/ns/activitystreams",
+        })
+        if response.status_code == 200:
+            return Response({"message": "liked post"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"message": "cannot like post", "data": response}, status=status.HTTP_403_FORBIDDEN)
+    # elif 'ctrlAltDelete' in request.data["postId"]:
+    #     return Response({"message": "cannot like post"}, status=status.HTTP_403_FORBIDDEN)
+
+    return Response({"message": "post not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class AddLikeToPostView(generics.ListCreateAPIView):
     queryset = PostLike.objects.all()
-    serializer_class = PostLikeSerializer
+    serializer_class = RemoteLikeSerializer
     permission_classes = [permissions.IsAuthenticated]
-    pagination_class = Pagination
+    pagination_class = JsonObjectPaginator
 
     @extend_schema(
         tags=['Likes'],
         description='GET [local, remote] a list of likes from other authors on AUTHOR_ID’s post POST_ID'
     )
     def get(self, request, author_pk, post_pk, format=None):
-        post = Post.objects.get(pk=post_pk)
-        likes = PostLike.objects.filter(post=post)
-        if isFrontendRequest(request):
-            if not likes:
+        allLikes = []
+        try:
+            post = Post.objects.get(pk=post_pk)
+            likes = PostLike.objects.filter(post=post)
+            allLikes = json.loads(JSONRenderer().render(PostLikeSerializer(likes, many=True).data).decode('utf-8'))
+        except:
+            if isFrontendRequest(request):
                 # TODO: check that this works
-                team1_likes = team1.get(f"authors/{author_pk}/posts/{post_pk}/likes/")
-                if team1_likes.status_code == 200:
-                    for like in team1_likes.json()["likes"]:
-                        likes.append({
-                            "id": like["id"],
-                            "author": serializeTeam1Author(like["author"]),
-                            "post": serializeTeam1Post(like["post"]),
-                            "published": like["published"],
+                vibelyLikes = vibely.get(f"authors/{author_pk}/posts/{post_pk}/likes/")
+                # print(vibelyLikes.text)
+                if vibelyLikes.status_code == 200:
+                    for like in vibelyLikes.json()["items"]:
+                        allLikes.append({
+                            "object": like["object"],
+                            "author": serializeVibelyAuthor(like["author"]),
+                            "post": post_pk,
+                            # "published": like["published"],
                             "type": like["type"],
+                            # "context": like["@context"],
+                            "summary": like["summary"],
+                            
                         })
-                # team2_likes = team2.get(f"authors/{author_pk}/posts/{post_pk}/likes")
-                # if team2_likes.status_code == 200:
-                #     for like in team2_likes.json()["likes"]:
-                #         likes.append({
-                #             "id": like["id"],
-                #             "author": serializeTeam1Author(like["author"]),
-                #             "post": serializeTeam1Post(like["post"]),
-                #             "published": like["published"],
-                #             "type": like["type"],
-                #         })
-        page = self.paginate_queryset(likes)
-        serializer = PostLikeSerializer(likes, many=True)
-        return self.get_paginated_response(serializer.data)
+                
+                socialSyncLikes = socialSync.get(f"authors/{author_pk}/posts/{post_pk}/likes")
+                print(socialSyncLikes.text)
+                if socialSyncLikes.status_code == 200 and socialSyncLikes.text != "[]":
+                    for like in socialSyncLikes.json():
+                        allLikes.append({
+                            "author": serializeVibelyAuthor(like["author"]),
+                            "post": post_pk,
+                            "type": like["type"],
+                            "context": like["@context"],
+                            "object": like["object"],
+                            "summary": like["summary"],
+                        })
+
+                ctrlAltDeleteLikes = ctrlAltDelete.get(f"authors/{author_pk}/posts/{post_pk}/likes/")
+                if ctrlAltDeleteLikes.status_code == 200:
+                    for like in ctrlAltDeleteLikes.json()["items"]:
+                        allLikes.append({
+                            "object": like["object"],
+                            "author": serializeVibelyAuthor(like["author"]),
+                            "post": post_pk,
+                            # "published": like["published"],
+                            "type": like["type"],
+                            "context": like["context"],
+                            "summary": like["summary"],
+                        })
+            else:
+                return Response({"message": "no likes found"}, status=status.HTTP_404_NOT_FOUND)
+
+        print(allLikes)
+        page = self.paginate_queryset(allLikes)
+        return self.get_paginated_response(page)
 
     @extend_schema(
         tags=['Likes'],
@@ -56,32 +122,32 @@ class AddLikeToPostView(generics.ListCreateAPIView):
     )
     def post(self, request, author_pk, post_pk, format=None):
         author = Author.objects.get(pk=author_pk)
-        post = Post.objects.get(pk=post_pk)
-        if not post:
-            return Response({"message": "post not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        try:
+            post = Post.objects.get(pk=post_pk)
 
-        # check if author already liked the post
-        if PostLike.objects.filter(author=author, post=post).exists():
-            return Response({"message": "cannot like post again"}, status=status.HTTP_400_BAD_REQUEST)
+            # check if author already liked the post
+            # if PostLike.objects.filter(author=author, post=post).exists():
+            #     return Response({"message": "cannot like post again"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # can only like a friends only post or public post
-        # if (post.visibility == "FRIENDS" and isFriend(author, post.author)) or post.visibility == "PUBLIC":
-        serializer = PostLikeSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(author=author, post=post)
-
-            # send like to post owners inbox
-            addToInbox(post.author, serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        return Response({"message": "insufficient permissions to like psot"}, status=status.HTTP_403_FORBIDDEN)
-
+            # can only like a friends only post or public post
+            like = PostLike.objects.create(author=author, post=post,
+                                           summary=f"{author.username} likes your post",
+                                           context='https://www.w3.org/ns/activitystreams',
+                                           object=f"{settings.BASEHOST}/authors/{author.id}/posts/{post.id}/")
+            like.save()
+            serializer = PostLikeSerializer(like)
+            addToInbox(post.author, json.loads(JSONRenderer().render(serializer.data).decode('utf-8')))
+            return Response({"message": "liked post"}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return sendForeignLikeToInbox(request, author)
+            
 
 class AddLikeToCommentView(generics.ListCreateAPIView):
     queryset = CommentLike.objects.all()
     serializer_class = CommentLikeSerializer
     permission_classes = [permissions.IsAuthenticated]
-    pagination_class = Pagination
+    pagination_class = JsonObjectPaginator
 
     @extend_schema(
         tags=['Likes'],
@@ -114,12 +180,41 @@ class AddLikeToCommentView(generics.ListCreateAPIView):
     )
     def get(self, request, author_pk, post_pk, comment_pk, format=None):
         # TODO: check how it exactly works with remote authors
-        comment = Comment.objects.get(pk=comment_pk)
-        likes = CommentLike.objects.filter(comment=comment)
+        allLikes = []
+        try:
+            comment = Comment.objects.get(pk=comment_pk)
+            likes = CommentLike.objects.filter(comment=comment)
+            allLikes = json.loads(JSONRenderer().render(CommentLikeSerializer(likes, many=True).data).decode('utf-8'))
+        except:
+            if isFrontendRequest(request):
+                vibelyLikes = vibely.get(f"authors/{author_pk}/posts/{post_pk}/comments/{comment_pk}/likes")
+                if vibelyLikes.status_code == 200:
+                    for like in vibelyLikes.json()["items"]:
+                        allLikes.append({
+                            "id": like["id"],
+                            "author": serializeVibelyAuthor(like["author"]),
+                            "comment": serializeVibelyPost(like["comment"]),
+                            "published": like["published"],
+                            "type": like["type"],
+                        })
 
-        page = self.paginate_queryset(likes)
-        serializer = CommentLikeSerializer(likes, many=True)
-        return self.get_paginated_response(serializer.data)
+                socialSyncLikes = socialSync.get(f"authors/{author_pk}/posts/{post_pk}/comments/{comment_pk}/likes")
+                if socialSyncLikes.status_code == 200 and socialSyncLikes.text != "[]":
+                    for like in socialSyncLikes.json()["items"]:
+                        allLikes.append({
+                            "id": like["id"],
+                            "author": serializeVibelyAuthor(like["author"]),
+                            "comment": serializeVibelyPost(like["comment"]),
+                            "published": like["published"],
+                            "type": like["type"],
+                        })
+                
+                # ctrlAltDeleteLikes = ctrlAltDelete.get(f"authors/{author_pk}/posts/{post_pk}/comments/{comment_pk}/likes")
+                # if ctrlAltDeleteLikes.status_code == 200:
+                #     likes = ctrlAltDeleteLikes.json()["likes"]
+
+        page = self.paginate_queryset(allLikes)
+        return self.get_paginated_response(page)
 
 
 class GetAllAuthorLikes(generics.ListAPIView):
@@ -128,7 +223,7 @@ class GetAllAuthorLikes(generics.ListAPIView):
     serializer_class1 = PostLikeSerializer
     serializer_class2 = CommentLikeSerializer
     permission_classes = [permissions.IsAuthenticated]
-    pagination_class = Pagination
+    pagination_class = JsonObjectPaginator
 
     @extend_schema(
         tags=['Likes'],
@@ -139,23 +234,29 @@ class GetAllAuthorLikes(generics.ListAPIView):
         try:
             author = Author.objects.get(pk=author_pk)
         except:
-            # try to find the author on team1
-            remote_author = team1.get(f"authors/{author_pk}")
-            if remote_author.status_code == 200:
-                likes = team1.get(f"authors/{author_pk}/liked/")
+            # try to find the author on vibely
+            vibelyRemoteAuthor = vibely.get(f"authors/{author_pk}")
+            if vibelyRemoteAuthor.status_code == 200:
+                likes = vibely.get(f"authors/{author_pk}/liked/")
                 if likes.status_code == 200:
                     return Response(likes.json())
-            # try to find the author on team2
-            # remote_author = team2.get(f"authors/{author_pk}")
-            # if remote_author.status_code == 200:
-            #     likes = team2.get(f"authors/{author_pk}/liked/")
-            #     if likes.status_code == 200:
-            #         return Response(likes.json())
+            ctrlAltDeleteRemoteAuthor = ctrlAltDelete.get(f"authors/{author_pk}")
+            if ctrlAltDeleteRemoteAuthor.status_code == 200:
+                likes = ctrlAltDelete.get(f"authors/{author_pk}/liked/")
+                if likes.status_code == 200:
+                    return Response(likes.json())
+            # try to find the author on socialSync
+            socialSyncRemoteAuthor = socialSync.get(f"authors/{author_pk}")
+            if socialSyncRemoteAuthor.status_code == 200:
+                likes = socialSync.get(f"authors/{author_pk}/liked/")
+                if likes.status_code == 200:
+                    return Response(likes.json())
             return Response({"message": "author not found"}, status=status.HTTP_404_NOT_FOUND)
 
         postLikes = PostLike.objects.filter(author_id=author_pk, post__visibility='PUBLIC')
         commentLikes = CommentLike.objects.filter(author=author, comment__post__visibility='PUBLIC')
         if postLikes or commentLikes:
-            return Response(PostLikeSerializer(postLikes, many=True).data + CommentLikeSerializer(commentLikes, many=True).data)
+            return Response({"type":"liked",
+            "items": PostLikeSerializer(postLikes, many=True).data + CommentLikeSerializer(commentLikes, many=True).data})
 
         return Response({"message": "no likes found"}, status=status.HTTP_200_OK)

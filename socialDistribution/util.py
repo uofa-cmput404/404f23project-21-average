@@ -1,24 +1,25 @@
 from .models import Inbox, Author
 import json
 from requests_toolbelt import sessions
-from requests.auth import HTTPBasicAuth
 import base64
-import uuid
+from socialDistribution.serializers import AuthorSerializer
 
-CONNECTED = ["vibely", "CtrlAltDefeat"]
-team1 = sessions.BaseUrlSession(base_url='https://vibely-23b7dc4c736d.herokuapp.com/api/')
-team1.headers['Authorization'] = f"Basic {base64.b64encode('vibely:vibely'.encode('utf - 8')).decode('utf - 8')}"
+vibely = sessions.BaseUrlSession(base_url='https://vibely-23b7dc4c736d.herokuapp.com/api/')
+vibely.headers['Authorization'] = f"Basic {base64.b64encode('vibely:vibely'.encode('utf - 8')).decode('utf - 8')}"
 
-secondInstance = sessions.BaseUrlSession(base_url='https://second-instance-a06a2b03061a.herokuapp.com/api/')
-secondInstance.headers['Authorization'] = f"Basic {base64.b64encode('vibely:string'.encode('utf - 8')).decode('utf - 8')}"
+socialSync = sessions.BaseUrlSession(base_url='https://socialsync-404-project-6469dd163e44.herokuapp.com/')
+socialSync.headers['Authorization'] = f"Basic {base64.b64encode('21average:bigPass'.encode('utf - 8')).decode('utf - 8')}"
 
-team2 = sessions.BaseUrlSession(base_url='https://cmput404-project-backend-tian-aaf1fa9b20e8.herokuapp.com/')
-team2.headers['Authorization'] = 'Basic Y3Jvc3Mtc2VydmVyOnBhc3N3b3Jk'
+ctrlAltDelete = sessions.BaseUrlSession(base_url='https://cmput404-ctrl-alt-defeat-api-12dfa609f364.herokuapp.com/api/')
+ctrlAltDelete.headers['Authorization'] = f"Basic {base64.b64encode('CtrlAltDefeat:frontend'.encode('utf - 8')).decode('utf - 8')}"
 
 
 def addToInbox(author, data):
-    if author.type == "NodeAuthor":
-        secondInstance.post(f"authors/{author.id}/inbox/", json={"items":data})
+    print(data)
+    if author.type == "NodeAuthor": # sending posts to other people inbox
+        socialSync.post(f"authors/{author.id}/inbox", json=data)
+    # elif data["type"] == "like":  # sending likes to other peopel inbox
+    #     socialSync.post(f"authors/{author.id}/inbox/", json=data)
     else:
         inbox = Inbox.objects.get(author=author)
         items = json.loads(inbox.items)
@@ -37,23 +38,28 @@ def sendToEveryonesInbox(data):
 def sendToFriendsInbox(author, data):
     # send to all friends that have status accepted
     followers = author.followers.filter(status="Accepted").all()
-    following = author.following.filter(status="Accepted").all()
-    print(followers)
-    print(following)
+    # following = author.following.filter(status="Accepted").all()
+    # print(following)
     result = []
     for follower in followers:
         result.append(Author.objects.get(id=follower.follower.id))
-    for friend in following:
-        result.append(Author.objects.get(id=friend.following.id))
+    # for friend in following:
+    #     result.append(Author.objects.get(id=friend.following.id))
     
     # remover duplicate authors
     # TODO: check if this works
-    result = list(dict.fromkeys(result))
+    # result = list(dict.fromkeys(result))
     # Convert the follow object to author object
     print(result)
     for friend in result:
         addToInbox(friend, data)
 
+
+def getUUID(url):
+    components = url.split('/')
+    if components[-1] == "":
+        return components[-2]
+    return components[-1]
 
 def isFriend(author, foreign_author):
     if author.id == foreign_author.id:
@@ -64,28 +70,20 @@ def isFriend(author, foreign_author):
 
 
 def isFrontendRequest(request):
-    # return False
-    if request.user.username in CONNECTED:
-        return False
+    nodes = Author.objects.filter(type="node").all()
+    for node in nodes:
+        if request.user.username == node.username:
+            return False
     return True
-    # try:
-    #     # TODO: check prod swagger
-    #     if request.headers['Host'] in settings.ALLOWED_HOSTS:
-    #         return True
-
-    #     if request.headers['Origin'] == 'https://frontend-21-average-f45e3b82895c.herokuapp.com':
-    #         return True
-    # except KeyError:
-    #     return False
 
 
-def serializeTeam1Author(author):
+def serializeVibelyAuthor(author):
     return {
-        "id": uuid.UUID(hex=author["id"].split('/')[-1]),
+        "id": author["id"],
         "host": author["host"],
         "displayName": author["displayName"],
         "github": author["github"],
-        "image": author["profileImage"],
+        "profileImage": author["profileImage"],
         "first_name": "",
         "last_name": "",
         "email": "",
@@ -94,9 +92,9 @@ def serializeTeam1Author(author):
     }
 
 
-def serializeTeam1Post(post):
+def serializeVibelyPost(post):
     return {
-        "id": post["id"].split('/')[-1],
+        "id": post["id"],
         "title": post["title"],
         "type": "post",
         "source": post["source"],
@@ -107,10 +105,70 @@ def serializeTeam1Post(post):
         "unlisted": post["unlisted"],
         "content": post["content"],
         "published": post["published"],
-        "author": serializeTeam1Author(post["author"]),
+        "author": serializeVibelyAuthor(post["author"]),
         "categories": post["categories"],
-        # "image_link": post["image_link"],
-        # "image": post["image"],
-        # "imageOnlyPost": post["imageOnlyPost"],
-        "count": post["count"]
+        "image_link": None,
+        "image": None,
+        "imageOnlyPost": None,
+        "count": post["count"],
+        "comments": post["comments"]
+    }
+
+
+def serializeSocialSyncPost(post):
+    return {
+        "id": post["id"],
+        "title": "",
+        "type": "post",
+        "source": post["source"],
+        "origin": post["origin"],
+        "description": post["description"],
+        "contentType": post["contentType"],
+        "visibility": post["visibility"],
+        "unlisted": post["unlisted"],
+        "content": post["content"],
+        "published": post["published"],
+        "author": serializeVibelyAuthor(post["author"]),
+        "categories": post["categories"],
+        "comments": post["comments"],
+        "image_link": None,
+        "image": None,
+        "imageOnlyPost": None,
+        "count": 0,
+    }
+def serializeCtrlAltDeletePost(post):
+    return {
+        "id": post["id"],
+        "title": "",
+        "type": "post",
+        "source": post["source"],
+        "origin": post["origin"],
+        "description": post["description"],
+        "contentType": post["contentType"],
+        "visibility": post["visibility"],
+        "unlisted": post["unlisted"],
+        "content": post["content"],
+        "published": post["published"],
+        "author": serializeVibelyAuthor(post["author"]),
+        "categories": post["categories"],
+        "comments": post["comments"],
+        "image_link": None,
+        "image": None,
+        "imageOnlyPost": None,
+        "count": 0,
+    }
+
+
+def serializeCtrlAltDeleteAuthor(author):
+    return {
+        "id": author["url"],
+        "host": author["host"],
+        "displayName": author["displayName"],
+        "github": author["github"],
+        # "profileImage": author["profileImage"],
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "username": author["displayName"],
+        "type": "author"
     }

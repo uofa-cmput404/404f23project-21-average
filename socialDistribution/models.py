@@ -9,12 +9,13 @@ from django.contrib.auth.models import AbstractUser
 
 
 class Author(AbstractUser):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    id = models.CharField(primary_key=True, default=uuid.uuid4, max_length=255)
+    # id1 = models.CharField(max_length=255, blank=True, null=True)
     type = models.CharField(max_length=255, default="author")
     host = models.CharField(max_length=255, blank=True, null=True)
     displayName = models.CharField(max_length=255, blank=True, null=True, default="User")
     github = models.TextField(blank=True, null=True)
-    image = models.ImageField(
+    profileImage = models.ImageField(
         upload_to='profile_images/', blank=True, null=True)
 
     def __str__(self):

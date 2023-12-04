@@ -10,12 +10,12 @@ from drf_spectacular.utils import extend_schema
 from socialDistribution.models import Author, Post
 from socialDistribution.pagination import Pagination, JsonObjectPaginator
 from socialDistribution.serializers import PostSerializer, FollowSerializer, AuthorSerializer
-from socialDistribution.util import sendToFriendsInbox, isFriend
+from socialDistribution.util import sendToFriendsInbox, isFriend, getUUID
 import base64
 from io import BytesIO
 from PIL import Image
 from django.http import HttpResponse
-from ..util import isFrontendRequest, team1, team2, serializeTeam1Post, sendToEveryonesInbox, secondInstance
+from ..util import isFrontendRequest, vibely, serializeVibelyPost, sendToEveryonesInbox, serializeCtrlAltDeletePost, socialSync
 import json
 from rest_framework.renderers import JSONRenderer
 
@@ -23,8 +23,7 @@ from rest_framework.renderers import JSONRenderer
 class PostList(generics.ListCreateAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [
-        permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     pagination_class = JsonObjectPaginator
 
     @extend_schema(
@@ -35,13 +34,10 @@ class PostList(generics.ListCreateAPIView):
         author = Author.objects.get(pk=author_pk)
 
         # get posts from author, their friends, and public posts
-        authorPosts = Post.objects.filter(author=author, type="post")
+        authorPosts = Post.objects.filter(author=author).all()
 
         all_posts = PostSerializer(authorPosts, many=True).data
 
-        # add source to posts and return everything
-        for post in all_posts:
-            post["source"] = f"{settings.BASEHOST}/authors/{post['author']['id']}/posts/{post['id']}"
         page = self.paginate_queryset(all_posts)
         return self.get_paginated_response(page)
 
@@ -50,14 +46,16 @@ class PostList(generics.ListCreateAPIView):
         description='Create a new post but generate a new id'
     )
     def post(self, request, author_pk, format=None):
+        print(request.data)
         author = Author.objects.get(pk=author_pk)
         serializer = PostSerializer(data=request.data)
         
         if serializer.is_valid():
             serializer.save(author=author, origin=f"{settings.BASEHOST}/authors/{author.id}/posts/")
-            tempPost = Post.objects.get(pk=serializer.data["id"])
+            tempPost = Post.objects.get(pk=getUUID(serializer.data["id"]))
             if tempPost.imageOnlyPost:
                 tempPost.unlisted = True
+                tempPost.contentType = "image/png;base64"
             tempPost.origin = f"{settings.BASEHOST}/authors/{author.id}/posts/{tempPost.id}"
             tempPost.save()
 
@@ -115,31 +113,19 @@ class PostDetail(APIView):
         description='GET [local, remote] get the public post whose id is POST_ID'
     )
     def get(self, request, author_pk, post_pk, format=None):
+        # TODO: may not need to implement for other groups depeninf on ui
         try:
             author = Author.objects.get(pk=author_pk, type="author")
         except Author.DoesNotExist:
             if isFrontendRequest(request):
-                remote_posts = secondInstance.get(f"authors/{author_pk}/posts/{post_pk}/")
-                print(remote_posts)
-                if remote_posts.status_code == 200:
-                    return Response(PostSerializer(remote_posts).data)
-            #     team1_post = team1.get(f"authors/{author_pk}/posts/{post_pk}/")
-            #     if team1_post.status_code == 200:
-            #         return Response(serializeTeam1Post(team1_post.json()))
-            #     # team2_post = team2.get("author/posts/" + post_pk)
-            #     team2_post = team2.get(f"authors/{author_pk}/posts/{post_pk}")
-            #     if team2_post.status_code == 200:
-            #         post = team2_post.json()
-            #         post["author"]["github"] = ""
-            #         post["categories"] = ""
-            #         return Response(serializeTeam1Post(post))
+                vibelyRemotePost = vibely.get(f"authors/{author_pk}/posts/{post_pk}/")
+                if vibelyRemotePost.status_code == 200:
+                    return Response(serializeVibelyPost(vibelyRemotePost.json()))
+                socialSync_post = socialSync.get(f"authors/{author_pk}/posts/{post_pk}")
+                if socialSync_post.status_code == 200:
+                    post = socialSync_post.json()
+                    return Response(serializeCtrlAltDeletePost(post))
             return Response({"message": "Author not found"}, status=status.HTTP_404_NOT_FOUND)
-        # if isFrontendRequest(request):
-        #     print('sjfhhvsdkhbhsd')
-        #     remote_posts = secondInstance.get(f"authors/{author_pk}/posts/{post_pk}/")
-        #     print(remote_posts.status_code)
-        #     if remote_posts.status_code == 200:
-        #         return Response(PostSerializer(remote_posts).data)
         post = self.get_object(post_pk)
 
         serializer = PostSerializer(post)
@@ -177,10 +163,10 @@ class ImageViewSet(APIView):
     def get(self, request, post_pk, format=None):
         # TODO: check other groups image only posts
         # if isFrontendRequest(request):
-        #     team1_post = team1.get("authors/" + author_pk + "/posts/" + post_pk + "/")
-        #     if team1_post.status_code == 200:
-        #         return Response(serializeTeam1Post(team1_post.json()))
-        #     # team2_post = team2.get("author/posts/" + post_pk)
+        #     vibelyRemotePost = vibely.get("authors/" + author_pk + "/posts/" + post_pk + "/")
+        #     if vibelyRemotePost.status_code == 200:
+        #         return Response(serializeVibelyPost(vibelyRemotePost.json()))
+        #     # socialSync_post = socialSync.get("author/posts/" + post_pk)
 
         post = Post.objects.get(pk=post_pk)
         if post.imageOnlyPost:
@@ -193,8 +179,11 @@ class ImageViewSet(APIView):
             elif post.image:
                 with open(post.image.path, "rb") as img_file:
                     base64_data = base64.b64encode(img_file.read())
-            return HttpResponse(base64_data)
+            post.content = base64_data
+            serializer = PostSerializer(post)
+            return Response(serializer.data)
         elif post.visibility == 'PUBLIC' or post.unlisted == True:
+            post.content = base64_data
             serializer = PostSerializer(post)
             return Response(serializer.data)
         return Response(status=status.HTTP_400_BAD_REQUEST)

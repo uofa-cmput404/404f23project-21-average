@@ -8,7 +8,7 @@ class Pagination(pagination.PageNumberPagination):
 
 class JsonObjectPaginator(pagination.PageNumberPagination):
     page_size = 5  # Adjust this based on your desired page size
-    page_size_query_param = 'page_size'
+    page_size_query_param = 'size'
     max_page_size = 100
 
     def get_paginated_response(self, data):
@@ -16,5 +16,5 @@ class JsonObjectPaginator(pagination.PageNumberPagination):
             'next': self.get_next_link(),
             'previous': self.get_previous_link(),
             'count': self.page.paginator.count,
-            'results': data
+            'items': data
         })

@@ -11,40 +11,50 @@ from socialDistribution.models import Author, Post, Comment
 from socialDistribution.pagination import Pagination, JsonObjectPaginator
 from socialDistribution.serializers import PostSerializer, FollowSerializer, AuthorSerializer, \
     CommentSerializer
-from socialDistribution.util import sendToFriendsInbox, isFriend, serializeTeam1Author, secondInstance
+from socialDistribution.util import sendToFriendsInbox, isFriend, serializeVibelyAuthor
 import base64
 from io import BytesIO
 from PIL import Image
 from django.http import HttpResponse
-from ..util import isFrontendRequest, team1, team2, serializeTeam1Post, sendToEveryonesInbox
+from ..util import isFrontendRequest, vibely, socialSync, ctrlAltDelete, serializeVibelyPost, sendToEveryonesInbox, serializeCtrlAltDeletePost, serializeSocialSyncPost, getUUID
 import json
+import uuid
 from rest_framework.renderers import JSONRenderer
 
 
 def getPostsFromAuthors():
     res = []
-    remote_author1 = secondInstance.get("authors/")
-    if remote_author1.status_code == 200:
-        for author in remote_author1.json()["results"]:
-            author1 = AuthorSerializer(author).data
-            remote_posts = secondInstance.get(f"authors/{author1['id']}/posts/")
-            if remote_posts.status_code == 200:
-                for post in remote_posts.json()["results"]:
-                    res.append(PostSerializer(post).data)
-    # team1_authors = team1.get("authors/")
-    # if team1_authors.status_code == 200:
-    #     for author in team1_authors.json()["items"]:
-    #         author1 = serializeTeam1Author(author)
-    #         team1_posts = team1.get(f"authors/{author1['id']}/posts/")
-    #         if team1_posts.status_code == 200:
-    #             for post in team1_posts.json()["items"]:
-    #                 res.append(serializeTeam1Post(post))
-    # team2_posts = team2.get(f"authors/{author_pk}/posts/")
-            # if team2_posts.status_code == 200:
-            #     for post in team2_posts.json()["items"]:
-            #         post["author"]["github"] = ""
-            #         post["categories"] = ""
-            #         all_posts.append(serializeTeam1Post(post))
+    vibelyAuthors = vibely.get("authors/")
+    if vibelyAuthors.status_code == 200:
+        for author in vibelyAuthors.json()["items"]:
+            author1 = serializeVibelyAuthor(author)
+            vibelyPosts = vibely.get(f"authors/{getUUID(author1['id'])}/posts/")
+            print(vibelyPosts)
+            if vibelyPosts.status_code == 200:
+                for post in vibelyPosts.json()["items"]:
+                    res.append(serializeVibelyPost(post))
+
+    socialSyncAuthors = socialSync.get("authors/")
+    if socialSyncAuthors.status_code == 200:
+        for author in socialSyncAuthors.json()["items"]:
+            author2 = serializeVibelyAuthor(author)
+            socialSyncPosts = socialSync.get(f"authors/{getUUID(author2['id'])}/posts")
+            print(socialSyncPosts)
+            if socialSyncPosts.status_code == 200:
+                for post in socialSyncPosts.json()["items"]:
+                    res.append(serializeCtrlAltDeletePost(post))
+
+    # ctrlAltDeleteAuthors = ctrlAltDelete.get("authors/")
+    # if ctrlAltDeleteAuthors.status_code == 200:
+    #     for author in ctrlAltDeleteAuthors.json()["items"]:
+    #         author3 = serializeVibelyAuthor(author)
+    #         print(author3)
+    #         ctrlAltDeletePosts = ctrlAltDelete.get(f"authors/{getUUID(author3['id'])}/posts/")
+    #         print(ctrlAltDeletePosts.url)
+    #         print(ctrlAltDeletePosts.text, ctrlAltDeletePosts.status_code, ctrlAltDeletePosts.url)
+    #         if ctrlAltDeletePosts.status_code == 200:
+    #             for post in ctrlAltDeletePosts.json()["items"]:
+    #                 res.append(serializeCtrlAltDeletePost(post))
     return res
 
 
@@ -69,7 +79,7 @@ class StreamPostList(generics.ListAPIView):
         publicPosts = Post.objects.filter(visibility="PUBLIC", unlisted=False)
         
         authorFriends = FollowSerializer(author.following.filter(status="Accepted"), many=True).data
-        authorFriends = [(Author.objects.get(pk=friend["following"]["id"])) for friend in authorFriends]
+        authorFriends = [(Author.objects.get(pk=getUUID(friend["following"]["id"]))) for friend in authorFriends]
         friendsPosts = Post.objects.filter(author__in=authorFriends, visibility="FRIENDS")
 
         all_posts = json.loads(JSONRenderer().render(PostSerializer(authorPosts, many=True).data + 
@@ -82,7 +92,7 @@ class StreamPostList(generics.ListAPIView):
 
         # add source to posts and return everything
         for post in all_posts:
-            post["source"] = f"{settings.BASEHOST}/authors/{post['author']['id']}/posts/{post['id']}"
+            post["source"] = f"{settings.BASEHOST}/authors/{getUUID(post['author']['id'])}/posts/{getUUID(post['id'])}"
         page = self.paginate_queryset(all_posts)
         return self.get_paginated_response(page)
 
@@ -100,7 +110,7 @@ class StreamComments(generics.ListAPIView):
     def get(self, request, author_pk, post_pk, format=None):
         author = Author.objects.get(pk=request.user.id)
         post = Post.objects.get(pk=post_pk)
-        all_comments = []
+        # allComments = []
 
         if post.visibility == "PUBLIC":
             comments = Comment.objects.filter(post=post_pk)
@@ -109,25 +119,37 @@ class StreamComments(generics.ListAPIView):
 
         # if isFrontendRequest(request):
         # TODO: check duplicate comment returns 
-        all_comments = json.loads(JSONRenderer().render(CommentSerializer(comments, many=True).data).decode('utf-8'))
-        team1_comments = team1.get(f"authors/{author_pk}/posts/{post_pk}/comments")
-        if team1_comments.status_code == 200:
-            for comment in team1_comments.json()["comments"]:
-                all_comments.append({
+        allComments = json.loads(JSONRenderer().render(CommentSerializer(comments, many=True).data).decode('utf-8'))
+        vibelyComments = vibely.get(f"authors/{author_pk}/posts/{post_pk}/comments")
+        if vibelyComments.status_code == 200:
+            for comment in vibelyComments.json()["comments"]:
+                allComments.append({
                     "id": comment["id"],
-                    "author": serializeTeam1Author(comment["author"]),
+                    "author": serializeVibelyAuthor(comment["author"]),
                     "comment": comment["comment"],
                     "contentType": comment["contentType"],
                     "published": comment["published"],
                     "type": "NodeComment",
-                    # "post": comment["post"],
+                    "post": post_pk,
                 })
-        # team2_comments = team2.get(f"authors/{author_pk}/posts/{post_pk}/comments")
-        # if team2_comments.status_code == 200:
-        #     for comment in team2_comments.json()["comments"]:
-        #         all_comments.append({
+        socialSyncComments = socialSync.get(f"authors/{author_pk}/posts/{post_pk}/comments")
+        if socialSyncComments.status_code == 200:
+            for comment in socialSyncComments.json()["comments"]:
+                allComments.append({
+                    "id": comment["id"],
+                    "author": serializeVibelyAuthor(comment["author"]),
+                    "comment": comment["comment"],
+                    "contentType": comment["contentType"],
+                    "published": comment["published"],
+                    "type": "NodeComment",
+                    "post": post_pk,
+                })
+        # socialSync_comments = ctrlAltDelete.get(f"authors/{author_pk}/posts/{post_pk}/comments")
+        # if socialSync_comments.status_code == 200:
+        #     for comment in socialSync_comments.json()["comments"]:
+        #         allComments.append({
         #             "id": comment["id"],
-        #             "author": serializeTeam1Author(comment["author"]),
+        #             "author": serializeVibelyAuthor(comment["author"]),
         #             "comment": comment["comment"],
         #             "contentType": comment["contentType"],
         #             "published": comment["published"],

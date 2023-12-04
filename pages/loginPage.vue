@@ -39,9 +39,12 @@ const login = async () => {
       username: userId.value,
       password: password.value
     };
+    console.log(data)
     console.log(authorStore.BASE_URL)
-
+    await authorStore.setAuthToken(btoa(`${data.username}:${data.password}`))
     const response = await axios.post(authorStore.BASE_URL + '/auth/login/', data)
+    console.log(process.env.BASE_URL)
+    console.log(JSON.stringify(response))
     console.log(response)
     await authorStore.setAuthToken(btoa(`${data.username}:${data.password}`))
     await authorStore.setAuthorId(response.data.user.pk)

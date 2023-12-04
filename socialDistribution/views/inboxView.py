@@ -1,4 +1,4 @@
-from socialDistribution.models import Inbox, Author, Post, Comment, Follow, PostLike
+from socialDistribution.models import Inbox, Post, Comment, Follow, PostLike
 from socialDistribution.serializers import *
 from rest_framework.response import Response
 from rest_framework import permissions
@@ -6,99 +6,92 @@ from rest_framework import status
 from rest_framework import generics
 from drf_spectacular.utils import extend_schema
 import json
-from ..util import isFrontendRequest, serializeTeam1Post, serializeTeam1Author
-
+import uuid
+from ..util import isFrontendRequest, serializeVibelyPost, serializeVibelyAuthor, getUUID
 
 def handlePostItem(newItem):
     # TODO: maybe dont need to save post on db???
-    # post = serializeTeam1Post(newItem)
-    # authorJson = serializeTeam1Author(newItem["author"])
-    # authorJson["type"] = "NodeAuthor"
-    # author = Author.objects.get_or_create(**authorJson)
-    # # create the post object
-    # newPost = Post.objects.get_or_create(
-    #     id=post["id"],
-    #     title=post["title"],
-    #     source=post["source"],
-    #     type="NodePost",
-    #     origin=post["origin"],
-    #     description=post["description"],
-    #     contentType=post["contentType"],
-    #     content=post["content"],
-    #     author=author[0],
-    #     categories=','.join(post["categories"]),
-    #     count=post["count"],
-    #     visibility=post["visibility"],
-    #     unlisted=post["unlisted"],
-    #     published=post["published"],
-    # )
-    return PostSerializer(newItem).data
+    return {
+        "id": newItem["id"],
+        "title": newItem["title"],
+        "type": "post",
+        "source": newItem["source"],
+        "origin": newItem["origin"],
+        "description": newItem["description"],
+        "contentType": newItem["contentType"],
+        "visibility": newItem["visibility"],
+        "unlisted": newItem["unlisted"],
+        "content": newItem["content"],
+        "published": newItem["published"],
+        "author": serializeVibelyAuthor(newItem["author"]),
+        "categories": newItem["categories"],
+        "image_link": None,
+        "image": None,
+        "imageOnlyPost": None,
+        # "count": post["count"],
+        "comments": newItem["comments"]
+    }
+    # post = serializeVibelyPost(newItem)
+    # return post
 
 
 def handleCommentItem(newItem):
-    authorJson = serializeTeam1Author(newItem["author"])
-    authorJson["type"] = "NodeAuthor"
-    author = Author.objects.get_or_create(**authorJson)
+    authorJson = serializeVibelyAuthor(newItem["author"])
     comment = {
         "id": newItem["id"].split("/")[-1],
-        "author": author[0],
+        "author": authorJson,
         "comment": newItem["comment"],
         "contentType": newItem["contentType"],
         "published": newItem["published"],
-        "type": "NodeComment",
+        "type": "Comment",
         # "post": comment["post"],
     }
-    newComment = Comment.objects.get_or_create(**comment)
-    return CommentSerializer(newComment[0]).data
+    return comment
 
 
 def handleFollowItem(newItem):
     # object key must be an author on my server
     # actor key is the foreign_author following my object
     # actor is requesting to follow object
-    actorJson = AuthorSerializer(newItem["actor"]).data
+    actorJson = serializeVibelyAuthor(newItem["actor"])
     actorJson["type"] = "NodeAuthor"
-    author = Author.objects.get_or_create(**actorJson)
-
-    objectJson = AuthorSerializer(newItem["object"]).data
-    foreign_author = Author.objects.get(pk=objectJson["id"])
+    actorJson["id"] = getUUID(newItem["actor"]["id"])
+    try:
+        actingAuthor = Author.objects.get(pk=actorJson["id"])
+    except:
+        actingAuthor = Author.objects.create(**actorJson)
+    
+    try:
+        foreignAthorID = getUUID(newItem["object"]["id"])
+        foreign_author = Author.objects.filter(pk=foreignAthorID)[0]
+    except:
+        raise Exception("Object Author not found")
 
     # author is requesting to follow foreign_author
     follow = {
-        "follower": author[0],
-        "following": foreign_author,
-        "status": "Pending",
-        "summary": newItem["summary"],
+        "type": "follow",
+        "summary": f"{actingAuthor.username} wants to follow {foreign_author.username}",
+        "actor": AuthorSerializer(foreign_author).data,
+        "object": AuthorSerializer(actingAuthor).data,
     }
-    newFollow = Follow.objects.get_or_create(**follow)
-    return FollowSerializer(newFollow[0]).data
+    x = Follow.objects.create(following=foreign_author, follower=actingAuthor, summary=follow["summary"])
+    x.save()
+    return follow
 
 
 def handleLikeItem(newItem):
-    authorJson = serializeTeam1Author(newItem["author"])
-    authorJson["type"] = "NodeAuthor"
-    author = Author.objects.get_or_create(**authorJson)
-    
-    if newItem["summary"].split()[-1] == "post":
-        like = {
-        "context": newItem["context"],
-        "author": author[0],
-        "object": newItem["object"],
-        "type": "NodePostLike",
+    authorJson = serializeVibelyAuthor(newItem["author"])
+    likeJson = {
+        # "id": newItem["id"].split("/")[-1],
+        "author": authorJson,
         "summary": newItem["summary"],
-        }
-        newLike = PostLike.objects.get_or_create(**like)
-    elif newItem["summary"].split()[-1] == 'comment':
-        like = {
         "context": newItem["context"],
-        "author": author[0],
         "object": newItem["object"],
-        "type": "NodeCommentLike",
-        "summary": newItem["summary"],
-        }
-        newLike = CommentLike.objects.get_or_create(**like)
+        "type": "Like",
+    }
 
-    return PostLikeSerializer(newLike[0]).data
+    # return PostLikeSerializer(newLike[0]).data
+    return likeJson
 
 
 class InboxItemView(generics.GenericAPIView):
@@ -148,7 +141,11 @@ class InboxItemView(generics.GenericAPIView):
 
         if not isFrontendRequest(request):
             if newItem["type"].lower() == "follow":
-                items.append(json.dumps(handleFollowItem(newItem), default=str))
+                try:
+                    items.append(json.dumps(handleFollowItem(newItem), default=str))
+                except Exception as e:
+                    print(e)
+                    return Response({"message": "Object Author not found"}, status=status.HTTP_404_NOT_FOUND)
             elif newItem["type"].lower() == "like":
                 items.append(json.dumps(handleLikeItem(newItem), default=str))
             elif newItem["type"].lower() == "comment":
@@ -170,7 +167,6 @@ class InboxItemView(generics.GenericAPIView):
         # TODO: TEST IF IT WORKSS
         author = Author.objects.get(pk=author_pk)
         inbox = Inbox.objects.get(author=author)
-        print(inbox.items)
         inbox.items = json.dumps([])
         inbox.save()
         return Response({'message': "Inbox Cleared!"}, status=status.HTTP_204_NO_CONTENT)
