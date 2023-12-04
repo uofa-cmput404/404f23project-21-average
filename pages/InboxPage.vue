@@ -4,32 +4,32 @@
     <div class="main-content">
       <div class="header-container">
         <div class="header">INBOX</div>
-      <button class="clear-inbox-button" @click="clearInbox">Clear Inbox</button>
-      <div class="notification-list">
-        <div v-for="(notification, index) in notifications" :key="notification.id" class="notification-item">
-          <div class="notification-content">
-            <div v-if="notification.type.toLowerCase() === 'post'">
-              <PostComponent :key="notification.id" :postContent="notification.content"
-                :userId="notification.author.username" :postImage="notification.image" :postID="notification.id"
-                :isPublic="notification.visibility" :contentType="notification.contentType" />
-            </div>
-            <div v-if="notification.type.toLowerCase() === 'like'">
-              <h3>{{ notification.summary }}</h3>
-            </div>
-            <div v-if="notification.type.toLowerCase() === 'follow'">
-              <h3>{{ notification.summary }}</h3>
-              <div class="button-group">
-                <button @click="toggleAccept(notification, index)">
-                  {{ notification.isFollower ? 'Remove Follower' : 'Accept' }}
-                </button>
+        <button class="clear-inbox-button" @click="clearInbox">Clear Inbox</button>
+        <div class="notification-list">
+          <div v-for="(notification, index) in notifications" :key="notification.id" class="notification-item">
+            <div class="notification-content">
+              <div v-if="notification.type.toLowerCase() === 'post'">
+                <PostComponent :key="notification.id" :postContent="notification.content"
+                  :userId="notification.author.username" :postImage="notification.image" :postID="notification.id"
+                  :isPublic="notification.visibility" :contentType="notification.contentType" />
               </div>
-            </div>
-            <div v-if="notification.type.toLowerCase() === 'comment'">
-              <h3>{{ notification.author.username }} commented "{{ notification.comment }}" on your post</h3>
+              <div v-if="notification.type.toLowerCase() === 'like'">
+                <h3>{{ notification.summary }}</h3>
+              </div>
+              <div v-if="notification.type.toLowerCase() === 'follow'">
+                <h3>{{ notification.summary }}</h3>
+                <div class="button-group">
+                  <button @click="toggleAccept(notification, index)">
+                    {{ notification.isFollower ? 'Remove Follower' : 'Accept' }}
+                  </button>
+                </div>
+              </div>
+              <div v-if="notification.type.toLowerCase() === 'comment'">
+                <h3>{{ notification.author.username }} commented "{{ notification.comment }}" on your post</h3>
+              </div>
             </div>
           </div>
         </div>
-      </div>
       </div>
     </div>
   </div>
@@ -77,35 +77,35 @@ export default {
 
       for (let notification of notifications) {
         if (notification.type.toLowerCase() === 'follow') {
-          let response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + await authorStore.getIDFromURL(notification.object.id) + '/');
+          let response = await axios.get(authorStore.BASE_URL + '/authors/' + await authorStore.getIDFromURL(notification.object.id) + '/followers/' + authorStore.getAuthorId + '/');
           notification.isFollower = response.data === true;
-          console.log(response.data, notification)
+          console.log(response.data, notification, response.url)
         }
       }
     },
 
 
     async toggleAccept(notification, index) {
-  const authorStore = useAuthorStore();
-  axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-  try {
-    let response;
-    console.log(this.isAFollower)
-    if (notification.isFollower) {
-      // Call the unfollow API
-      response = await axios.delete(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + await authorStore.getIDFromURL(notification.object.id) + '/');
-    } else {
-      // Call the follow API
-      response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + await authorStore.getIDFromURL(notification.object.id) + '/');
-    }
-    if (response && (response.status === 200 || response.status === 204)) {
-      this.notifications[index].isFollower = !this.notifications[index].isFollower;
-    }
-  } catch (error) {
-    console.error('Error while toggling follow:', error);
-  }
-  },
-  async clearInbox() {
+      const authorStore = useAuthorStore();
+      axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
+      try {
+        let response;
+        console.log(this.isAFollower)
+        if (notification.isFollower) {
+          // Call the unfollow API
+          response = await axios.delete(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + await authorStore.getIDFromURL(notification.object.id) + '/');
+        } else {
+          // Call the follow API
+          response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + await authorStore.getIDFromURL(notification.object.id) + '/');
+        }
+        if (response && (response.status === 200 || response.status === 204)) {
+          this.notifications[index].isFollower = !this.notifications[index].isFollower;
+        }
+      } catch (error) {
+        console.error('Error while toggling follow:', error);
+      }
+    },
+    async clearInbox() {
       // Logic to clear the inbox
       // Example: Send a request to the backend to clear the inbox
       try {
@@ -220,7 +220,8 @@ button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px; /* Adjust as needed */
+  margin-bottom: 20px;
+  /* Adjust as needed */
 }
 
 .header {
@@ -232,8 +233,9 @@ button {
 }
 
 .clear-inbox-button {
-  width:80%;
-  background-color: #f44336; /* Red color for clear action */
+  width: 80%;
+  background-color: #f44336;
+  /* Red color for clear action */
   color: white;
   border: none;
   padding: 5px 10px;
@@ -242,8 +244,10 @@ button {
 }
 
 .clear-inbox-button:hover {
-  background-color: #d32f2f; /* Darker shade on hover */
+  background-color: #d32f2f;
+  /* Darker shade on hover */
 }
+
 .header-container {
   display: flex;
   flex-direction: column;
