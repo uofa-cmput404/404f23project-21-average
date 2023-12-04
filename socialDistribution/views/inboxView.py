@@ -7,7 +7,7 @@ from rest_framework import generics
 from drf_spectacular.utils import extend_schema
 import json
 import uuid
-from ..util import isFrontendRequest, serializeTeam1Post, serializeTeam1Author, getUUID
+from ..util import isFrontendRequest, serializeVibelyPost, serializeVibelyAuthor, getUUID
 
 
 def handlePostItem(newItem):
@@ -24,7 +24,7 @@ def handlePostItem(newItem):
         "unlisted": newItem["unlisted"],
         "content": newItem["content"],
         "published": newItem["published"],
-        "author": serializeTeam1Author(newItem["author"]),
+        "author": serializeVibelyAuthor(newItem["author"]),
         "categories": newItem["categories"],
         "image_link": None,
         "image": None,
@@ -32,12 +32,12 @@ def handlePostItem(newItem):
         # "count": post["count"],
         "comments": newItem["comments"]
     }
-    # post = serializeTeam1Post(newItem)
+    # post = serializeVibelyPost(newItem)
     # return post
 
 
 def handleCommentItem(newItem):
-    authorJson = serializeTeam1Author(newItem["author"])
+    authorJson = serializeVibelyAuthor(newItem["author"])
     comment = {
         "id": newItem["id"].split("/")[-1],
         "author": authorJson,
@@ -54,7 +54,7 @@ def handleFollowItem(newItem):
     # object key must be an author on my server
     # actor key is the foreign_author following my object
     # actor is requesting to follow object
-    actorJson = serializeTeam1Author(newItem["actor"])
+    actorJson = serializeVibelyAuthor(newItem["actor"])
     actorJson["type"] = "NodeAuthor"
     actorJson["id"] = getUUID(newItem["actor"]["id"])
     try:
@@ -78,7 +78,7 @@ def handleFollowItem(newItem):
 
 
 def handleLikeItem(newItem):
-    authorJson = serializeTeam1Author(newItem["author"])
+    authorJson = serializeVibelyAuthor(newItem["author"])
     likeJson = {
         # "id": newItem["id"].split("/")[-1],
         "author": authorJson,

@@ -5,7 +5,7 @@ from socialDistribution.serializers import AuthorSerializer, FollowSerializer, F
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
-from ..util import team1, team2, team3, addToInbox, serializeTeam1Author, serializeTeam3Author, getUUID
+from ..util import vibely, socialSync, ctrlAltDelete, addToInbox, serializeVibelyAuthor, serializeCtrlAltDeleteAuthor, getUUID
 from drf_spectacular.utils import extend_schema
 from ..pagination import JsonObjectPaginator
 from django.conf import settings
@@ -31,27 +31,27 @@ class FollowViewSet(generics.ListAPIView):
                 authors.append(AuthorSerializer(Author.objects.get(pk=follower.follower.id)).data)
         except:
             # TODO: i dont think we need to get followers of remote authors on UI???
-            team1RemoteAuthor = team1.get(f"authors/{author_pk}")
-            if team1RemoteAuthor.status_code == 200:
-                team1AuthorFollowers = team1.get(f"authors/{author_pk}/followers/")
-                if team1AuthorFollowers.status_code == 200:
-                    for follower in team1AuthorFollowers.json()["items"]:
-                        authors.append(serializeTeam1Author(follower["follower"]))
+            vibelyRemoteAuthor = vibely.get(f"authors/{author_pk}")
+            if vibelyRemoteAuthor.status_code == 200:
+                vibelyAuthorFollowers = vibely.get(f"authors/{author_pk}/followers/")
+                if vibelyAuthorFollowers.status_code == 200:
+                    for follower in vibelyAuthorFollowers.json()["items"]:
+                        authors.append(serializeVibelyAuthor(follower["follower"]))
             
-            team2RemoteAuthor = team2.get(f"authors/{author_pk}")
-            if team2RemoteAuthor.status_code == 200:
-                team2AuthorFollowers = team2.get(f"authors/{author_pk}/followers/")
-                if team2AuthorFollowers.status_code == 200:
-                    for follower in team2AuthorFollowers.json()["items"]:
-                        authors.append(serializeTeam1Author(follower["follower"]))
+            socialSyncRemoteAuthor = socialSync.get(f"authors/{author_pk}")
+            if socialSyncRemoteAuthor.status_code == 200:
+                socialSyncAuthorFollowers = socialSync.get(f"authors/{author_pk}/followers/")
+                if socialSyncAuthorFollowers.status_code == 200:
+                    for follower in socialSyncAuthorFollowers.json()["items"]:
+                        authors.append(serializeVibelyAuthor(follower["follower"]))
 
-            # try to find the author on team3
-            team3RemoteAuthor = team3.get(f"authors/{author_pk}")
-            if team3RemoteAuthor.status_code == 200:
-                team3AuthorFollowers = team3.get(f"authors/{author_pk}/followers")
-                if team3AuthorFollowers.status_code == 200:
-                    for follower in team3AuthorFollowers.json()["items"]:
-                        authors.append(serializeTeam3Author(follower))
+            # try to find the author on ctrlAltDelete
+            ctrlAltDeleteRemoteAuthor = ctrlAltDelete.get(f"authors/{author_pk}")
+            if ctrlAltDeleteRemoteAuthor.status_code == 200:
+                ctrlAltDeleteAuthorFollowers = ctrlAltDelete.get(f"authors/{author_pk}/followers")
+                if ctrlAltDeleteAuthorFollowers.status_code == 200:
+                    for follower in ctrlAltDeleteAuthorFollowers.json()["items"]:
+                        authors.append(serializeCtrlAltDeleteAuthor(follower))
         
         if not authors:
             return Response({'message': 'No followers'}, status=status.HTTP_200_OK)
@@ -73,17 +73,17 @@ class FollowingViewSet(generics.ListAPIView):
         try:
             author = Author.objects.get(pk=author_pk, type="author")
         except:
-            # team1RemoteAuthor = team1.get(f"authors/{author_pk}")
-            # if team1RemoteAuthor.status_code == 200:
-            #     team3AuthorFollowers = team1.get(f"authors/{author_pk}/followers/")
-            #     if team3AuthorFollowers.status_code == 200:
-            #         return Response(team3AuthorFollowers.json())
-            # # try to find the author on team3
-            # team3RemoteAuthor = team3.get(f"authors/{author_pk}")
-            # if team3RemoteAuthor.status_code == 200:
-            #     team3AuthorFollowers = team3.get(f"authors/{author_pk}/followers/")
-            #     if team3AuthorFollowers.status_code == 200:
-            #         return Response(team3AuthorFollowers.json())
+            # vibelyRemoteAuthor = vibely.get(f"authors/{author_pk}")
+            # if vibelyRemoteAuthor.status_code == 200:
+            #     ctrlAltDeleteAuthorFollowers = vibely.get(f"authors/{author_pk}/followers/")
+            #     if ctrlAltDeleteAuthorFollowers.status_code == 200:
+            #         return Response(ctrlAltDeleteAuthorFollowers.json())
+            # # try to find the author on ctrlAltDelete
+            # ctrlAltDeleteRemoteAuthor = ctrlAltDelete.get(f"authors/{author_pk}")
+            # if ctrlAltDeleteRemoteAuthor.status_code == 200:
+            #     ctrlAltDeleteAuthorFollowers = ctrlAltDelete.get(f"authors/{author_pk}/followers/")
+            #     if ctrlAltDeleteAuthorFollowers.status_code == 200:
+            #         return Response(ctrlAltDeleteAuthorFollowers.json())
             return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
         following = author.following.filter(status="Accepted").all()
         # turn followers queryset into a list of authors
@@ -147,7 +147,7 @@ class FollowDetailViewSet(generics.GenericAPIView):
             # # send follow request to remote inbox
             # TODO: Implement other teams inbox
             if 'socialsync' in request.data["objectHost"]:
-                remoteAuthor = team2.get(f"authors/{foreign_author_pk}")
+                remoteAuthor = socialSync.get(f"authors/{foreign_author_pk}")
                 print(remoteAuthor.url, remoteAuthor.text)
                 if remoteAuthor.status_code == 200:
                     remoteAuthor = remoteAuthor.json()
@@ -157,7 +157,7 @@ class FollowDetailViewSet(generics.GenericAPIView):
                     "actor": AuthorSerializer(author).data,
                     "object": remoteAuthor,
                 }
-                response = team2.post(f"authors/{getUUID(remoteAuthor['id'])}/inbox", json=payload)
+                response = socialSync.post(f"authors/{getUUID(remoteAuthor['id'])}/inbox", json=payload)
                 print(response.url)
                 print(response, response.text)
             

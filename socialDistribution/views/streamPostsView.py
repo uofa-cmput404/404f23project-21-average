@@ -11,12 +11,12 @@ from socialDistribution.models import Author, Post, Comment
 from socialDistribution.pagination import Pagination, JsonObjectPaginator
 from socialDistribution.serializers import PostSerializer, FollowSerializer, AuthorSerializer, \
     CommentSerializer
-from socialDistribution.util import sendToFriendsInbox, isFriend, serializeTeam1Author
+from socialDistribution.util import sendToFriendsInbox, isFriend, serializeVibelyAuthor
 import base64
 from io import BytesIO
 from PIL import Image
 from django.http import HttpResponse
-from ..util import isFrontendRequest, team1, team2, team3, serializeTeam1Post, sendToEveryonesInbox, serializeTeam3Post, serializeTeam2Post, getUUID
+from ..util import isFrontendRequest, vibely, socialSync, ctrlAltDelete, serializeVibelyPost, sendToEveryonesInbox, serializeCtrlAltDeletePost, serializeSocialSyncPost, getUUID
 import json
 import uuid
 from rest_framework.renderers import JSONRenderer
@@ -24,37 +24,37 @@ from rest_framework.renderers import JSONRenderer
 
 def getPostsFromAuthors():
     res = []
-    team1Authors = team1.get("authors/")
-    if team1Authors.status_code == 200:
-        for author in team1Authors.json()["items"]:
-            author1 = serializeTeam1Author(author)
-            team1Posts = team1.get(f"authors/{getUUID(author1['id'])}/posts/")
-            if team1Posts.status_code == 200:
-                for post in team1Posts.json()["items"]:
-                    res.append(serializeTeam1Post(post))
+    vibelyAuthors = vibely.get("authors/")
+    if vibelyAuthors.status_code == 200:
+        for author in vibelyAuthors.json()["items"]:
+            author1 = serializeVibelyAuthor(author)
+            vibelyPosts = vibely.get(f"authors/{getUUID(author1['id'])}/posts/")
+            print(vibelyPosts)
+            if vibelyPosts.status_code == 200:
+                for post in vibelyPosts.json()["items"]:
+                    res.append(serializeVibelyPost(post))
 
-    team2Authors = team2.get("authors/")
-    # TODO: fix this
-    if team2Authors.status_code == 200:
-        for author in team2Authors.json()["items"]:
-            author2 = serializeTeam1Author(author)
-            team2Posts = team2.get(f"authors/{getUUID(author2['id'])}/posts")
-            if team2Posts.status_code == 200:
-                for post in team2Posts.json()["items"]:
-                    # print(post)
-                    res.append(serializeTeam3Post(post))
+    socialSyncAuthors = socialSync.get("authors/")
+    if socialSyncAuthors.status_code == 200:
+        for author in socialSyncAuthors.json()["items"]:
+            author2 = serializeVibelyAuthor(author)
+            socialSyncPosts = socialSync.get(f"authors/{getUUID(author2['id'])}/posts")
+            print(socialSyncPosts)
+            if socialSyncPosts.status_code == 200:
+                for post in socialSyncPosts.json()["items"]:
+                    res.append(serializeCtrlAltDeletePost(post))
 
-    team3Authors = team3.get("authors/")
-    if team3Authors.status_code == 200:
-        for author in team3Authors.json()["items"]:
-            author3 = serializeTeam1Author(author)
-            print(author3)
-            team3Posts = team3.get(f"authors/{getUUID(author3['id'])}/posts/")
-            print(team3Posts.url)
-            print(team3Posts.text, team3Posts.status_code, team3Posts.url)
-            if team3Posts.status_code == 200:
-                for post in team3Posts.json()["items"]:
-                    res.append(serializeTeam3Post(post))
+    # ctrlAltDeleteAuthors = ctrlAltDelete.get("authors/")
+    # if ctrlAltDeleteAuthors.status_code == 200:
+    #     for author in ctrlAltDeleteAuthors.json()["items"]:
+    #         author3 = serializeVibelyAuthor(author)
+    #         print(author3)
+    #         ctrlAltDeletePosts = ctrlAltDelete.get(f"authors/{getUUID(author3['id'])}/posts/")
+    #         print(ctrlAltDeletePosts.url)
+    #         print(ctrlAltDeletePosts.text, ctrlAltDeletePosts.status_code, ctrlAltDeletePosts.url)
+    #         if ctrlAltDeletePosts.status_code == 200:
+    #             for post in ctrlAltDeletePosts.json()["items"]:
+    #                 res.append(serializeCtrlAltDeletePost(post))
     return res
 
 
@@ -120,36 +120,36 @@ class StreamComments(generics.ListAPIView):
         # if isFrontendRequest(request):
         # TODO: check duplicate comment returns 
         allComments = json.loads(JSONRenderer().render(CommentSerializer(comments, many=True).data).decode('utf-8'))
-        team1Comments = team1.get(f"authors/{author_pk}/posts/{post_pk}/comments")
-        if team1Comments.status_code == 200:
-            for comment in team1Comments.json()["comments"]:
+        vibelyComments = vibely.get(f"authors/{author_pk}/posts/{post_pk}/comments")
+        if vibelyComments.status_code == 200:
+            for comment in vibelyComments.json()["comments"]:
                 allComments.append({
                     "id": comment["id"],
-                    "author": serializeTeam1Author(comment["author"]),
+                    "author": serializeVibelyAuthor(comment["author"]),
                     "comment": comment["comment"],
                     "contentType": comment["contentType"],
                     "published": comment["published"],
                     "type": "NodeComment",
                     "post": post_pk,
                 })
-        team2Comments = team2.get(f"authors/{author_pk}/posts/{post_pk}/comments")
-        if team2Comments.status_code == 200:
-            for comment in team2Comments.json()["comments"]:
+        socialSyncComments = socialSync.get(f"authors/{author_pk}/posts/{post_pk}/comments")
+        if socialSyncComments.status_code == 200:
+            for comment in socialSyncComments.json()["comments"]:
                 allComments.append({
                     "id": comment["id"],
-                    "author": serializeTeam1Author(comment["author"]),
+                    "author": serializeVibelyAuthor(comment["author"]),
                     "comment": comment["comment"],
                     "contentType": comment["contentType"],
                     "published": comment["published"],
                     "type": "NodeComment",
                     "post": post_pk,
                 })
-        # team2_comments = team3.get(f"authors/{author_pk}/posts/{post_pk}/comments")
-        # if team2_comments.status_code == 200:
-        #     for comment in team2_comments.json()["comments"]:
+        # socialSync_comments = ctrlAltDelete.get(f"authors/{author_pk}/posts/{post_pk}/comments")
+        # if socialSync_comments.status_code == 200:
+        #     for comment in socialSync_comments.json()["comments"]:
         #         allComments.append({
         #             "id": comment["id"],
-        #             "author": serializeTeam1Author(comment["author"]),
+        #             "author": serializeVibelyAuthor(comment["author"]),
         #             "comment": comment["comment"],
         #             "contentType": comment["contentType"],
         #             "published": comment["published"],

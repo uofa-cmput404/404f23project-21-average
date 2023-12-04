@@ -15,7 +15,7 @@ import base64
 from io import BytesIO
 from PIL import Image
 from django.http import HttpResponse
-from ..util import isFrontendRequest, team1, serializeTeam1Post, sendToEveryonesInbox, serializeTeam3Post
+from ..util import isFrontendRequest, vibely, serializeVibelyPost, sendToEveryonesInbox, serializeCtrlAltDeletePost, socialSync
 import json
 from rest_framework.renderers import JSONRenderer
 
@@ -118,13 +118,13 @@ class PostDetail(APIView):
             author = Author.objects.get(pk=author_pk, type="author")
         except Author.DoesNotExist:
             if isFrontendRequest(request):
-                team1RemotePost = team1.get(f"authors/{author_pk}/posts/{post_pk}/")
-                if team1RemotePost.status_code == 200:
-                    return Response(serializeTeam1Post(team1RemotePost.json()))
-                team2_post = team2.get(f"authors/{author_pk}/posts/{post_pk}")
-                if team2_post.status_code == 200:
-                    post = team2_post.json()
-                    return Response(serializeTeam3Post(post))
+                vibelyRemotePost = vibely.get(f"authors/{author_pk}/posts/{post_pk}/")
+                if vibelyRemotePost.status_code == 200:
+                    return Response(serializeVibelyPost(vibelyRemotePost.json()))
+                socialSync_post = socialSync.get(f"authors/{author_pk}/posts/{post_pk}")
+                if socialSync_post.status_code == 200:
+                    post = socialSync_post.json()
+                    return Response(serializeCtrlAltDeletePost(post))
             return Response({"message": "Author not found"}, status=status.HTTP_404_NOT_FOUND)
         post = self.get_object(post_pk)
 
@@ -163,10 +163,10 @@ class ImageViewSet(APIView):
     def get(self, request, post_pk, format=None):
         # TODO: check other groups image only posts
         # if isFrontendRequest(request):
-        #     team1RemotePost = team1.get("authors/" + author_pk + "/posts/" + post_pk + "/")
-        #     if team1RemotePost.status_code == 200:
-        #         return Response(serializeTeam1Post(team1RemotePost.json()))
-        #     # team2_post = team2.get("author/posts/" + post_pk)
+        #     vibelyRemotePost = vibely.get("authors/" + author_pk + "/posts/" + post_pk + "/")
+        #     if vibelyRemotePost.status_code == 200:
+        #         return Response(serializeVibelyPost(vibelyRemotePost.json()))
+        #     # socialSync_post = socialSync.get("author/posts/" + post_pk)
 
         post = Post.objects.get(pk=post_pk)
         if post.imageOnlyPost:
