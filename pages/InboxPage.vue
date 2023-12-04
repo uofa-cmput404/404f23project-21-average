@@ -78,8 +78,8 @@ export default {
       for (let notification of notifications) {
         if (notification.type.toLowerCase() === 'follow') {
           let response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + await authorStore.getIDFromURL(notification.object.id) + '/');
-          notification.isFollower = response.data === true;
-          console.log(response.data, notification)
+          notification.isFollower = response.data
+          console.log(response.data)
         }
       }
     },

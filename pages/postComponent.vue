@@ -116,7 +116,7 @@ export default {
     },
   },
   async mounted() {
-    console.log(this.postType)
+    console.log(this.isPublic)
     const authorStore = useAuthorStore();
     this.postid = await authorStore.getIDFromURL(this.postID)
     this.postImage = authorStore.BASE_URL.split('/api')[0] + this.postImage;
@@ -216,6 +216,7 @@ export default {
           this.postImage = e.target.result;
           this.postImageUrl = e.target.result; // Update the image URL for display
         };
+        this.postImage = file;
       }
     },
     async updatePost() {
@@ -234,10 +235,11 @@ export default {
       formData.append('published', new Date().toISOString());
       formData.append('categories', 'Your Categories Here'); // Adjust accordingly
       if (this.postImage) {
-        formData.append('image', this.postImage);
+        formData.append('image', file);
       }
       axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
       const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postid + "/", formData);
+      console.log(formData)
     },
     async deletePost() {
       const authorStore = useAuthorStore();
@@ -307,15 +309,24 @@ body {
   /* Ensures these elements don't overflow */
 }
 
-.post-status-icon {
-  position: absolute;
-  top: 17px;
-  right: 17px;
-  font-size: 1.5em;
-  color: #00C58E;
-  /* Green color for icons */
+.post {
+  position: relative; /* Add this line */
+  background-color: #1f1f1f;
+  padding: 20px;
+  margin: 20px auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 100%;
+  word-wrap: break-word;
 }
 
+.post-status-icon {
+  position: absolute;
+  top: 10px; /* Adjust as needed */
+  right: 10px; /* Adjust as needed */
+  font-size: 1.5em;
+  color: #00C58E;
+}
 .user-info {
   display: flex;
   align-items: center;
@@ -542,6 +553,11 @@ button:hover {
     /* Align with the right edge */
   }
 }
+
+.bi{
+    font-size: 20px;
+
+  }
 </style>
 
 
