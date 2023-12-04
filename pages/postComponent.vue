@@ -17,54 +17,49 @@
             <img :src="postContent" alt="Base64 Image">
           </div>
           <div v-else>
-          <div v-if="postImage !== null">
-            <img v-if="postImage" :src="postImage">
+            <div v-if="postImage !== null">
+              <img v-if="postImage" :src="postImage">
+            </div>
+            <div v-if="contentType === 'text/markdown'">
+              <div v-html="renderedContent"></div>
+            </div>
+            <div v-else>
+              <p style="margin-top: 25px;">{{ postContent }}</p>
+            </div>
           </div>
-          <div v-if="contentType === 'text/markdown'">
-            <div v-html="renderedContent"></div>
-          </div>
-          <div v-else>
-            <p style="margin-top: 25px;">{{ postContent }}</p>
-          </div>
-<<<<<<< HEAD
 
-=======
+          <div class="post-actions">
+            <button @click="toggleLike">{{ liked ? 'liked' : 'Like' }}</button>
+            <button @click="toggleCommentBox">Comment</button>
+            <button @click="sharePostWithUser">Share</button>
+          </div>
+          <div v-if="showCommentBox">
+            <comment-component v-if="showCommentBox" :postId="postID"></comment-component>
+          </div>
         </div>
-          
->>>>>>> ec78bf111f6306ae4c7336337c6be06dd6424138
-        </div>
+      </div>
+
+
+      <!-- Edit Post Component -->
+      <div v-if="showEditPost" class="edit-post">
+        <textarea v-model="editedPostContent" placeholder="Edit your post"></textarea>
+        <button @click="deletePost" class="delete-button">Delete Post</button>
 
         <div class="post-actions">
-          <button @click="toggleLike">{{ liked ? 'liked' : 'Like' }}</button>
-          <button @click="toggleCommentBox">Comment</button>
-          <button @click="sharePostWithUser">Share</button>
-        </div>
-        <div v-if="showCommentBox">
-          <comment-component v-if="showCommentBox" :postId="postID"></comment-component>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- Edit Post Component -->
-    <div v-if="showEditPost" class="edit-post">
-      <textarea v-model="editedPostContent" placeholder="Edit your post"></textarea>
-      <button @click="deletePost" class="delete-button">Delete Post</button>
-
-      <div class="post-actions">
-        <label class="upload-image">
-          Change Image
-          <input type="file" @change="onImageSelected">
-        </label>
-        <div class="toggle-container">
-          <label class="switch">
-            <input type="checkbox" v-model="isPublic">
-            <span class="slider"></span>
+          <label class="upload-image">
+            Change Image
+            <input type="file" @change="onImageSelected">
           </label>
-          <span style="color:white">{{ isPublic ? 'Public' : 'Private' }}</span>
+          <div class="toggle-container">
+            <label class="switch">
+              <input type="checkbox" v-model="isPublic">
+              <span class="slider"></span>
+            </label>
+            <span style="color:white">{{ isPublic ? 'Public' : 'Private' }}</span>
+          </div>
         </div>
+        <button @click="updatePost">Update Post</button>
       </div>
-      <button @click="updatePost">Update Post</button>
     </div>
   </div>
 </template>
@@ -108,12 +103,7 @@ export default {
       isPublic: this.isPublic,
       userList: [{ id: 1, name: 'User 1' }, { id: 2, name: 'User 2' }],
       postid: String,
-<<<<<<< HEAD
-=======
       imageUrl: String
-      
-
->>>>>>> ec78bf111f6306ae4c7336337c6be06dd6424138
     };
   },
 
@@ -136,17 +126,16 @@ export default {
       if (response.data.items[i].comment !== undefined) {
         continue
       }
-<<<<<<< HEAD
       else {
         if (response.data.items[i].post === this.postid) {
           console.log("lol")
           this.liked = true
         }
-=======
-      else{
-      if (response.data.items[i].post === this.postid) {
-        this.liked = true
->>>>>>> ec78bf111f6306ae4c7336337c6be06dd6424138
+        else {
+          if (response.data.items[i].post === this.postid) {
+            this.liked = true
+          }
+        }
       }
     }
   },
@@ -207,13 +196,7 @@ export default {
           this.likeCount -= 1;
         } else {
           // Logic to like the post
-<<<<<<< HEAD
-          console.log({ postId: this.postID })
-          await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postid + '/likes/',
-            { postId: this.postID });
-=======
           await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postid + '/likes/');
->>>>>>> ec78bf111f6306ae4c7336337c6be06dd6424138
           this.likeCount += 1;
         }
         this.liked = !this.liked;
@@ -282,7 +265,7 @@ export default {
     }
 
   }
-};
+}
 </script>
   
   <!-- Combining styles from both components -->
