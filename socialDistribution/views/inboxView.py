@@ -15,7 +15,7 @@ def handlePostItem(newItem):
     return {
         "id": newItem["id"],
         "title": newItem["title"],
-        "type": "newItem",
+        "type": "post",
         "source": newItem["source"],
         "origin": newItem["origin"],
         "description": newItem["description"],
@@ -44,7 +44,7 @@ def handleCommentItem(newItem):
         "comment": newItem["comment"],
         "contentType": newItem["contentType"],
         "published": newItem["published"],
-        "type": "NodeComment",
+        "type": "Comment",
         # "post": comment["post"],
     }
     return comment

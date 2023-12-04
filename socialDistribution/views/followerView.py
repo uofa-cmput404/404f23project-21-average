@@ -148,7 +148,7 @@ class FollowDetailViewSet(generics.GenericAPIView):
             # TODO: Implement other teams inbox
             if 'socialsync' in request.data["objectHost"]:
                 remoteAuthor = socialSync.get(f"authors/{foreign_author_pk}")
-                print(remoteAuthor.url, remoteAuthor.text)
+                
                 if remoteAuthor.status_code == 200:
                     remoteAuthor = remoteAuthor.json()
                 payload = {
@@ -158,6 +158,20 @@ class FollowDetailViewSet(generics.GenericAPIView):
                     "object": remoteAuthor,
                 }
                 response = socialSync.post(f"authors/{getUUID(remoteAuthor['id'])}/inbox", json=payload)
+                print(response.url)
+                print(response, response.text)
+            elif 'vibely' in request.data["objectHost"]:
+                remoteAuthor = vibely.get(f"authors/{foreign_author_pk}")
+                print(remoteAuthor.url, remoteAuthor.text)
+                if remoteAuthor.status_code == 200:
+                    remoteAuthor = remoteAuthor.json()
+                payload = {
+                    "type": "follow",
+                    "summary": f"{author.username} wants to follow {remoteAuthor['displayName']}",
+                    "actor": AuthorSerializer(author).data,
+                    "object": remoteAuthor,
+                }
+                response = vibely.post(f"authors/{getUUID(remoteAuthor['id'])}/inbox/", json=payload)
                 print(response.url)
                 print(response, response.text)
             

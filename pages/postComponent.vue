@@ -99,8 +99,6 @@ export default {
       isPublic: this.isPublic,
       userList: [{ id: 1, name: 'User 1' }, { id: 2, name: 'User 2' }],
       postid: String,
-      
-
     };
   },
 
@@ -172,6 +170,7 @@ export default {
     async toggleLike() {
       const authorStore = useAuthorStore();
       this.postid = await (authorStore.getIDFromURL(this.postID) )
+      console.log(this.postid)
       try {
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
         if (this.liked) {

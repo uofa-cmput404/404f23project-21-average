@@ -15,7 +15,9 @@ ctrlAltDelete.headers['Authorization'] = 'Basic MjFBdmVyYWdlOnBhc3N3b3Jk'
 
 
 def addToInbox(author, data):
-    if author.type == "NodeAuthor":
+    if author.type == "NodeAuthor": # sending posts to other people inbox
+        socialSync.post(f"authors/{author.id}/inbox/", json=data)
+    elif data["type"] == "like":  # sending likes to other peopel inbox
         socialSync.post(f"authors/{author.id}/inbox/", json=data)
     else:
         inbox = Inbox.objects.get(author=author)

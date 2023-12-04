@@ -94,13 +94,15 @@ class AddLikeToPostView(generics.ListCreateAPIView):
 
         # can only like a friends only post or public post
         # if (post.visibility == "FRIENDS" and isFriend(author, post.author)) or post.visibility == "PUBLIC":
+        print(request.data)
+        # x = json.loads(JSONRenderer().render(PostLikeSerializer(data=request.data).data).decode('utf-8'))
         serializer = PostLikeSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(author=author, post=post)
 
             # send like to post owners inbox
-            addToInbox(post.author, serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            addToInbox(post.author, json.loads(JSONRenderer().render(serializer.data).decode('utf-8')))
+            return Response({"message": "liked post"}, status=status.HTTP_201_CREATED)
 
         return Response({"message": "insufficient permissions to like psot"}, status=status.HTTP_403_FORBIDDEN)
 
