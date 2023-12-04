@@ -16,8 +16,13 @@ ctrlAltDelete.headers['Authorization'] = f"Basic {base64.b64encode('CtrlAltDefea
 
 def addToInbox(author, data):
     print(data)
-    if author.type == "NodeAuthor": # sending posts to other people inbox
-        socialSync.post(f"authors/{author.id}/inbox", json=data)
+    if author.type == "NodeAuthor":  # sending posts to other people inbox
+        if 'socialsync' in author.host:
+            socialSync.post(f"authors/{author.id}/inbox", json=data)
+        elif 'vibely' in author.host:
+            vibely.post(f"authors/{author.id}/inbox", json=data)
+        elif 'ctrl' in author.host:
+            ctrlAltDelete.post(f"authors/{author.id}/inbox", json=data)
     # elif data["type"] == "like":  # sending likes to other peopel inbox
     #     socialSync.post(f"authors/{author.id}/inbox/", json=data)
     else:
