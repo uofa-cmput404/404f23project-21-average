@@ -59,7 +59,6 @@ class PostList(generics.ListCreateAPIView):
             tempPost.origin = f"{settings.BASEHOST}/authors/{author.id}/posts/{tempPost.id}"
             tempPost.save()
 
-            # TODO: check Inbox for stuff from nodes
             if tempPost.visibility == "FRIENDS":
                 sendToFriendsInbox(author, PostSerializer(tempPost).data)
             elif tempPost.visibility == "PUBLIC":
@@ -113,7 +112,6 @@ class PostDetail(APIView):
         description='GET [local, remote] get the public post whose id is POST_ID'
     )
     def get(self, request, author_pk, post_pk, format=None):
-        # TODO: may not need to implement for other groups depeninf on ui
         try:
             author = Author.objects.get(pk=author_pk, type="author")
         except Author.DoesNotExist:
@@ -161,7 +159,6 @@ class ImageViewSet(APIView):
                 (unlisted implies pubic post)'
     )
     def get(self, request, post_pk, format=None):
-        # TODO: check other groups image only posts
         # if isFrontendRequest(request):
         #     vibelyRemotePost = vibely.get("authors/" + author_pk + "/posts/" + post_pk + "/")
         #     if vibelyRemotePost.status_code == 200:
