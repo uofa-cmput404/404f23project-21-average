@@ -194,14 +194,12 @@ export default {
       axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
       const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/github/');
       this.github = response.data
-      console.log(this.github)
     },
-    logout() {
-      // Here you should implement the logic to clear user data and redirect
-      // For demonstration, let's just log out and redirect to a login page
-      console.log("Logging out");
-      // Clear user data (local storage/session storage)
-      // Redirect to login page
+    async logout() {
+      const authorStore = useAuthorStore();
+      axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
+      const response = await axios.post(authorStore.BASE_URL + '/auth/logout/');
+      console.log('logout')
       window.location.href = '/loginPage'; // Replace with your login page URL
     }
 }};
@@ -283,6 +281,11 @@ export default {
   color: black;
   margin-bottom: 20px;
   text-align: center;
+}
+
+.posts-section{
+  width:80%;
+  margin:auto;
 }
 
 .post {
@@ -416,6 +419,7 @@ li {
 }
 
 .github_activity {
+  width:80%;
   display: flex;
   justify-content: space-between;
   align-items: start;
@@ -429,6 +433,10 @@ li {
 
 h4 {
   color: white
+}
+
+h3{
+  text-align: center;
 }
 </style>
  
