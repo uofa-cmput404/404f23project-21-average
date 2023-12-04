@@ -13,6 +13,10 @@
       <div class="post-content">
 
         <div>
+          <div v-if="postType === 'image/png;base64'">
+            <img :src="postContent" alt="Base64 Image">
+          </div>
+          <div v-else>
           <div v-if="postImage !== null">
             <img v-if="postImage" :src="postImage">
           </div>
@@ -22,11 +26,16 @@
           <div v-else>
             <p style="margin-top: 25px;">{{ postContent }}</p>
           </div>
+<<<<<<< HEAD
 
+=======
+        </div>
+          
+>>>>>>> ec78bf111f6306ae4c7336337c6be06dd6424138
         </div>
 
         <div class="post-actions">
-          <button @click="toggleLike">{{ liked ? 'Unlike' : 'Like' }}</button>
+          <button @click="toggleLike">{{ liked ? 'liked' : 'Like' }}</button>
           <button @click="toggleCommentBox">Comment</button>
           <button @click="sharePostWithUser">Share</button>
         </div>
@@ -84,7 +93,8 @@ export default {
     postImage: String,
     isPublic: String,
     contentType: String,
-    remotePost: Boolean
+    remotePost: Boolean,
+    postType: String
   },
 
   data() {
@@ -98,6 +108,12 @@ export default {
       isPublic: this.isPublic,
       userList: [{ id: 1, name: 'User 1' }, { id: 2, name: 'User 2' }],
       postid: String,
+<<<<<<< HEAD
+=======
+      imageUrl: String
+      
+
+>>>>>>> ec78bf111f6306ae4c7336337c6be06dd6424138
     };
   },
 
@@ -110,6 +126,7 @@ export default {
     },
   },
   async mounted() {
+    console.log(this.postType)
     const authorStore = useAuthorStore();
     this.postid = await authorStore.getIDFromURL(this.postID)
     this.postImage = authorStore.BASE_URL.split('/api')[0] + this.postImage;
@@ -119,11 +136,17 @@ export default {
       if (response.data.items[i].comment !== undefined) {
         continue
       }
+<<<<<<< HEAD
       else {
         if (response.data.items[i].post === this.postid) {
           console.log("lol")
           this.liked = true
         }
+=======
+      else{
+      if (response.data.items[i].post === this.postid) {
+        this.liked = true
+>>>>>>> ec78bf111f6306ae4c7336337c6be06dd6424138
       }
     }
   },
@@ -138,6 +161,10 @@ export default {
       if (response.status === 200) {
         this.post = response.data;
         this.postImageUrl = this.post.image;
+        // if (this.postType === 'image/png;base64'){
+        //   let img = new Image();
+        //   img.src = this.post.content;
+        //   this.postImageUrl = img;}
         // Fetch likes
         this.getLikes();
       } else {
@@ -167,6 +194,7 @@ export default {
         console.error('Error while fetching likes:', error);
       }
     },
+
     async toggleLike() {
       const authorStore = useAuthorStore();
       this.postid = await authorStore.getIDFromURL(this.postID)
@@ -179,9 +207,13 @@ export default {
           this.likeCount -= 1;
         } else {
           // Logic to like the post
+<<<<<<< HEAD
           console.log({ postId: this.postID })
           await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postid + '/likes/',
             { postId: this.postID });
+=======
+          await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/' + this.postid + '/likes/');
+>>>>>>> ec78bf111f6306ae4c7336337c6be06dd6424138
           this.likeCount += 1;
         }
         this.liked = !this.liked;
@@ -245,7 +277,6 @@ export default {
 
 
     async sharePostWithUser() {
-      console.log('Sharing post with users');
       const authorStore = useAuthorStore();
       const response = await axios.post(authorStore.BASE_URL + '/share/' + this.postid + '/');
     }

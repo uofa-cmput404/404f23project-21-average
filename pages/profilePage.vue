@@ -30,7 +30,7 @@
         <div class="posts-section">
           <h3>MY POSTS:</h3>
           <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :userId="post.author.username"
-            :postImage="post.image" :postID="post.id" />
+            :postImage="post.image" :postID="post.id" :postType="post.contentType"/>
         </div>
 
         <div class="github">
@@ -104,6 +104,7 @@ export default {
       // Fetch user's posts
       let postsResponse = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
       this.posts = postsResponse.data.items;
+      console.log(this.posts)
 
       // Fetch user's profile
       let profileResponse = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId);
@@ -166,8 +167,7 @@ export default {
       console.error('Error while updating profile photo:', error);
       // Handle the error appropriately
     }
-  }
-},
+  },
 
     async fetchFollowers() {
       // Fetch and populate followers
@@ -194,17 +194,15 @@ export default {
       axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
       const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/github/');
       this.github = response.data
-      console.log(this.github)
     },
-    logout() {
-      // Here you should implement the logic to clear user data and redirect
-      // For demonstration, let's just log out and redirect to a login page
-      console.log("Logging out");
-      // Clear user data (local storage/session storage)
-      // Redirect to login page
+    async logout() {
+      const authorStore = useAuthorStore();
+      axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
+      const response = await axios.post(authorStore.BASE_URL + '/auth/logout/');
+      console.log('logout')
       window.location.href = '/loginPage'; // Replace with your login page URL
     }
-};
+}};
 </script>
 
 
@@ -283,6 +281,11 @@ export default {
   color: black;
   margin-bottom: 20px;
   text-align: center;
+}
+
+.posts-section{
+  width:80%;
+  margin:auto;
 }
 
 .post {
@@ -416,6 +419,7 @@ li {
 }
 
 .github_activity {
+  width:80%;
   display: flex;
   justify-content: space-between;
   align-items: start;
@@ -429,6 +433,10 @@ li {
 
 h4 {
   color: white
+}
+
+h3{
+  text-align: center;
 }
 </style>
  
