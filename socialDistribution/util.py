@@ -11,7 +11,7 @@ socialSync = sessions.BaseUrlSession(base_url='https://socialsync-404-project-64
 socialSync.headers['Authorization'] = f"Basic {base64.b64encode('21average:bigPass'.encode('utf - 8')).decode('utf - 8')}"
 
 ctrlAltDelete = sessions.BaseUrlSession(base_url='https://cmput404-ctrl-alt-defeat-api-12dfa609f364.herokuapp.com/api/')
-ctrlAltDelete.headers['Authorization'] = 'Basic MjFBdmVyYWdlOnBhc3N3b3Jk'
+ctrlAltDelete.headers['Authorization'] = f"Basic {base64.b64encode('CtrlAltDefeat:frontend'.encode('utf - 8')).decode('utf - 8')}"
 
 
 def addToInbox(author, data):

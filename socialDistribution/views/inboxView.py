@@ -74,6 +74,8 @@ def handleFollowItem(newItem):
         "actor": AuthorSerializer(foreign_author).data,
         "object": AuthorSerializer(actingAuthor).data,
     }
+    x = Follow.objects.create(**follow)
+    x.save()
     return follow
 
 
