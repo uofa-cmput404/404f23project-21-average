@@ -13,7 +13,7 @@
         <h2>Posts</h2>
         <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :userId="post.author.username"
           :postImage="post.image" :postID="post.id" :isPublic="post.visibility" :contentType="post.contentType"
-          :remotePost="checkRemote()" />
+          :remotePost="checkRemote()" :postType = "post.contentType" />
       </div>
       <SidebarComponent />
     </div>
@@ -43,13 +43,25 @@
           <!-- Add this inside your create-post form -->
           <!-- Add this inside your create-post form -->
 
-          <div class="toggle-container">
-            <label class="switch">
-              <input type="checkbox" v-model="isPlainText">
-              <span class="slider"></span>
-            </label>
-            <span>{{ isPlainText ? 'Plain Text' : 'Markdown' }}</span>
-          </div>
+          <!-- ... existing code ... -->
+
+        <div class="toggle-container">
+          <label class="switch">
+            <input type="checkbox" v-model="isBase64">
+            <span class="slider"></span>
+          </label>
+          <span>Base64 Image</span>
+        </div>
+
+        <div class="toggle-container">
+          <label class="switch">
+            <input type="checkbox" v-model="isPlainText" :disabled="isBase64">
+            <span class="slider"></span>
+          </label>
+          <span>{{ isPlainText ? 'Plain Text' : 'Markdown' }}</span>
+        </div>
+
+<!-- ... existing code ... -->
 
         </div>
 
@@ -92,6 +104,7 @@ export default {
       isPublic: true,
       showPostPopup: false, // Variable to control the visibility of the create post popup
       isPlainText: true,
+      isBase64: false,
     };
   },
   async mounted() {
@@ -121,7 +134,12 @@ export default {
         formData.append('source', 'Your Source Here'); // Adjust accordingly
         formData.append('origin', 'Your Origin Here'); // Adjust accordingly
         formData.append('description', 'Your Description Here'); // Adjust accordingly
-        formData.append('contentType', this.isPlainText === false ? 'text/markdown' : 'text/plain');
+        if (this.isBase64) {
+          formData.append('contentType', 'image/png;base64');
+        } else{
+          formData.append('contentType', this.isPlainText === false ? 'text/markdown' : 'text/plain');
+        }
+        
         formData.append('content', this.postContent);
         formData.append('published', new Date().toISOString());
         formData.append('categories', 'Your Categories Here'); // Adjust accordingly
@@ -345,4 +363,19 @@ input:checked+.slider:before {
   padding: 0;
   /* Override Bootstrap's padding to maintain the square shape */
 }
+
+/* ... existing styles ... */
+
+.toggle-container input:disabled + .slider {
+  background-color: #ccc; /* Grey color for disabled slider */
+}
+
+.toggle-container input:disabled + .slider:before {
+  background-color: #999; /* Darker grey for the slider handle */
+}
+
+
+
+/* ... existing styles ... */
+
 </style>

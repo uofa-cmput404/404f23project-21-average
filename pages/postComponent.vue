@@ -13,6 +13,10 @@
       <div class="post-content">
         
         <div>
+          <div v-if="postType === 'image/png;base64'">
+            <img :src="postContent" alt="Base64 Image">
+          </div>
+          <div v-else>
           <div v-if="postImage !== null">
             <img v-if="postImage" :src="postImage">
           </div>
@@ -22,6 +26,7 @@
           <div v-else>
             <p style="margin-top: 25px;">{{ postContent }}</p>
           </div>
+        </div>
           
         </div>
 
@@ -84,7 +89,8 @@ export default {
     postImage: String,
     isPublic: String,
     contentType: String,
-    remotePost: Boolean
+    remotePost: Boolean,
+    postType: String
   },
 
   data() {
@@ -113,6 +119,7 @@ export default {
     },
   },
   async mounted() {
+    console.log(this.postType)
     const authorStore = useAuthorStore();
     this.postid = await (authorStore.getIDFromURL(this.postID) )
     this.postImage = authorStore.BASE_URL.split('/api')[0] + this.postImage;
@@ -140,11 +147,10 @@ export default {
       if (response.status === 200) {
         this.post = response.data;
         this.postImageUrl = this.post.image;
-        if (this.post.image_link){
-          console.log("lssss")
-          let img = new Image();
-          img.src = this.post.image_link;
-          this.postImageUrl = img;}
+        // if (this.postType === 'image/png;base64'){
+        //   let img = new Image();
+        //   img.src = this.post.content;
+        //   this.postImageUrl = img;}
         // Fetch likes
         this.getLikes();
       } else {

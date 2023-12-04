@@ -30,7 +30,7 @@
         <div class="posts-section">
           <h3>MY POSTS:</h3>
           <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :userId="post.author.username"
-            :postImage="post.image" :postID="post.id" />
+            :postImage="post.image" :postID="post.id" :postType="post.contentType"/>
         </div>
 
         <div class="github">
@@ -104,6 +104,7 @@ export default {
       // Fetch user's posts
       let postsResponse = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
       this.posts = postsResponse.data.items;
+      console.log(this.posts)
 
       // Fetch user's profile
       let profileResponse = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId);

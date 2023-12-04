@@ -7,13 +7,18 @@
         <i v-else class="bi bi-lock-fill"></i> <!-- Private Icon -->
       </div>
       <div class="user-info">
-        <img :src="profilePicture" alt="User Profile Picture" class="profile-pic" />
+        
         <span class="user-id">{{ userId }}</span>
       </div>
 
       <div class="post-content">
         
+        
         <div>
+          <div v-if="postType === 'image/png;base64'">
+            <img :src="postContent" alt="Base64 Image">
+          </div>
+          <div v-else>
           <div v-if="postImage !== null">
             <img v-if="postImage" :src="postImage">
           </div>
@@ -23,7 +28,7 @@
           <div v-else>
             <p style="margin-top: 25px;">{{ postContent }}</p>
           </div>
-          
+        </div>
         </div>
 
         <div class="post-actions">
@@ -86,7 +91,8 @@ export default {
     postImage: String,
     isPublic: String,
     contentType: String,
-    remotePost: Boolean
+    remotePost: Boolean,
+    postType: String
   },
 
   data() {
