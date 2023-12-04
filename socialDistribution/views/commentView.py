@@ -6,8 +6,8 @@ from socialDistribution.serializers import CommentSerializer
 from rest_framework import status
 from rest_framework import generics
 from drf_spectacular.utils import extend_schema
-from socialDistribution.util import addToInbox, vibely, serializeVibelyAuthor, isFriend, socialSync, ctrlAltDelete, serializeCtrlAltDeleteAuthor
-
+from ..util import addToInbox, vibely, serializeVibelyAuthor, isFriend, socialSync, ctrlAltDelete, serializeCtrlAltDeleteAuthor, AuthorSerializer
+from datetime import datetime
 
 class CommentViewSet(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
@@ -59,7 +59,7 @@ class CommentViewSet(generics.ListCreateAPIView):
                         "comment": comment["comment"],
                         "contentType": comment["contentType"],
                         "published": comment["published"],
-                        "type": "NodeComment",
+                        "type": "comment",
                         "post": post_pk,
                     })
             # TODO: ctrlAltDelete not implemented yet
@@ -86,14 +86,48 @@ class CommentViewSet(generics.ListCreateAPIView):
     )
     def post(self, request, author_pk, post_pk, format=None):
         author = Author.objects.get(pk=author_pk)
-        post = Post.objects.get(pk=post_pk)
-        serializer = CommentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(author=author, post=post)
+        print(request.data)
+        try:
+            post = Post.objects.get(pk=post_pk)
+            serializer = CommentSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save(author=author, post=post)
 
-            # add the comment to post owners inbox
-            addToInbox(post.author, serializer.data)
-            
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                # add the comment to post owners inbox
+                addToInbox(post.author, serializer.data)
+                
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            if 'socialsync' in request.data["post"]:
+                originList = request.data["post"].split("/")
+                print(originList)
+                response = socialSync.post(f"authors/{originList[5]}/inbox", json={
+                    "type": "comment",
+                    "author": AuthorSerializer(author).data,
+                    "id": f"{request.data['post']}/comments/{author.id}",  # double check??
+                    "comment": request.data['comment'],
+                    "contentType": request.data['contentType'],
+                    'published': datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                })
+                if response.status_code == 200:
+                    return Response({"message": "comment on post"}, status=status.HTTP_201_CREATED)
+                else:
+                    print(response.text)
+                    return Response({"message": "comment not added", "data": response}, status=status.HTTP_403_FORBIDDEN)
+
+            elif 'vibely' in request.data["postId"]:
+                originList = request.data["postId"].split("/")
+                response = vibely.post(f"authors/{originList[5]}/inbox/", json={
+                    "type": "comment",
+                    "author": AuthorSerializer(author).data,
+                    "id": f"{request.data['post']}/comments/{author.id}",  # double check??
+                    "comment": request.data['comment'],
+                    "contentType": request.data['contentType'],
+                    'published': datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                })
+                if response.status_code == 200:
+                    return Response({"message": "comment on post"}, status=status.HTTP_201_CREATED)
+                else:
+                    return Response({"message": "comment not added", "data": response}, status=status.HTTP_403_FORBIDDEN)
     

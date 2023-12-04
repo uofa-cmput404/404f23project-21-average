@@ -174,6 +174,21 @@ class FollowDetailViewSet(generics.GenericAPIView):
                 response = vibely.post(f"authors/{getUUID(remoteAuthor['id'])}/inbox/", json=payload)
                 print(response.url)
                 print(response, response.text)
+            elif 'ctrl' in request.data["objectHost"]:
+                remoteAuthor = ctrlAltDelete.get(f"authors/{foreign_author_pk}")
+                print(remoteAuthor.url, remoteAuthor.text)
+                if remoteAuthor.status_code == 200:
+                    remoteAuthor = remoteAuthor.json()
+                payload = {
+                    "type": "follow",
+                    "summary": f"{author.username} wants to follow {remoteAuthor['displayName']}",
+                    "actor": AuthorSerializer(author).data,
+                    "object": remoteAuthor,
+                }
+                print(payload)
+                response = ctrlAltDelete.post(f"authors/{getUUID(remoteAuthor['id'])}/inbox", json=payload)
+                print(response.url)
+                print(response, response.text)
             
             return Response({'message': 'Follow Request Sent Successfully'}, status=status.HTTP_201_CREATED)
         

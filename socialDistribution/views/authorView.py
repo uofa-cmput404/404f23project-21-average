@@ -31,7 +31,7 @@ class AuthorListViewSet(generics.ListAPIView):
         all_authors = json.loads(JSONRenderer().render(AuthorSerializer(authors, many=True).data).decode('utf-8'))
         if isFrontendRequest(request):
             vibelyRemoteAuthors = vibely.get("authors/")
-            print(vibelyRemoteAuthors.text)
+            # print(vibelyRemoteAuthors.text)
             if vibelyRemoteAuthors.status_code == 200:
                 for author in vibelyRemoteAuthors.json()["items"]:
                     all_authors.append(serializeVibelyAuthor(author))
