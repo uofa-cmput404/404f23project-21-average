@@ -9,7 +9,6 @@ import json
 import uuid
 from ..util import isFrontendRequest, serializeVibelyPost, serializeVibelyAuthor, getUUID
 
-
 def handlePostItem(newItem):
     # TODO: maybe dont need to save post on db???
     return {
@@ -59,12 +58,15 @@ def handleFollowItem(newItem):
     actorJson["id"] = getUUID(newItem["actor"]["id"])
     try:
         actingAuthor = Author.objects.get(pk=actorJson["id"])
+        print("ACTING AUTHOR FOUND")
     except:
         actingAuthor = Author.objects.create(**actorJson)
+        print("ACTING AUTHOR CREATED")
     
     try:
         foreignAthorID = getUUID(newItem["object"]["id"])
-        foreign_author = Author.objects.get(pk=foreignAthorID)
+        foreign_author = Author.objects.filter(pk=foreignAthorID)[0]
+        print(foreign_author)
     except:
         raise Exception("Object Author not found")
 
@@ -75,7 +77,7 @@ def handleFollowItem(newItem):
         "actor": AuthorSerializer(foreign_author).data,
         "object": AuthorSerializer(actingAuthor).data,
     }
-    x = Follow.objects.create(**follow)
+    x = Follow.objects.create(following=foreign_author, follower=actingAuthor, summary=follow["summary"])
     x.save()
     return follow
 
