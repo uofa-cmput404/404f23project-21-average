@@ -30,7 +30,7 @@
         <div class="posts-section">
           <h3>MY POSTS:</h3>
           <PostComponent v-for="post in posts" :key="post.id" :postContent="post.content" :userId="post.author.username"
-            :postImage="post.image" :postID="post.id" :postType="post.contentType"/>
+            :postImage="post.image" :postID="post.id" :postType="post.contentType" />
         </div>
 
         <div class="github">
@@ -146,30 +146,32 @@ export default {
       this.$refs.profilePhotoInput.click();
     },
     async changeProfilePhoto(event) {
-      try{
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.profilePhoto = e.target.result;
-        };
-        reader.readAsDataURL(file);
-        const authorStore = useAuthorStore();
-        let formData = new FormData();
-        formData.append('profileImage', file)
-        formData.append('username', this.username)
-        axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-        const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/',formData,
-        {headers: {
-            'Content-Type': 'multipart/form-data'
-          }});
+      try {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.profilePhoto = e.target.result;
+          };
+          reader.readAsDataURL(file);
+          const authorStore = useAuthorStore();
+          let formData = new FormData();
+          formData.append('profileImage', file)
+          formData.append('username', this.username)
+          axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
+          const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/', formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            });
           console.log(response)
+        }
+      } catch (error) {
+        console.error('Error while updating profile photo:', error);
+        // Handle the error appropriately
       }
-    } catch (error) {
-      console.error('Error while updating profile photo:', error);
-      // Handle the error appropriately
-    }
-  },
+    },
 
     async fetchFollowers() {
       // Fetch and populate followers
@@ -204,7 +206,8 @@ export default {
       console.log('logout')
       window.location.href = '/loginPage'; // Replace with your login page URL
     }
-}};
+  }
+};
 </script>
 
 
@@ -285,9 +288,9 @@ export default {
   text-align: center;
 }
 
-.posts-section{
-  width:80%;
-  margin:auto;
+.posts-section {
+  width: 80%;
+  margin: auto;
 }
 
 .post {
@@ -421,7 +424,7 @@ li {
 }
 
 .github_activity {
-  width:80%;
+  width: 80%;
   display: flex;
   justify-content: space-between;
   align-items: start;
@@ -437,7 +440,7 @@ h4 {
   color: white
 }
 
-h3{
+h3 {
   text-align: center;
 }
 </style>
