@@ -1,4 +1,4 @@
-from socialDistribution.models import Inbox, Author, Post, Comment, Follow, PostLike
+from socialDistribution.models import Inbox, Post, Comment, Follow, PostLike
 from socialDistribution.serializers import *
 from rest_framework.response import Response
 from rest_framework import permissions
@@ -9,13 +9,12 @@ import json
 import uuid
 from ..util import isFrontendRequest, serializeVibelyPost, serializeVibelyAuthor, getUUID
 
-
 def handlePostItem(newItem):
     # TODO: maybe dont need to save post on db???
     return {
         "id": newItem["id"],
         "title": newItem["title"],
-        "type": "newItem",
+        "type": "post",
         "source": newItem["source"],
         "origin": newItem["origin"],
         "description": newItem["description"],
@@ -44,7 +43,7 @@ def handleCommentItem(newItem):
         "comment": newItem["comment"],
         "contentType": newItem["contentType"],
         "published": newItem["published"],
-        "type": "NodeComment",
+        "type": "Comment",
         # "post": comment["post"],
     }
     return comment
@@ -63,7 +62,8 @@ def handleFollowItem(newItem):
         actingAuthor = Author.objects.create(**actorJson)
     
     try:
-        foreign_author = Author.objects.get(pk=getUUID(newItem["object"]["id"]))
+        foreignAthorID = getUUID(newItem["object"]["id"])
+        foreign_author = Author.objects.filter(pk=foreignAthorID)[0]
     except:
         raise Exception("Object Author not found")
 
@@ -74,6 +74,8 @@ def handleFollowItem(newItem):
         "actor": AuthorSerializer(foreign_author).data,
         "object": AuthorSerializer(actingAuthor).data,
     }
+    x = Follow.objects.create(following=foreign_author, follower=actingAuthor, summary=follow["summary"])
+    x.save()
     return follow
 
 

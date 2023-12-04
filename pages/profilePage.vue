@@ -102,7 +102,7 @@ export default {
     axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
     try {
       // Fetch user's posts
-      let postsResponse = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
+      let postsResponse = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/?size=100');
       this.posts = postsResponse.data.items;
       console.log(this.posts)
 
@@ -127,7 +127,7 @@ export default {
       axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
       const author = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/');
       console.log(author.data)
-      const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
+      const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/?size=100');
       console.log(response)
       if (response.status === 200) {
         this.posts = response.data.items; // Update the posts data property with the fetched posts

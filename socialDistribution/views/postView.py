@@ -10,7 +10,7 @@ from drf_spectacular.utils import extend_schema
 from socialDistribution.models import Author, Post
 from socialDistribution.pagination import Pagination, JsonObjectPaginator
 from socialDistribution.serializers import PostSerializer, FollowSerializer, AuthorSerializer
-from socialDistribution.util import sendToFriendsInbox, isFriend
+from socialDistribution.util import sendToFriendsInbox, isFriend, getUUID
 import base64
 from io import BytesIO
 from PIL import Image
@@ -23,8 +23,7 @@ from rest_framework.renderers import JSONRenderer
 class PostList(generics.ListCreateAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [
-        permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     pagination_class = JsonObjectPaginator
 
     @extend_schema(
@@ -35,7 +34,7 @@ class PostList(generics.ListCreateAPIView):
         author = Author.objects.get(pk=author_pk)
 
         # get posts from author, their friends, and public posts
-        authorPosts = Post.objects.filter(author=author, type="post")
+        authorPosts = Post.objects.filter(author=author).all()
 
         all_posts = PostSerializer(authorPosts, many=True).data
 
@@ -47,12 +46,13 @@ class PostList(generics.ListCreateAPIView):
         description='Create a new post but generate a new id'
     )
     def post(self, request, author_pk, format=None):
+        print(request.data)
         author = Author.objects.get(pk=author_pk)
         serializer = PostSerializer(data=request.data)
         
         if serializer.is_valid():
             serializer.save(author=author, origin=f"{settings.BASEHOST}/authors/{author.id}/posts/")
-            tempPost = Post.objects.get(pk=serializer.data["id"].split("/")[-1])
+            tempPost = Post.objects.get(pk=getUUID(serializer.data["id"]))
             if tempPost.imageOnlyPost:
                 tempPost.unlisted = True
                 tempPost.contentType = "image/png;base64"

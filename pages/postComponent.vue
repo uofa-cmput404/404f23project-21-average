@@ -11,56 +11,55 @@
       </div>
 
       <div class="post-content">
-        
+
         <div>
           <div v-if="postType === 'image/png;base64'">
             <img :src="postContent" alt="Base64 Image">
           </div>
           <div v-else>
-          <div v-if="postImage !== null">
-            <img v-if="postImage" :src="postImage">
+            <div v-if="postImage !== null">
+              <img v-if="postImage" :src="postImage">
+            </div>
+            <div v-if="contentType === 'text/markdown'">
+              <div v-html="renderedContent"></div>
+            </div>
+            <div v-else>
+              <p style="margin-top: 25px;">{{ postContent }}</p>
+            </div>
           </div>
-          <div v-if = "contentType === 'text/markdown'">
-            <div v-html="renderedContent"></div>
+
+          <div class="post-actions">
+            <button @click="toggleLike">{{ liked ? 'liked' : 'Like' }}</button>
+            <button @click="toggleCommentBox">Comment</button>
+            <button @click="sharePostWithUser">Share</button>
           </div>
-          <div v-else>
-            <p style="margin-top: 25px;">{{ postContent }}</p>
+          <div v-if="showCommentBox">
+            <comment-component v-if="showCommentBox" :postId="postID"></comment-component>
           </div>
         </div>
-          
-        </div>
+      </div>
+
+
+      <!-- Edit Post Component -->
+      <div v-if="showEditPost" class="edit-post">
+        <textarea v-model="editedPostContent" placeholder="Edit your post"></textarea>
+        <button @click="deletePost" class="delete-button">Delete Post</button>
 
         <div class="post-actions">
-          <button @click="toggleLike">{{ liked ? 'liked' : 'Like' }}</button>
-          <button @click="toggleCommentBox">Comment</button>
-          <button @click="sharePostWithUser">Share</button> 
-        </div>
-        <div v-if="showCommentBox">
-          <comment-component v-if="showCommentBox" :postId="postID"></comment-component>
-        </div>
-      </div>
-    </div>
-
-    
-    <!-- Edit Post Component -->
-    <div v-if="showEditPost" class="edit-post">
-      <textarea v-model="editedPostContent" placeholder="Edit your post"></textarea>
-      <button @click="deletePost" class="delete-button">Delete Post</button>
-
-      <div class="post-actions">
-        <label class="upload-image">
-          Change Image
-          <input type="file" @change="onImageSelected">
-        </label>
-        <div class="toggle-container">
-          <label class="switch">
-            <input type="checkbox" v-model="isPublic">
-            <span class="slider"></span>
+          <label class="upload-image">
+            Change Image
+            <input type="file" @change="onImageSelected">
           </label>
-          <span style="color:white">{{ isPublic ? 'Public' : 'Private' }}</span>
+          <div class="toggle-container">
+            <label class="switch">
+              <input type="checkbox" v-model="isPublic">
+              <span class="slider"></span>
+            </label>
+            <span style="color:white">{{ isPublic ? 'Public' : 'Private' }}</span>
+          </div>
         </div>
+        <button @click="updatePost">Update Post</button>
       </div>
-      <button @click="updatePost">Update Post</button>
     </div>
   </div>
 </template>
@@ -105,8 +104,6 @@ export default {
       userList: [{ id: 1, name: 'User 1' }, { id: 2, name: 'User 2' }],
       postid: String,
       imageUrl: String
-      
-
     };
   },
 
@@ -121,25 +118,31 @@ export default {
   async mounted() {
     console.log(this.postType)
     const authorStore = useAuthorStore();
-    this.postid = await (authorStore.getIDFromURL(this.postID) )
+    this.postid = await authorStore.getIDFromURL(this.postID)
     this.postImage = authorStore.BASE_URL.split('/api')[0] + this.postImage;
     const response = await axios.get(authorStore.BASE_URL + '/posts/' + authorStore.getAuthorId + '/liked/')
 
     for (let i = 0; i < response.data.items.length; i++) {
-      if (response.data.items[i].comment !== undefined){
+      if (response.data.items[i].comment !== undefined) {
         continue
       }
-      else{
-      if (response.data.items[i].post === this.postid) {
-        this.liked = true
+      else {
+        if (response.data.items[i].post === this.postid) {
+          console.log("lol")
+          this.liked = true
+        }
+        else {
+          if (response.data.items[i].post === this.postid) {
+            this.liked = true
+          }
+        }
       }
     }
-  }
   },
 
   async created() {
     const authorStore = useAuthorStore();
-    this.postid = await (authorStore.getIDFromURL(this.postID) )
+    this.postid = await authorStore.getIDFromURL(this.postID)
     try {
       axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
       const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/posts/');
@@ -164,7 +167,7 @@ export default {
   methods: {
     async getLikes() {
       const authorStore = useAuthorStore();
-      this.postid = await (authorStore.getIDFromURL(this.postID) )
+      this.postid = await authorStore.getIDFromURL(this.postID)
       // Implement the logic to get likes
       // Example:
       try {
@@ -183,7 +186,8 @@ export default {
 
     async toggleLike() {
       const authorStore = useAuthorStore();
-      this.postid = await (authorStore.getIDFromURL(this.postID) )
+      this.postid = await authorStore.getIDFromURL(this.postID)
+      console.log(this.postid)
       try {
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
         if (this.liked) {
@@ -237,7 +241,7 @@ export default {
     },
     async deletePost() {
       const authorStore = useAuthorStore();
-      this.postid = await (authorStore.getIDFromURL(this.postID) )
+      this.postid = await authorStore.getIDFromURL(this.postID)
       const authorId = authorStore.getAuthorId; // Replace with actual way to get author_id
       const postId = this.postID; // Assuming this is a prop or data property
 
@@ -261,12 +265,11 @@ export default {
     }
 
   }
-};
+}
 </script>
   
   <!-- Combining styles from both components -->
 <style scoped>
-
 /* General Styles */
 * {
   box-sizing: border-box;
@@ -283,18 +286,25 @@ body {
   margin: 20px auto;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  max-width: 100%; /* Ensures it doesn't overflow the parent container */
-  word-wrap: break-word; /* Prevents long text strings from overflowing */
+  max-width: 100%;
+  /* Ensures it doesn't overflow the parent container */
+  word-wrap: break-word;
+  /* Prevents long text strings from overflowing */
 }
 
 .post img {
-  max-width: 100%; /* Ensures images are responsive */
-  height: auto; /* Maintains aspect ratio */
+  max-width: 100%;
+  /* Ensures images are responsive */
+  height: auto;
+  /* Maintains aspect ratio */
   border-radius: 5px;
 }
 
-.post-content, .user-info, .post-actions {
-  width: 100%; /* Ensures these elements don't overflow */
+.post-content,
+.user-info,
+.post-actions {
+  width: 100%;
+  /* Ensures these elements don't overflow */
 }
 
 .post-status-icon {
@@ -302,7 +312,8 @@ body {
   top: 17px;
   right: 17px;
   font-size: 1.5em;
-  color: #00C58E; /* Green color for icons */
+  color: #00C58E;
+  /* Green color for icons */
 }
 
 .user-info {
@@ -317,7 +328,8 @@ body {
   border-radius: 50%;
   object-fit: cover;
   margin-right: 10px;
-  border: 2px solid #00C58E; /* Green border for profile pic */
+  border: 2px solid #00C58E;
+  /* Green border for profile pic */
 }
 
 .user-id {
@@ -335,12 +347,15 @@ body {
   justify-content: space-around;
   margin-top: 20px;
 }
+
 .post-actions button {
-  margin-right: 10px; /* Adds space to the right of each button */
+  margin-right: 10px;
+  /* Adds space to the right of each button */
 }
 
 .post-actions button:last-child {
-  margin-right: 0px; /* Removes the margin from the last button */
+  margin-right: 0px;
+  /* Removes the margin from the last button */
 }
 
 button {
@@ -355,18 +370,22 @@ button {
 
 button:hover {
   background-color: #007744;
-  transform: scale(1.05); /* Slightly enlarge buttons on hover */
+  transform: scale(1.05);
+  /* Slightly enlarge buttons on hover */
 }
 
 /* Edit Post Component Styles */
 .edit-post {
-  background-color: #2c2c2c; /* Darker background for edit area */
+  background-color: #2c2c2c;
+  /* Darker background for edit area */
   padding: 25px;
   border-radius: 8px;
   margin-top: 20px;
   width: 90%;
-  max-width: 500px; /* Limit maximum width */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* More pronounced shadow */
+  max-width: 500px;
+  /* Limit maximum width */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  /* More pronounced shadow */
 }
 
 textarea {
@@ -378,7 +397,8 @@ textarea {
   background-color: #1f1f1f;
   color: white;
   margin-bottom: 15px;
-  resize: vertical; /* Allow vertical resizing */
+  resize: vertical;
+  /* Allow vertical resizing */
 }
 
 .upload-image {
@@ -414,30 +434,39 @@ textarea {
   width: 20px;
 }
 
-input:checked + .slider {
-  background-color: #4CAF50; /* Green background for active toggle */
+input:checked+.slider {
+  background-color: #4CAF50;
+  /* Green background for active toggle */
 }
 
 /* Additional Hover Effects */
-a:hover, button:hover {
-  opacity: 0.9; /* Slight opacity change on hover */
+a:hover,
+button:hover {
+  opacity: 0.9;
+  /* Slight opacity change on hover */
 }
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
-  .post, .edit-post {
-    width: 95%; /* Full width on smaller screens */
+
+  .post,
+  .edit-post {
+    width: 95%;
+    /* Full width on smaller screens */
     margin: 10px auto;
   }
 }
+
 /* Share Popup Styles */
 .share-popup {
   background-color: #2c2c2c;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   padding: 15px;
-  width: 100%; /* Take full width of the post */
-  margin-top: 10px; /* Space between post content and share popup */
+  width: 100%;
+  /* Take full width of the post */
+  margin-top: 10px;
+  /* Space between post content and share popup */
 }
 
 /* Rest of the share-popup styles remain the same */
@@ -449,11 +478,13 @@ a:hover, button:hover {
 }
 
 .share-popup li {
-  margin-bottom: 10px; /* Space between list items */
+  margin-bottom: 10px;
+  /* Space between list items */
 }
 
 .share-popup li:last-child {
-  margin-bottom: 0; /* Remove margin for the last item */
+  margin-bottom: 0;
+  /* Remove margin for the last item */
 }
 
 .share-popup button {
@@ -461,7 +492,8 @@ a:hover, button:hover {
   color: black;
   width: 100%;
   padding: 8px 10px;
-  text-align: left; /* Align text to the left */
+  text-align: left;
+  /* Align text to the left */
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -475,11 +507,41 @@ a:hover, button:hover {
 /* Adjustments for smaller screens */
 @media (max-width: 768px) {
   .share-popup {
-    width: 100%; /* Full width on smaller screens */
-    right: 0; /* Align with the right edge */
+    width: 100%;
+    /* Full width on smaller screens */
+    right: 0;
+    /* Align with the right edge */
   }
 }
 
+/* Remove margin for the last item */
+
+.share-popup button {
+  background-color: #00C58E;
+  color: black;
+  width: 100%;
+  padding: 8px 10px;
+  text-align: left;
+  /* Align text to the left */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.share-popup button:hover {
+  background-color: #007744;
+}
+
+/* Adjustments for smaller screens */
+@media (max-width: 768px) {
+  .share-popup {
+    width: 100%;
+    /* Full width on smaller screens */
+    right: 0;
+    /* Align with the right edge */
+  }
+}
 </style>
 
 
