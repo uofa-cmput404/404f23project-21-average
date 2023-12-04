@@ -30,7 +30,6 @@ class FollowViewSet(generics.ListAPIView):
             for follower in followers:
                 authors.append(AuthorSerializer(Author.objects.get(pk=follower.follower.id)).data)
         except:
-            # TODO: i dont think we need to get followers of remote authors on UI???
             vibelyRemoteAuthor = vibely.get(f"authors/{author_pk}")
             if vibelyRemoteAuthor.status_code == 200:
                 vibelyAuthorFollowers = vibely.get(f"authors/{author_pk}/followers/")
@@ -107,7 +106,6 @@ class FollowDetailViewSet(generics.GenericAPIView):
     )
     def get(self, request, author_pk, foreign_author_pk, format=None):
         # return true if foreign_author is a follower of author
-        # TODO: check if this makes sense for cross server??
         author = Author.objects.get(pk=author_pk)
         try:
             foreign_author = Author.objects.get(pk=foreign_author_pk)
@@ -144,8 +142,7 @@ class FollowDetailViewSet(generics.GenericAPIView):
         try:
             foreign_author = Author.objects.get(pk=foreign_author_pk, type="author")
         except:
-            # # send follow request to remote inbox
-            # TODO: Implement other teams inbox
+            # send follow request to remote inbox
             if 'socialsync' in request.data["objectHost"]:
                 remoteAuthor = socialSync.get(f"authors/{foreign_author_pk}")
                 
