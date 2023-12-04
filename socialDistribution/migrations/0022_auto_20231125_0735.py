@@ -26,7 +26,7 @@ def generate_data(apps, schema_editor):
 
     # Use the default users for data generation
     for author in default_users:
-        for _ in range(5):
+        for _ in range(3):
             post = Post.objects.create(
                 title=fake.sentence(),
                 content=fake.paragraph(),
