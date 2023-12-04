@@ -16,8 +16,13 @@ ctrlAltDelete.headers['Authorization'] = f"Basic {base64.b64encode('CtrlAltDefea
 
 def addToInbox(author, data):
     print(data)
-    if author.type == "NodeAuthor": # sending posts to other people inbox
-        socialSync.post(f"authors/{author.id}/inbox", json=data)
+    if author.type == "NodeAuthor":  # sending posts to other people inbox
+        if 'socialsync' in author.host:
+            socialSync.post(f"authors/{author.id}/inbox", json=data)
+        elif 'vibely' in author.host:
+            vibely.post(f"authors/{author.id}/inbox", json=data)
+        elif 'ctrl' in author.host:
+            ctrlAltDelete.post(f"authors/{author.id}/inbox", json=data)
     # elif data["type"] == "like":  # sending likes to other peopel inbox
     #     socialSync.post(f"authors/{author.id}/inbox/", json=data)
     else:
@@ -38,17 +43,10 @@ def sendToEveryonesInbox(data):
 def sendToFriendsInbox(author, data):
     # send to all friends that have status accepted
     followers = author.followers.filter(status="Accepted").all()
-    # following = author.following.filter(status="Accepted").all()
-    # print(following)
     result = []
     for follower in followers:
         result.append(Author.objects.get(id=follower.follower.id))
-    # for friend in following:
-    #     result.append(Author.objects.get(id=friend.following.id))
-    
-    # remover duplicate authors
-    # TODO: check if this works
-    # result = list(dict.fromkeys(result))
+
     # Convert the follow object to author object
     print(result)
     for friend in result:
