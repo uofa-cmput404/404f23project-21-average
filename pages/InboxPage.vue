@@ -77,15 +77,9 @@ export default {
 
       for (let notification of notifications) {
         if (notification.type.toLowerCase() === 'follow') {
-<<<<<<< HEAD
-          let response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + await authorStore.getIDFromURL(notification.object.id) + '/');
-          notification.isFollower = response.data
-          console.log(response.data)
-=======
           let response = await axios.get(authorStore.BASE_URL + '/authors/' + await authorStore.getIDFromURL(notification.object.id) + '/followers/' + authorStore.getAuthorId + '/');
           notification.isFollower = response.data === true;
           console.log(response.data, notification, response.url)
->>>>>>> e70366db2ee0ee2bc7510e44e50c49463ce93d11
         }
       }
     },
