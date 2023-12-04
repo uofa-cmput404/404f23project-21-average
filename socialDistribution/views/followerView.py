@@ -215,7 +215,7 @@ class FollowDetailViewSet(generics.GenericAPIView):
         author = Author.objects.get(pk=author_pk)
         foreign_author = Author.objects.get(pk=foreign_author_pk)
         
-        follow = Follow.objects.get(following=author, follower=foreign_author, status="Pending")
+        follow = Follow.objects.filter(following=author, follower=foreign_author, status="Pending")[0]
         if follow:
             follow.status = "Accepted"
             follow.save()
