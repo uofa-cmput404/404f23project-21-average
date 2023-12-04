@@ -1,4 +1,4 @@
-from socialDistribution.models import Inbox, Author, Post, Comment, Follow, PostLike
+from socialDistribution.models import Inbox, Post, Comment, Follow, PostLike
 from socialDistribution.serializers import *
 from rest_framework.response import Response
 from rest_framework import permissions
@@ -63,7 +63,8 @@ def handleFollowItem(newItem):
         actingAuthor = Author.objects.create(**actorJson)
     
     try:
-        foreign_author = Author.objects.get(pk=getUUID(newItem["object"]["id"]))
+        foreignAthorID = getUUID(newItem["object"]["id"])
+        foreign_author = Author.objects.get(pk=foreignAthorID)
     except:
         raise Exception("Object Author not found")
 
