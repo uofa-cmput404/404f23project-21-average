@@ -10,7 +10,6 @@ import uuid
 from ..util import isFrontendRequest, serializeVibelyPost, serializeVibelyAuthor, getUUID
 
 def handlePostItem(newItem):
-    # TODO: maybe dont need to save post on db???
     return {
         "id": newItem["id"],
         "title": newItem["title"],
@@ -31,8 +30,6 @@ def handlePostItem(newItem):
         # "count": post["count"],
         "comments": newItem["comments"]
     }
-    # post = serializeVibelyPost(newItem)
-    # return post
 
 
 def handleCommentItem(newItem):
@@ -44,7 +41,6 @@ def handleCommentItem(newItem):
         "contentType": newItem["contentType"],
         "published": newItem["published"],
         "type": "Comment",
-        # "post": comment["post"],
     }
     return comment
 
@@ -82,15 +78,12 @@ def handleFollowItem(newItem):
 def handleLikeItem(newItem):
     authorJson = serializeVibelyAuthor(newItem["author"])
     likeJson = {
-        # "id": newItem["id"].split("/")[-1],
         "author": authorJson,
         "summary": newItem["summary"],
         "context": newItem["context"],
         "object": newItem["object"],
         "type": "Like",
     }
-
-    # return PostLikeSerializer(newLike[0]).data
     return likeJson
 
 
@@ -123,13 +116,6 @@ class InboxItemView(generics.GenericAPIView):
             You must send a json.dumps(object) string in the `items` field. Just the object not a list or anything",
     )
     def post(self, request, author_pk, *args, **kwargs):
-        """
-        json_string = json.dumps(data)
-        escaped_json_string = json_string.replace('"', '\\"')
-        final_format_string = f'"{escaped_json_string}"'
-        """
-        # TODO: TEST IF IT WORKS
-
         try:
             author = Author.objects.get(pk=author_pk)
         except:
@@ -164,7 +150,6 @@ class InboxItemView(generics.GenericAPIView):
         description="Delete all inbox items for the current user.(author_id is the recipient)",
     )
     def delete(self, request, author_pk, *args, **kwargs):
-        # TODO: TEST IF IT WORKSS
         author = Author.objects.get(pk=author_pk)
         inbox = Inbox.objects.get(author=author)
         inbox.items = json.dumps([])
