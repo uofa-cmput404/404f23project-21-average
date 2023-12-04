@@ -84,7 +84,8 @@ export default {
         try {
           const payload = {
             comment: this.newComment,
-            contentType: 'string',
+            contentType: 'text/plain',
+            post: this.postId
           };
           axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
           await axios.post(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/posts/${this.postid}/comments/`, payload);

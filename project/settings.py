@@ -245,6 +245,6 @@ STORAGES = {
 # }
 
 CONNECTED = ["vibely", "CtrlAltDefeat", "socialSync"]
-DEFAULT_AUTHORS = ["string", "user1", "user2", "user3"]
+DEFAULT_AUTHORS = ["string", "itachi", "metroboomin", "21savage",]
 DEFAULT_AUTHORS_PASSWORD = "string"
 BASEHOST = os.environ.get("BASE_URL")

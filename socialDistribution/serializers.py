@@ -109,6 +109,12 @@ class PostLikeSerializer(ModelSerializer):
             return obj.object
 
 
+class RemoteLikeSerializer(ModelSerializer):
+    postId = serializers.CharField(write_only=True, required=False)
+    class Meta:
+        model = PostLike
+        fields = ['postId']
+
 class CommentLikeSerializer(ModelSerializer):
     author = AuthorSerializer(read_only=True)
     object = serializers.SerializerMethodField(method_name='get_object')

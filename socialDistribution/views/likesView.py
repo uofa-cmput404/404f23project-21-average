@@ -5,16 +5,54 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import permissions
 from socialDistribution.models import Author, Comment, CommentLike, Post, PostLike
 from ..util import vibely, serializeVibelyPost, serializeVibelyAuthor, socialSync, ctrlAltDelete, isFrontendRequest
-from socialDistribution.serializers import CommentLikeSerializer, PostLikeSerializer
+from socialDistribution.serializers import CommentLikeSerializer, PostLikeSerializer, RemoteLikeSerializer,\
+    AuthorSerializer
 from socialDistribution.util import addToInbox
 from ..pagination import JsonObjectPaginator
 import json
 from rest_framework.renderers import JSONRenderer
+from django.conf import settings
+
+
+def sendForeignLikeToInbox(request, author):
+    print(request.data["postId"])
+    if 'socialsync' in request.data["postId"]:
+        originList = request.data["postId"].split("/")
+        print(originList)
+        response = socialSync.post(f"authors/{originList[5]}/inbox", json={
+            "type": "like",
+            "author": AuthorSerializer(author).data,
+            "object": request.data['postId'], # double check??
+            "summary": f"{author.displayName} likes your post",
+            "context": "https://www.w3.org/ns/activitystreams",
+        })
+        if response.status_code == 200:
+            return Response({"message": "liked post"}, status=status.HTTP_201_CREATED)
+        else:
+            print(response.text)
+            return Response({"message": "cannot like post", "data": response}, status=status.HTTP_403_FORBIDDEN)
+    elif 'vibely' in request.data["postId"]:
+        originList = request.data["postId"].split("/")
+        response = vibely.post(f"authors/{originList[5]}/inbox/", json={
+            "type": "like",
+            "author": AuthorSerializer(author).data,
+            "object": f"{settings.BASEHOST}/authors/{author.id}/posts/{originList[-1]}/",
+            "summary": f"{author.displayName} likes your post",
+            "context": "https://www.w3.org/ns/activitystreams",
+        })
+        if response.status_code == 200:
+            return Response({"message": "liked post"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"message": "cannot like post", "data": response}, status=status.HTTP_403_FORBIDDEN)
+    # elif 'ctrlAltDelete' in request.data["postId"]:
+    #     return Response({"message": "cannot like post"}, status=status.HTTP_403_FORBIDDEN)
+
+    return Response({"message": "post not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class AddLikeToPostView(generics.ListCreateAPIView):
     queryset = PostLike.objects.all()
-    serializer_class = PostLikeSerializer
+    serializer_class = RemoteLikeSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = JsonObjectPaginator
 
@@ -84,26 +122,26 @@ class AddLikeToPostView(generics.ListCreateAPIView):
     )
     def post(self, request, author_pk, post_pk, format=None):
         author = Author.objects.get(pk=author_pk)
-        post = Post.objects.get(pk=post_pk)
-        if not post:
-            return Response({"message": "post not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        try:
+            post = Post.objects.get(pk=post_pk)
 
-        # check if author already liked the post
-        if PostLike.objects.filter(author=author, post=post).exists():
-            return Response({"message": "cannot like post again"}, status=status.HTTP_400_BAD_REQUEST)
+            # check if author already liked the post
+            # if PostLike.objects.filter(author=author, post=post).exists():
+            #     return Response({"message": "cannot like post again"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # can only like a friends only post or public post
-        # if (post.visibility == "FRIENDS" and isFriend(author, post.author)) or post.visibility == "PUBLIC":
-        serializer = PostLikeSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(author=author, post=post)
-
-            # send like to post owners inbox
-            addToInbox(post.author, serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        return Response({"message": "insufficient permissions to like psot"}, status=status.HTTP_403_FORBIDDEN)
-
+            # can only like a friends only post or public post
+            like = PostLike.objects.create(author=author, post=post,
+                                           summary=f"{author.username} likes your post",
+                                           context='https://www.w3.org/ns/activitystreams',
+                                           object=f"{settings.BASEHOST}/authors/{author.id}/posts/{post.id}/")
+            like.save()
+            serializer = PostLikeSerializer(like)
+            addToInbox(post.author, json.loads(JSONRenderer().render(serializer.data).decode('utf-8')))
+            return Response({"message": "liked post"}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return sendForeignLikeToInbox(request, author)
+            
 
 class AddLikeToCommentView(generics.ListCreateAPIView):
     queryset = CommentLike.objects.all()
