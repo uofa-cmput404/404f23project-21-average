@@ -2,7 +2,9 @@
   <div class="app-container">
     <SidebarComponent />
     <div class="main-content">
-      <div class="header">INBOX</div>
+      <div class="header-container">
+        <div class="header">INBOX</div>
+      <button class="clear-inbox-button" @click="clearInbox">Clear Inbox</button>
       <div class="notification-list">
         <div v-for="(notification, index) in notifications" :key="notification.id" class="notification-item">
           <div class="notification-content">
@@ -27,6 +29,7 @@
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   </div>
@@ -76,6 +79,7 @@ export default {
         if (notification.type.toLowerCase() === 'follow') {
           let response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + await authorStore.getIDFromURL(notification.object.id) + '/');
           notification.isFollower = response.data === true;
+          console.log(response.data, notification)
         }
       }
     },
@@ -86,6 +90,7 @@ export default {
   axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
   try {
     let response;
+    console.log(this.isAFollower)
     if (notification.isFollower) {
       // Call the unfollow API
       response = await axios.delete(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/followers/' + await authorStore.getIDFromURL(notification.object.id) + '/');
@@ -99,9 +104,23 @@ export default {
   } catch (error) {
     console.error('Error while toggling follow:', error);
   }
-},
-}
-
+  },
+  async clearInbox() {
+      // Logic to clear the inbox
+      // Example: Send a request to the backend to clear the inbox
+      try {
+        const authorStore = useAuthorStore();
+        axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
+        const response = await axios.delete(`${authorStore.BASE_URL}/authors/${authorStore.getAuthorId}/inbox/`);
+        if (response.status === 200) {
+          // Clear the notifications in the local state
+          this.notifications = [];
+        }
+      } catch (error) {
+        console.error('Error clearing inbox:', error);
+      }
+    },
+  },
 };
 </script>
 
@@ -195,5 +214,39 @@ button {
 button {
   margin-right: 0;
   /* Removes margin from the last button */
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px; /* Adjust as needed */
+}
+
+.header {
+  color: black;
+  font-size: 30px;
+  text-align: center;
+  text-decoration: underline;
+  font-weight: bolder;
+}
+
+.clear-inbox-button {
+  width:80%;
+  background-color: #f44336; /* Red color for clear action */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.clear-inbox-button:hover {
+  background-color: #d32f2f; /* Darker shade on hover */
+}
+.header-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>
