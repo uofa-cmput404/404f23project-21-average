@@ -31,7 +31,7 @@
         </div>
 
         <div class="post-actions">
-          <button @click="toggleLike">{{ liked ? 'Unlike' : 'Like' }}</button>
+          <button @click="toggleLike">{{ liked ? 'liked' : 'Like' }}</button>
           <button @click="toggleCommentBox">Comment</button>
           <button @click="sharePostWithUser">Share</button> 
         </div>
