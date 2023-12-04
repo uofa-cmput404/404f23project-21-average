@@ -118,6 +118,7 @@ export default {
       this.username = profileResponse.data.username; // Update this line to match your API response structure
       
       // Set profile photo if available
+      console.log(profileResponse.data.profileImage)
       if (profileResponse.data.profileImage) {
         this.profilePhoto = authorStore.BASE_URL.split('/api')[0] + profileResponse.data.profileImage;
         console.log(this.profilePhoto)
@@ -152,23 +153,44 @@ export default {
       this.$refs.profilePhotoInput.click();
     },
     async changeProfilePhoto(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.profilePhoto = e.target.result;
-        };
-        reader.readAsDataURL(file);
-        const authorStore = useAuthorStore();
-        let formData = new FormData();
-        formData.append('profileImage', this.profilePhoto)
-        axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
-        const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/',formData,
-        {headers: {
-            'Content-Type': 'multipart/form-data'
-          }});
+  const file = event.target.files[0];
+  if (file) {
+    // Read the file for preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.profilePhoto = e.target.result; // This is just for preview
+    };
+    reader.readAsDataURL(file);
+
+    // Prepare the file to be sent to the server
+    const authorStore = useAuthorStore();
+    let formData = new FormData();
+    formData.append('profileImage', file); // Append the file object
+    const response = await axios.get(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId)
+    console.log(file)
+    formData.append('username', response.data.username )
+
+    axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
+    try {
+      const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      console.log(response);
+
+      // Handle the response here. You might want to update the profile photo URL based on the response
+      if (response.data && response.data.profileImage) {
+        // Assuming the response contains the new image URL
+        this.profilePhoto = authorStore.BASE_URL.split('/api')[0] + response.data.profileImage;
       }
-    },
+    } catch (error) {
+      console.error('Error while updating profile photo:', error);
+      // Handle the error appropriately
+    }
+  }
+},
+
     async fetchFollowers() {
     // Fetch and populate followers
     const authorStore = useAuthorStore();
