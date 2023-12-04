@@ -156,12 +156,14 @@ export default {
         reader.readAsDataURL(file);
         const authorStore = useAuthorStore();
         let formData = new FormData();
-        formData.append('profileImage', this.profilePhoto)
+        formData.append('profileImage', file)
+        formData.append('username', this.username)
         axios.defaults.headers.common["Authorization"] = `Basic ${authorStore.getAuthToken}`;
         const response = await axios.post(authorStore.BASE_URL + '/authors/' + authorStore.getAuthorId + '/',formData,
         {headers: {
             'Content-Type': 'multipart/form-data'
           }});
+          console.log(response)
       }
     } catch (error) {
       console.error('Error while updating profile photo:', error);
