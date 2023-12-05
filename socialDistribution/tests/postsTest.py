@@ -99,13 +99,11 @@ class GetAllPostsTest(TestCase):
     #     }
     #     myuuid = uuid.uuid4()
     #     self.header['Content-Disposition'] = 'attachment; filename="c.txt";'
-    #     print(self.header)
     #     response = self.client.put(
     #         reverse('posts-detail', kwargs={'author_pk': self.authorId,
     #                                         'post_pk': myuuid}),
     #         data=self.update_post,
     #         **self.header)
-    #     print('118', response.data)
     #     # self.assertEqual(response.data['id'], str(myuuid))
     #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 

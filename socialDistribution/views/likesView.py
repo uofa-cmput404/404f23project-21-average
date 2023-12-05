@@ -15,10 +15,8 @@ from django.conf import settings
 
 
 def sendForeignLikeToInbox(request, author):
-    print(request.data["postId"])
     if 'socialsync' in request.data["postId"]:
         originList = request.data["postId"].split("/")
-        print(originList)
         response = socialSync.post(f"authors/{originList[5]}/inbox", json={
             "type": "like",
             "author": AuthorSerializer(author).data,
@@ -29,7 +27,6 @@ def sendForeignLikeToInbox(request, author):
         if response.status_code == 200:
             return Response({"message": "liked post"}, status=status.HTTP_201_CREATED)
         else:
-            print(response.text)
             return Response({"message": "cannot like post", "data": response}, status=status.HTTP_403_FORBIDDEN)
     elif 'vibely' in request.data["postId"]:
         originList = request.data["postId"].split("/")
@@ -70,7 +67,6 @@ class AddLikeToPostView(generics.ListCreateAPIView):
             if isFrontendRequest(request):
                 # TODO: check that this works
                 vibelyLikes = vibely.get(f"authors/{author_pk}/posts/{post_pk}/likes/")
-                # print(vibelyLikes.text)
                 if vibelyLikes.status_code == 200:
                     for like in vibelyLikes.json()["items"]:
                         allLikes.append({
@@ -85,7 +81,6 @@ class AddLikeToPostView(generics.ListCreateAPIView):
                         })
                 
                 socialSyncLikes = socialSync.get(f"authors/{author_pk}/posts/{post_pk}/likes")
-                print(socialSyncLikes.text)
                 if socialSyncLikes.status_code == 200 and socialSyncLikes.text != "[]":
                     for like in socialSyncLikes.json():
                         allLikes.append({
@@ -112,7 +107,6 @@ class AddLikeToPostView(generics.ListCreateAPIView):
             else:
                 return Response({"message": "no likes found"}, status=status.HTTP_404_NOT_FOUND)
 
-        print(allLikes)
         page = self.paginate_queryset(allLikes)
         return self.get_paginated_response(page)
 

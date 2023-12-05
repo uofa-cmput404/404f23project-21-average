@@ -15,7 +15,6 @@ ctrlAltDelete.headers['Authorization'] = f"Basic {base64.b64encode('CtrlAltDefea
 
 
 def addToInbox(author, data):
-    print(data)
     if author.type == "NodeAuthor":  # sending posts to other people inbox
         if 'socialsync' in author.host:
             socialSync.post(f"authors/{author.id}/inbox", json=data)
@@ -48,7 +47,6 @@ def sendToFriendsInbox(author, data):
         result.append(Author.objects.get(id=follower.follower.id))
 
     # Convert the follow object to author object
-    print(result)
     for friend in result:
         addToInbox(friend, data)
 

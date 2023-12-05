@@ -26,7 +26,6 @@ class FollowViewSet(generics.ListAPIView):
         try:
             author = Author.objects.get(pk=author_pk, type="author")
             followers = author.followers.filter(status="Accepted").all()
-            print(followers)
             for follower in followers:
                 authors.append(AuthorSerializer(Author.objects.get(pk=follower.follower.id)).data)
         except:
@@ -139,7 +138,6 @@ class FollowDetailViewSet(generics.GenericAPIView):
     )
     def put(self, request, author_pk, foreign_author_pk, format=None):
         author = Author.objects.get(pk=author_pk)
-        print(request.data)
         try:
             foreign_author = Author.objects.get(pk=foreign_author_pk, type="author")
         except:
@@ -156,11 +154,8 @@ class FollowDetailViewSet(generics.GenericAPIView):
                     "object": remoteAuthor,
                 }
                 response = socialSync.post(f"authors/{getUUID(remoteAuthor['id'])}/inbox", json=payload)
-                print(response.url)
-                print(response, response.text)
             elif 'vibely' in request.data["objectHost"]:
                 remoteAuthor = vibely.get(f"authors/{foreign_author_pk}")
-                print(remoteAuthor.url, remoteAuthor.text)
                 if remoteAuthor.status_code == 200:
                     remoteAuthor = remoteAuthor.json()
                 payload = {
@@ -170,11 +165,8 @@ class FollowDetailViewSet(generics.GenericAPIView):
                     "object": remoteAuthor,
                 }
                 response = vibely.post(f"authors/{getUUID(remoteAuthor['id'])}/inbox/", json=payload)
-                print(response.url)
-                print(response, response.text)
             elif 'ctrl' in request.data["objectHost"]:
                 remoteAuthor = ctrlAltDelete.get(f"authors/{foreign_author_pk}")
-                print(remoteAuthor.url, remoteAuthor.text)
                 if remoteAuthor.status_code == 200:
                     remoteAuthor = remoteAuthor.json()
                 payload = {
@@ -183,10 +175,7 @@ class FollowDetailViewSet(generics.GenericAPIView):
                     "actor": AuthorSerializer(author).data,
                     "object": remoteAuthor,
                 }
-                print(payload)
                 response = ctrlAltDelete.post(f"authors/{getUUID(remoteAuthor['id'])}/inbox", json=payload)
-                print(response.url)
-                print(response, response.text)
             
             return Response({'message': 'Follow Request Sent Successfully'}, status=status.HTTP_201_CREATED)
         
@@ -222,36 +211,3 @@ class FollowDetailViewSet(generics.GenericAPIView):
             follow.save()
             return Response({'message': 'Follow Request Accepted Successfully'}, status=status.HTTP_201_CREATED)
         return Response({'message': 'not found'}, status=status.HTTP_404_NOT_FOUND)
-
-
-
-# {
-#   "items": {
-#         "type": "Follow",      
-#         "summary":"secondinstanceuser3 wants to follow user3",
-#         "actor":{
-#         "id": "https://socialsync-404-project-6469dd163e44.herokuapp.com/authors/7",
-#         "host": "https://socialsync-404-project-6469dd163e44.herokuapp.com/",
-#         "displayName": "itachi",
-#         "github": null,
-#         "profileImage": null,
-#         "first_name": "",
-#         "last_name": "",
-#         "email": "",
-#         "username": "itachi",
-#         "type": "author"
-#         },
-#         "object":{
-#         "id": "https://cmput-average-21-b54788720538.herokuapp.com/api/authors/db7d3968-c035-4950-a606-e690638189dd/",
-#         "host": "https://cmput-average-21-b54788720538.herokuapp.com/api",
-#         "displayName": "string",
-#         "github": null,
-#         "profileImage": null,
-#         "first_name": "",
-#         "last_name": "",
-#         "email": "",
-#         "username": "string",
-#         "type": "author"
-#         }
-#     }
-# }

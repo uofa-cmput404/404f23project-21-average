@@ -31,7 +31,6 @@ class AuthorListViewSet(generics.ListAPIView):
         all_authors = json.loads(JSONRenderer().render(AuthorSerializer(authors, many=True).data).decode('utf-8'))
         if isFrontendRequest(request):
             vibelyRemoteAuthors = vibely.get("authors/")
-            # print(vibelyRemoteAuthors.text)
             if vibelyRemoteAuthors.status_code == 200:
                 for author in vibelyRemoteAuthors.json()["items"]:
                     all_authors.append(serializeVibelyAuthor(author))
@@ -42,7 +41,6 @@ class AuthorListViewSet(generics.ListAPIView):
                     all_authors.append(serializeVibelyAuthor(author))
 
             ctrlAltDeleteRemoteAuthors = ctrlAltDelete.get("authors/")
-            print(ctrlAltDeleteRemoteAuthors.text)
             if ctrlAltDeleteRemoteAuthors.status_code == 200 and ctrlAltDeleteRemoteAuthors.text != "error\n":
                 for author in ctrlAltDeleteRemoteAuthors.json()["items"] :
                     all_authors.append(serializeVibelyAuthor(author))
@@ -101,7 +99,6 @@ class AuthorDetailView(APIView):
     )
     def delete(self, request, author_pk, *args, **kwargs):
         author = Author.objects.get(pk=author_pk)
-        print(author.id)
         # delete the author from the database
         author.delete()
         return Response(status=204)

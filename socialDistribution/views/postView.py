@@ -9,15 +9,12 @@ from django.conf import settings
 from drf_spectacular.utils import extend_schema
 from socialDistribution.models import Author, Post
 from socialDistribution.pagination import Pagination, JsonObjectPaginator
-from socialDistribution.serializers import PostSerializer, FollowSerializer, AuthorSerializer
+from socialDistribution.serializers import PostSerializer
 from socialDistribution.util import sendToFriendsInbox, isFriend, getUUID
 import base64
 from io import BytesIO
 from PIL import Image
-from django.http import HttpResponse
 from ..util import isFrontendRequest, vibely, serializeVibelyPost, sendToEveryonesInbox, serializeCtrlAltDeletePost, socialSync
-import json
-from rest_framework.renderers import JSONRenderer
 
 
 class PostList(generics.ListCreateAPIView):
@@ -46,7 +43,6 @@ class PostList(generics.ListCreateAPIView):
         description='Create a new post but generate a new id'
     )
     def post(self, request, author_pk, format=None):
-        print(request.data)
         author = Author.objects.get(pk=author_pk)
         serializer = PostSerializer(data=request.data)
         

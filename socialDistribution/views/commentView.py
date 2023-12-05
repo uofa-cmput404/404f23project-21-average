@@ -50,7 +50,6 @@ class CommentViewSet(generics.ListCreateAPIView):
                         "post": post_pk,
                     })
             socialSyncComments = socialSync.get(f"authors/{author_pk}/posts/{post_pk}/comments")
-            print(socialSyncComments.text)
             if socialSyncComments.status_code == 200 and socialSyncComments.json():
                 for comment in socialSyncComments.json()["items"]:
                     allComments.append({
@@ -86,7 +85,6 @@ class CommentViewSet(generics.ListCreateAPIView):
     )
     def post(self, request, author_pk, post_pk, format=None):
         author = Author.objects.get(pk=author_pk)
-        print(request.data)
         try:
             post = Post.objects.get(pk=post_pk)
             serializer = CommentSerializer(data=request.data)
@@ -101,7 +99,6 @@ class CommentViewSet(generics.ListCreateAPIView):
         except:
             if 'socialsync' in request.data["post"]:
                 originList = request.data["post"].split("/")
-                print(originList)
                 response = socialSync.post(f"authors/{originList[5]}/inbox", json={
                     "type": "comment",
                     "author": AuthorSerializer(author).data,
@@ -113,7 +110,6 @@ class CommentViewSet(generics.ListCreateAPIView):
                 if response.status_code == 200:
                     return Response({"message": "comment on post"}, status=status.HTTP_201_CREATED)
                 else:
-                    print(response.text)
                     return Response({"message": "comment not added", "data": response}, status=status.HTTP_403_FORBIDDEN)
 
             elif 'vibely' in request.data["postId"]:
