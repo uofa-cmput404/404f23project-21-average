@@ -111,9 +111,10 @@ class FollowDetailViewSet(generics.GenericAPIView):
             foreign_author = Author.objects.get(pk=foreign_author_pk)
         except:
             return Response(False)
-        follow = Follow.objects.filter(following=foreign_author, follower=author)
-        if author and foreign_author and follow and follow[0].status == "Accepted":
-            return Response(True)
+        followers = author.followers.filter(status="Accepted").all()
+        for follower in followers:
+            if follower.follower.id == foreign_author.id:
+                return Response(True)
         return Response(False)
     
     @extend_schema(
