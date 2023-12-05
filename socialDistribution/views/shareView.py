@@ -6,7 +6,6 @@ from rest_framework import permissions
 from rest_framework import status
 from ..util import sendToEveryonesInbox, sendToFriendsInbox
 from drf_spectacular.utils import extend_schema
-from ..pagination import JsonObjectPaginator
 from ..models import Post
 
 

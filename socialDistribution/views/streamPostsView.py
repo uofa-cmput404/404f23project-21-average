@@ -1,9 +1,4 @@
-import requests
 from rest_framework import permissions
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from django.http import Http404
-from rest_framework import status
 from rest_framework import generics
 from django.conf import settings
 from drf_spectacular.utils import extend_schema
@@ -23,7 +18,6 @@ def getPostsFromAuthors():
         for author in vibelyAuthors.json()["items"]:
             author1 = serializeVibelyAuthor(author)
             vibelyPosts = vibely.get(f"authors/{getUUID(author1['id'])}/posts/")
-            print(vibelyPosts)
             if vibelyPosts.status_code == 200:
                 for post in vibelyPosts.json()["items"]:
                     res.append(serializeVibelyPost(post))
@@ -33,7 +27,6 @@ def getPostsFromAuthors():
         for author in socialSyncAuthors.json()["items"]:
             author2 = serializeVibelyAuthor(author)
             socialSyncPosts = socialSync.get(f"authors/{getUUID(author2['id'])}/posts")
-            print(socialSyncPosts)
             if socialSyncPosts.status_code == 200:
                 for post in socialSyncPosts.json()["items"]:
                     res.append(serializeCtrlAltDeletePost(post))
@@ -88,64 +81,3 @@ class StreamPostList(generics.ListAPIView):
             post["source"] = f"{settings.BASEHOST}/authors/{getUUID(post['author']['id'])}/posts/{getUUID(post['id'])}"
         page = self.paginate_queryset(all_posts)
         return self.get_paginated_response(page)
-
-
-class StreamComments(generics.ListAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    pagination_class = JsonObjectPaginator
-
-    @extend_schema(
-        tags=['Comments'],
-        description='returns all the comments that AUTHOR_ID can see (paginated)'
-    )
-    def get(self, request, author_pk, post_pk, format=None):
-        author = Author.objects.get(pk=request.user.id)
-        post = Post.objects.get(pk=post_pk)
-        # allComments = []
-
-        if post.visibility == "PUBLIC":
-            comments = Comment.objects.filter(post=post_pk)
-        elif post.visibility == "FRIENDS" and isFriend(author, post.author):
-            comments = Comment.objects.filter(post=post_pk, type="comment")
-
-        # if isFrontendRequest(request):
-        # TODO: check duplicate comment returns 
-        allComments = json.loads(JSONRenderer().render(CommentSerializer(comments, many=True).data).decode('utf-8'))
-        vibelyComments = vibely.get(f"authors/{author_pk}/posts/{post_pk}/comments")
-        if vibelyComments.status_code == 200:
-            for comment in vibelyComments.json()["comments"]:
-                allComments.append({
-                    "id": comment["id"],
-                    "author": serializeVibelyAuthor(comment["author"]),
-                    "comment": comment["comment"],
-                    "contentType": comment["contentType"],
-                    "published": comment["published"],
-                    "type": "NodeComment",
-                    "post": post_pk,
-                })
-        socialSyncComments = socialSync.get(f"authors/{author_pk}/posts/{post_pk}/comments")
-        if socialSyncComments.status_code == 200:
-            for comment in socialSyncComments.json()["comments"]:
-                allComments.append({
-                    "id": comment["id"],
-                    "author": serializeVibelyAuthor(comment["author"]),
-                    "comment": comment["comment"],
-                    "contentType": comment["contentType"],
-                    "published": comment["published"],
-                    "type": "NodeComment",
-                    "post": post_pk,
-                })
-        # socialSync_comments = ctrlAltDelete.get(f"authors/{author_pk}/posts/{post_pk}/comments")
-        # if socialSync_comments.status_code == 200:
-        #     for comment in socialSync_comments.json()["comments"]:
-        #         allComments.append({
-        #             "id": comment["id"],
-        #             "author": serializeVibelyAuthor(comment["author"]),
-        #             "comment": comment["comment"],
-        #             "contentType": comment["contentType"],
-        #             "published": comment["published"],
-        #             # "post": comment["post"],
-        #         })
-        
