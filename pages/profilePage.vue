@@ -35,14 +35,16 @@
 
         <div class="github">
           <h3>GITHUB STREAM</h3>
-
-          <div v-for="activity in github" :key="activity.id" class="github_activity">
-            <div>
-              <h4>Activity Type: {{ activity.type }}</h4>
-              <h4>Activity Repository: {{ activity.repo.name }} </h4>
-              <h4>Activity Author: {{ activity.actor.login }}</h4>
+          <div v-if="github !== ''">
+            <div v-for="activity in github" :key="activity.id" class="github_activity">
+              <div>
+                <h4>Activity Type: {{ activity.type }}</h4>
+                <h4>Activity Repository: {{ activity.repo.name }} </h4>
+                <h4>Activity Author: {{ activity.actor.login }}</h4>
+              </div>
             </div>
           </div>
+
         </div>
       </div>
     </main>
