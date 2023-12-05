@@ -59,7 +59,7 @@ import defaultProfilePic from '../pages/defualtprofilepic.jpg'; // Import the de
 import UserListPopup from './UserListPopup.vue';
 
 export default {
-  name: "SocialDistributionApp",
+  // name: "SocialDistributionApp",
   components: {
     PostComponent,
     SidebarComponent,
