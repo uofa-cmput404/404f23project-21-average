@@ -8,7 +8,7 @@ from drf_spectacular.utils import extend_schema
 import json
 import uuid
 from ..util import isFrontendRequest, serializeVibelyPost, serializeVibelyAuthor, getUUID
-
+from django.http import JsonResponse
 
 def handlePostItem(newItem):
     return {
@@ -132,9 +132,9 @@ class InboxItemView(generics.GenericAPIView):
                     items.append(json.dumps(handleFollowItem(newItem), default=str))
                 except Exception as e:
                     print(e)
-                    return Response({
+                    return JsonResponse({
                         "message": "Object Author not found",
-                        'exception': json.dumps(e),
+                        'exception': str(e),
                         'req': request,
                         'author': author_pk
                         },
