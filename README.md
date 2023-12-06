@@ -35,6 +35,10 @@ REGULAR USERS:
     - connected parts: posts, authors, comments, likes
 
 
+Demo Video: `link`
+![Post](foreignPost.png)
+
+
 ## User Stories
    
    - [x] As an author I want to make public posts.
