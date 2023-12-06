@@ -134,7 +134,7 @@ class InboxItemView(generics.GenericAPIView):
                     print(e)
                     return Response({
                         "message": "Object Author not found",
-                        'exception': e,
+                        'exception': json.dumps(e),
                         'req': request,
                         'author': author_pk
                         },
