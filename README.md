@@ -32,7 +32,7 @@ REGULAR USERS:
     - `username: user password: pass`
 
 
-** User Stories
+## User Stories
    
    - [x] As an author I want to make public posts.
    - [x] As an author I want to edit public posts.
