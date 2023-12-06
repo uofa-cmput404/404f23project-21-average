@@ -23,13 +23,16 @@ REGULAR USERS:
 ### Connected Teams
 - SocialSync 
     - https://socialsync-404-project-6469dd163e44.herokuapp.com/login/
-    - `username: username password: pass`
+    - `username: socialsink password: 123`
+    - Connected parts: follower/following, comments, likes, authors, posts(public/friends)
 - Vibely
     - https://656d595c9cf6c70641d9d342--chic-mochi-59bc3d.netlify.app/signin
     - `username: user password: pass`
+    -  COnnected parts: comments, likes, authors, posts(public)
 - CTRLALTDELETE
     - https://cmput404-ctrl-alt-defeat-react-574ccb97869b.herokuapp.com/
     - `username: user password: pass`
+    - connected parts: posts, authors, comments, likes
 
 
 ## User Stories
