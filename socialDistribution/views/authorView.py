@@ -38,6 +38,7 @@ class AuthorListViewSet(generics.ListAPIView):
             socialSyncRemoteAuthors = socialSync.get("authors/")
             if socialSyncRemoteAuthors.status_code == 200:
                 for author in socialSyncRemoteAuthors.json()["items"]:
+                    print(serializeVibelyAuthor(author))
                     all_authors.append(serializeVibelyAuthor(author))
 
             ctrlAltDeleteRemoteAuthors = ctrlAltDelete.get("authors/")

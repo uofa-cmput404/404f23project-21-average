@@ -187,7 +187,35 @@ class FollowDetailViewSet(generics.GenericAPIView):
         
         # author is requesting to follow foreign_author
         Follow.objects.create(following=foreign_author, follower=author)
-
+        # x = 
+                # {
+                # "type": "follow",
+                # "summary": "wants to follow",
+                # "actor": {
+                #     "id": "https://socialsync-404-project-6469dd163e44.herokuapp.com/authors/7",
+                #     "host": "https://socialsync-404-project-6469dd163e44.herokuapp.com/",
+                #     "displayName": "soup",
+                #     "github": null,
+                #     "profileImage": null,
+                #     "first_name": "",
+                #     "last_name": "",
+                #     "email": "",
+                #     "username": "soup",
+                #     "type": "author"
+                #     },
+                # "object":{
+                #     "id": "http://127.0.0.1:8000/api/authors/23159871-d384-4ab6-9288-c098e3f5a622/",
+                #     "host": "http://127.0.0.1:8000/api",
+                #     "displayName": "string",
+                #     "github": null,
+                #     "profileImage": null,
+                #     "first_name": "",
+                #     "last_name": "",
+                #     "email": "",
+                #     "username": "string",
+                #     "type": "author"
+                #     }
+                # }
         addToInbox(foreign_author, {
                 "type": "follow",
                 "summary": f"{author.username} wants to follow {foreign_author.username}",

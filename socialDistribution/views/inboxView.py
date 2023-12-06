@@ -9,6 +9,7 @@ import json
 import uuid
 from ..util import isFrontendRequest, serializeVibelyPost, serializeVibelyAuthor, getUUID
 
+
 def handlePostItem(newItem):
     return {
         "id": newItem["id"],
@@ -131,7 +132,13 @@ class InboxItemView(generics.GenericAPIView):
                     items.append(json.dumps(handleFollowItem(newItem), default=str))
                 except Exception as e:
                     print(e)
-                    return Response({"message": "Object Author not found"}, status=status.HTTP_404_NOT_FOUND)
+                    return Response({
+                        "message": "Object Author not found",
+                        'exception': e,
+                        'req': request,
+                        'author': author_pk
+                        },
+                         status=status.HTTP_404_NOT_FOUND)
             elif newItem["type"].lower() == "like":
                 items.append(json.dumps(handleLikeItem(newItem), default=str))
             elif newItem["type"].lower() == "comment":
