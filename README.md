@@ -1,14 +1,14 @@
 # Social Distrubution
 ## Our App
-UI: https://frontend-21-average-f45e3b82895c.herokuapp.com/
-API: https://cmput-average-21-b54788720538.herokuapp.com/api/
-Admin: https://cmput-average-21-b54788720538.herokuapp.com/admin/
+`UI: https://frontend-21-average-f45e3b82895c.herokuapp.com/`
+`API: https://cmput-average-21-b54788720538.herokuapp.com/api/`
+`Admin: https://cmput-average-21-b54788720538.herokuapp.com/admin/`
 
 ### Users
 ```bash
 ADMIN:
-username: admin
-password; admin
+    username: admin
+    password: admin
 
 REGULAR:
 username: itachi
