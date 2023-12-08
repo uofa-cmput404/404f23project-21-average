@@ -6,6 +6,8 @@ from django.contrib.auth import get_user_model
 from faker import Faker
 from socialDistribution.models import Post, Comment, Follow, PostLike, CommentLike
 import random
+from socialDistribution.serializers import PostSerializer, CommentSerializer, PostLikeSerializer, CommentLikeSerializer
+from socialDistribution.util import sendToFriendsInbox, sendToEveryonesInbox, addToInbox
 
 fake = Faker()
 
@@ -26,7 +28,7 @@ def generate_data(apps, schema_editor):
 
     # Use the default users for data generation
     for author in default_users:
-        for _ in range(3):
+        for _ in range(4):
             post = Post.objects.create(
                 title=fake.sentence(),
                 content=fake.paragraph(),
@@ -38,6 +40,10 @@ def generate_data(apps, schema_editor):
             )
             post.origin = f"{settings.BASEHOST}/authors/{author.id}/posts/{post.id}"
             post.save()
+            if post.visibility == "FRIENDS":
+                sendToFriendsInbox(author, PostSerializer(post).data)
+            elif post.visibility == "PUBLIC":
+                sendToEveryonesInbox(PostSerializer(post).data)
 
         for post in Post.objects.filter(author=author):
             for _ in range(random.randint(1, 5)):
@@ -47,6 +53,7 @@ def generate_data(apps, schema_editor):
                     comment=fake.paragraph(),
                     contentType="text/plain"
                 )
+                addToInbox(post.author, CommentSerializer(comment).data)
 
         for post in Post.objects.filter(author=author):
             for _ in range(random.randint(1, 5)):
@@ -58,6 +65,7 @@ def generate_data(apps, schema_editor):
                     context=fake.url(),
                     object=f"{settings.BASEHOST}/authors/{auth.id}/posts/{post.id}",
                 )
+                addToInbox(post.author, PostLikeSerializer(like).data)
 
         for comment in Comment.objects.filter(post__author=author):
             for _ in range(random.randint(1, 5)):
@@ -69,6 +77,7 @@ def generate_data(apps, schema_editor):
                     context=fake.url(),
                     object=f"{settings.BASEHOST}/authors/{auth.id}/posts/{comment.post.id}/comments/{comment.id}"
                 )
+                addToInbox(comment.author, CommentLikeSerializer(like).data)
 
 
 class Migration(migrations.Migration):
