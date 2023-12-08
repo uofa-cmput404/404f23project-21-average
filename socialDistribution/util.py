@@ -34,7 +34,7 @@ def addToInbox(author, data):
 
 def sendToEveryonesInbox(data):
     # send to all authors
-    authors = Author.objects.all()
+    authors = Author.objects.filter(type="author").all()
     for author in authors:
         addToInbox(author, data)
 
@@ -56,6 +56,7 @@ def getUUID(url):
     if components[-1] == "":
         return components[-2]
     return components[-1]
+
 
 def isFriend(author, foreign_author):
     if author.id == foreign_author.id:
@@ -132,6 +133,8 @@ def serializeSocialSyncPost(post):
         "imageOnlyPost": None,
         "count": 0,
     }
+
+
 def serializeCtrlAltDeletePost(post):
     return {
         "id": post["id"],

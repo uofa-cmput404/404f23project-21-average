@@ -23,11 +23,17 @@ password: string
     - https://socialsync-404-project-6469dd163e44.herokuapp.com/login/
     - `username: username password: pass`
 - Vibely
-    - https://656d595c9cf6c70641d9d342--chic-mochi-59bc3d.netlify.app/signin
-    - `username: user password: pass`
+    - https://656e621335df4d009ac30488--chic-mochi-59bc3d.netlify.app/signin
+    - `username: drake password: drake`
+    -  COnnected parts: comments, likes, authors, posts(public)
 - CTRLALTDELETE
     - https://cmput404-ctrl-alt-defeat-react-574ccb97869b.herokuapp.com/
-    - `username: user password: pass`
+    - `username: localhost password: test`
+    - connected parts: posts, authors, comments, likes
+
+
+Demo Video: `link`
+![Post](foreignPost.png)
 
 
 ** User Stories
