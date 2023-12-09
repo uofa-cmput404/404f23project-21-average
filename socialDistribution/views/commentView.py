@@ -6,7 +6,7 @@ from socialDistribution.serializers import CommentSerializer
 from rest_framework import status
 from rest_framework import generics
 from drf_spectacular.utils import extend_schema
-from ..util import addToInbox, vibely, serializeVibelyAuthor, isFriend, socialSync, ctrlAltDelete, serializeCtrlAltDeleteAuthor, AuthorSerializer
+from ..util import addToInbox, vibely, serializeVibelyAuthor, isFriend, socialSync, AuthorSerializer
 from datetime import datetime
 
 class CommentViewSet(generics.ListCreateAPIView):

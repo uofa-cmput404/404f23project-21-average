@@ -38,12 +38,11 @@ class AuthorListViewSet(generics.ListAPIView):
             socialSyncRemoteAuthors = socialSync.get("authors/")
             if socialSyncRemoteAuthors.status_code == 200:
                 for author in socialSyncRemoteAuthors.json()["items"]:
-                    print(serializeVibelyAuthor(author))
                     all_authors.append(serializeVibelyAuthor(author))
 
             ctrlAltDeleteRemoteAuthors = ctrlAltDelete.get("authors/")
             if ctrlAltDeleteRemoteAuthors.status_code == 200 and ctrlAltDeleteRemoteAuthors.text != "error\n":
-                for author in ctrlAltDeleteRemoteAuthors.json()["items"] :
+                for author in ctrlAltDeleteRemoteAuthors.json()["items"]:
                     all_authors.append(serializeVibelyAuthor(author))
 
         page = self.paginate_queryset(all_authors)

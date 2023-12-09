@@ -3,14 +3,18 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 from socialDistribution.models import Author, Inbox, Post, Comment
-
+import base64
+from django.urls import reverse
 
 class ShareViewTestCase(TestCase):
 
     def setUp(self):
         # Set up a user and author for testing
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
-        self.author = Author.objects.create(user=self.user)
+        # self.user = User.objects.create_user(username='testuser', password='testpassword')
+        # self.author = Author.objects.create(user=self.user)
+        self.author = Author.objects.get(username='string')
+        self.client = APIClient()
+        self.headers = {'Authorization': f"Basic {base64.b64encode('string:string'.encode('utf-8')).decode('utf-8')}"}
         # Set up a post for testing
         self.post_data = {
             'title': 'Test Post',

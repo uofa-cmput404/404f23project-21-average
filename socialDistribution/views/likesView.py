@@ -5,7 +5,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import permissions
 from socialDistribution.models import Author, Comment, CommentLike, Post, PostLike
 from ..util import vibely, serializeVibelyPost, serializeVibelyAuthor, socialSync, ctrlAltDelete, isFrontendRequest
-from socialDistribution.serializers import CommentLikeSerializer, PostLikeSerializer, RemoteLikeSerializer,\
+from socialDistribution.serializers import CommentLikeSerializer, PostLikeSerializer, RemoteLikeSerializer, \
     AuthorSerializer
 from socialDistribution.util import addToInbox
 from ..pagination import JsonObjectPaginator
@@ -20,7 +20,7 @@ def sendForeignLikeToInbox(request, author):
         response = socialSync.post(f"authors/{originList[5]}/inbox", json={
             "type": "like",
             "author": AuthorSerializer(author).data,
-            "object": request.data['postId'], # double check??
+            "object": request.data['postId'],  # double check??
             "summary": f"{author.displayName} likes your post",
             "context": "https://www.w3.org/ns/activitystreams",
         })

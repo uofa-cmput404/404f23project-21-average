@@ -1,14 +1,14 @@
-from socialDistribution.models import Inbox, Post, Comment, Follow, PostLike
-from socialDistribution.serializers import *
 from rest_framework.response import Response
+from socialDistribution.models import Author, Inbox, Follow
+from socialDistribution.serializers import AuthorSerializer, InboxSerializer
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework import generics
 from drf_spectacular.utils import extend_schema
 import json
-import uuid
-from ..util import isFrontendRequest, serializeVibelyPost, serializeVibelyAuthor, getUUID
+from ..util import isFrontendRequest, serializeVibelyAuthor, getUUID
 from django.http import JsonResponse
+
 
 def handlePostItem(newItem):
     return {
@@ -146,6 +146,7 @@ class InboxItemView(generics.GenericAPIView):
             elif newItem["type"].lower() == "post":
                 items.append(json.dumps(handlePostItem(newItem), default=str))
         else:
+            # Only implement inbox for nodes b/c this will be done manually for local authors
             return Response({"message": "Only Nodes can request to inbox"}, status=status.HTTP_400_BAD_REQUEST)
 
         inbox.items = json.dumps(items, default=str)

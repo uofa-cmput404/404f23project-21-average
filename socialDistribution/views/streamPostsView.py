@@ -2,10 +2,10 @@ from rest_framework import permissions
 from rest_framework import generics
 from django.conf import settings
 from drf_spectacular.utils import extend_schema
-from socialDistribution.models import Author, Post, Comment
+from socialDistribution.models import Author, Post
 from socialDistribution.pagination import  JsonObjectPaginator
-from socialDistribution.serializers import PostSerializer, FollowSerializer, CommentSerializer
-from socialDistribution.util import isFriend, serializeVibelyAuthor
+from socialDistribution.serializers import PostSerializer, FollowSerializer
+from socialDistribution.util import  serializeVibelyAuthor
 from ..util import isFrontendRequest, vibely, socialSync, serializeVibelyPost, serializeCtrlAltDeletePost, getUUID
 import json
 from rest_framework.renderers import JSONRenderer

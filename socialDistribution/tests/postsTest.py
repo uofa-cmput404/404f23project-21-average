@@ -138,3 +138,9 @@ class GetAllPostsTest(TestCase):
             reverse('posts-detail', kwargs={'author_pk': self.authorId,
                                             'post_pk': myuuid}), headers=headers)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_image(self):
+        # Test getting an image associated with a post
+        post = Post.objects.create(author=self.author, title='Test Image Post', content='Test Content', visibility='PUBLIC')
+        response = self.client.get(f'/posts/{post.id}/image/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

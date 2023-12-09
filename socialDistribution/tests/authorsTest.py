@@ -63,8 +63,6 @@ class AuthorTestCase(TestCase):
         }
         response = self.client.post(reverse('rest_login'), auth_data, headers=self.headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        token = response.data['access']
-        header = {'Authorization': 'Bearer ' + token}
 
         data = {'host': 'asdasd', 'username': 'JohnSmith', 'displayName': 'testtt', 'github': 'asdasd',
                 'email': 'johnsmith@example.com', 'password': 'testts'}
@@ -78,7 +76,6 @@ class AuthorTestCase(TestCase):
     def test_node_list_view(self):
         # Test NodeListViewSet
         response = self.client.get(reverse('nodes'), headers=self.headers)
-        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('items', response.data)
         # Ensure that the response contains the expected key 'results'

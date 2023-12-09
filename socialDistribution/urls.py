@@ -36,7 +36,7 @@ urlpatterns = [
     path('authors/<slug:author_pk>/posts/<slug:post_pk>/comments/<slug:comment_pk>/likes/',
          AddLikeToCommentView.as_view(), name='comment-likes'),
      path('posts/<slug:author_pk>/liked/',
-         GetAllAuthorLikes.as_view(), name='post-likes'),
+         GetAllAuthorLikes.as_view(), name='liked-posts'),
     
     # followers
     path('authors/<slug:author_pk>/followers/', FollowViewSet.as_view(), name='followers'),
@@ -49,7 +49,7 @@ urlpatterns = [
     # inbox
     path('authors/<slug:author_pk>/inbox/', InboxItemView.as_view(), name='inbox'),
 
-    path('authors/<slug:author_pk>/posts/allposts/stream/', StreamPostList.as_view(), name='share-posts'),
+    path('authors/<slug:author_pk>/posts/allposts/stream/', StreamPostList.as_view(), name='posts-stream'),
 
     path('share/<slug:post_pk>/', ShareView.as_view(), name='share-post'),
 ]
