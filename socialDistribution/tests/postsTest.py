@@ -1,14 +1,16 @@
 from datetime import datetime
-from django.test import TestCase, Client
+from django.test import TestCase
+from rest_framework.test import APIClient
 from django.urls import reverse
 from rest_framework import status
-from ..models import Post
+from ..models import Post, Author
 from ..serializers import PostSerializer
 import uuid
-
+import base64
 
 # initialize the APIClient app
-client = Client()
+client = APIClient()
+headers = {'Authorization': f"Basic {base64.b64encode('string:string'.encode('utf-8')).decode('utf-8')}"}
 
 
 class GetAllPostsTest(TestCase):
@@ -29,26 +31,29 @@ class GetAllPostsTest(TestCase):
             'username': 'testuser',
             'password': 'testpassword'
         }
-        response = self.client.post(reverse('rest_login'), auth_data)
+        response = self.client.post(reverse('rest_login'), auth_data, headers=headers)
         self.authorId = response.data['user']['pk']
         self.token = response.data['access']
-        self.header = {'Authorization': 'Bearer ' + self.token}
+        self.header = {'Authorization': 'Basic ' + self.token}
+
+        author = Author.objects.get(pk=self.authorId)
 
         self.first_post = Post.objects.create(
-            title='First Post', content='This is the first post', owner_id=self.authorId)
+            title='First Post', content='This is the first post', author=author)
 
         self.valid_payload = {
             'title': 'First Post',
             'content': 'This is the first post',
             'published': datetime.now(),
         }
+
     def test_get_all_posts(self):
         # get API response
 
         header = {'Authorization': 'Bearer ' + self.token}
 
         response = client.get(
-            reverse('posts-list', kwargs={'author_pk': self.authorId}), **self.header)
+            reverse('posts-list', kwargs={'author_pk': self.authorId}), headers=header)
         # get data from db
         posts = Post.objects.all()
         serializer = PostSerializer(posts, many=True)
@@ -58,7 +63,7 @@ class GetAllPostsTest(TestCase):
     def test_get_valid_single_post(self):
         response = client.get(
             reverse('posts-detail', kwargs={'author_pk': self.authorId,
-                                            'post_pk': self.first_post.pk}), **self.header)
+                                            'post_pk': self.first_post.pk}), headers=headers)
         post = Post.objects.get(pk=self.first_post.pk)
         serializer = PostSerializer(post)
         self.assertEqual(response.data, serializer.data)
@@ -67,7 +72,7 @@ class GetAllPostsTest(TestCase):
     def test_create_valid_post(self):
         response = self.client.post(
             reverse('posts-list', kwargs={'author_pk': self.authorId}),
-            data=self.valid_payload, **self.header)
+            data=self.valid_payload, headers=headers)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_valid_update_post(self):
@@ -80,7 +85,7 @@ class GetAllPostsTest(TestCase):
             reverse('posts-detail', kwargs={'author_pk': self.authorId,
                                             'post_pk': self.first_post.pk}),
             data=self.update_post,
-            **self.header)
+            headers=headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # def test_create_post_given_id(self):
@@ -103,14 +108,14 @@ class GetAllPostsTest(TestCase):
     #         reverse('posts-detail', kwargs={'author_pk': self.authorId,
     #                                         'post_pk': myuuid}),
     #         data=self.update_post,
-    #         **self.header)
+    #         headers=headers)
     #     # self.assertEqual(response.data['id'], str(myuuid))
     #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_get_one_post_given_id(self):
         response = self.client.get(
             reverse('posts-detail', kwargs={'author_pk': self.authorId,
-                                            'post_pk': self.first_post.pk}), **self.header)
+                                            'post_pk': self.first_post.pk}), headers=headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['title'], self.first_post.title)
 
@@ -124,12 +129,12 @@ class GetAllPostsTest(TestCase):
     def test_valid_delete_post(self):
         response = self.client.delete(
             reverse('posts-detail', kwargs={'author_pk': self.authorId,
-                                            'post_pk': self.first_post.pk}), **self.header)
+                                            'post_pk': self.first_post.pk}), headers=headers)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_invalid_delete_post(self):
         myuuid = uuid.uuid4()
         response = self.client.delete(
             reverse('posts-detail', kwargs={'author_pk': self.authorId,
-                                            'post_pk': myuuid}), **self.header)
+                                            'post_pk': myuuid}), headers=headers)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

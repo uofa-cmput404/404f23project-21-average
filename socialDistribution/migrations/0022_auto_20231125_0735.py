@@ -13,71 +13,72 @@ fake = Faker()
 
 
 def generate_data(apps, schema_editor):
+    pass
     # Fetch the default users created in the migration
-    default_users = get_user_model().objects.filter(username__in=settings.DEFAULT_AUTHORS)
+    # default_users = get_user_model().objects.filter(username__in=settings.DEFAULT_AUTHORS)
 
     # x = fake.image_url()
     # string is true friends with user 1
-    Follow.objects.create(follower=default_users[0], following=default_users[1], status="Accepted")
-    Follow.objects.create(follower=default_users[1], following=default_users[0], status="Accepted")
-    # user 2 is follwoing user 3
-    # therefore user 2 is a friend of user 3, but user 3 is not a friend of user 2
-    # user 3 is followed by user 1 and 2 so user3's frineds only posts will be sent to user 1 and 2
-    Follow.objects.create(follower=default_users[2], following=default_users[3], status="Accepted")
-    Follow.objects.create(follower=default_users[1], following=default_users[3], status="Accepted")
+    # Follow.objects.create(follower=default_users[0], following=default_users[1], status="Accepted")
+    # Follow.objects.create(follower=default_users[1], following=default_users[0], status="Accepted")
+    # # user 2 is follwoing user 3
+    # # therefore user 2 is a friend of user 3, but user 3 is not a friend of user 2
+    # # user 3 is followed by user 1 and 2 so user3's frineds only posts will be sent to user 1 and 2
+    # Follow.objects.create(follower=default_users[2], following=default_users[3], status="Accepted")
+    # Follow.objects.create(follower=default_users[1], following=default_users[3], status="Accepted")
 
     # Use the default users for data generation
-    for author in default_users:
-        for _ in range(4):
-            post = Post.objects.create(
-                title=fake.sentence(),
-                content=fake.paragraph(),
-                author=author,
-                description=fake.paragraph(),
-                categories=fake.random_element(elements=('web,school', 'school', 'personal,school', 'work', 'other,school')),
-                contentType=fake.random_element(elements=('text/plain', 'text/markdown', 'text/html')),
-                visibility=fake.random_element(elements=('PUBLIC', 'PRIVATE', 'FRIENDS')),
-            )
-            post.origin = f"{settings.BASEHOST}/authors/{author.id}/posts/{post.id}"
-            post.save()
-            if post.visibility == "FRIENDS":
-                sendToFriendsInbox(author, PostSerializer(post).data)
-            elif post.visibility == "PUBLIC":
-                sendToEveryonesInbox(PostSerializer(post).data)
+    # for author in default_users:
+    #     for _ in range(4):
+    #         post = Post.objects.create(
+    #             title=fake.sentence(),
+    #             content=fake.paragraph(),
+    #             author=author,
+    #             description=fake.paragraph(),
+    #             categories=fake.random_element(elements=('web,school', 'school', 'personal,school', 'work', 'other,school')),
+    #             contentType=fake.random_element(elements=('text/plain', 'text/markdown', 'text/html')),
+    #             visibility=fake.random_element(elements=('PUBLIC', 'PRIVATE', 'FRIENDS')),
+    #         )
+    #         post.origin = f"{settings.BASEHOST}/authors/{author.id}/posts/{post.id}"
+    #         post.save()
+    #         if post.visibility == "FRIENDS":
+    #             sendToFriendsInbox(author, PostSerializer(post).data)
+    #         elif post.visibility == "PUBLIC":
+    #             sendToEveryonesInbox(PostSerializer(post).data)
 
-        for post in Post.objects.filter(author=author):
-            for _ in range(random.randint(1, 5)):
-                comment = Comment.objects.create(
-                    author=random.choice(default_users),
-                    post=post,
-                    comment=fake.paragraph(),
-                    contentType="text/plain"
-                )
-                addToInbox(post.author, CommentSerializer(comment).data)
+    #     for post in Post.objects.filter(author=author):
+    #         for _ in range(random.randint(1, 5)):
+    #             comment = Comment.objects.create(
+    #                 author=random.choice(default_users),
+    #                 post=post,
+    #                 comment=fake.paragraph(),
+    #                 contentType="text/plain"
+    #             )
+    #             addToInbox(post.author, CommentSerializer(comment).data)
 
-        for post in Post.objects.filter(author=author):
-            for _ in range(random.randint(1, 5)):
-                auth = random.choice(default_users)
-                like = PostLike.objects.create(
-                    author=auth,
-                    post=post,
-                    summary=f"{auth.username} likes your post",
-                    context=fake.url(),
-                    object=f"{settings.BASEHOST}/authors/{auth.id}/posts/{post.id}",
-                )
-                addToInbox(post.author, PostLikeSerializer(like).data)
+    #     for post in Post.objects.filter(author=author):
+    #         for _ in range(random.randint(1, 5)):
+    #             auth = random.choice(default_users)
+    #             like = PostLike.objects.create(
+    #                 author=auth,
+    #                 post=post,
+    #                 summary=f"{auth.username} likes your post",
+    #                 context=fake.url(),
+    #                 object=f"{settings.BASEHOST}/authors/{auth.id}/posts/{post.id}",
+    #             )
+    #             addToInbox(post.author, PostLikeSerializer(like).data)
 
-        for comment in Comment.objects.filter(post__author=author):
-            for _ in range(random.randint(1, 5)):
-                auth = random.choice(default_users)
-                like = CommentLike.objects.create(
-                    author=auth,
-                    comment=comment,
-                    summary=f"{auth.username} likes your comment",
-                    context=fake.url(),
-                    object=f"{settings.BASEHOST}/authors/{auth.id}/posts/{comment.post.id}/comments/{comment.id}"
-                )
-                addToInbox(comment.author, CommentLikeSerializer(like).data)
+    #     for comment in Comment.objects.filter(post__author=author):
+    #         for _ in range(random.randint(1, 5)):
+    #             auth = random.choice(default_users)
+    #             like = CommentLike.objects.create(
+    #                 author=auth,
+    #                 comment=comment,
+    #                 summary=f"{auth.username} likes your comment",
+    #                 context=fake.url(),
+    #                 object=f"{settings.BASEHOST}/authors/{auth.id}/posts/{comment.post.id}/comments/{comment.id}"
+    #             )
+    #             addToInbox(comment.author, CommentLikeSerializer(like).data)
 
 
 class Migration(migrations.Migration):

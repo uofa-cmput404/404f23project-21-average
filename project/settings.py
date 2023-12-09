@@ -131,7 +131,7 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -245,6 +245,6 @@ STORAGES = {
 # }
 
 CONNECTED = ["vibely", "CtrlAltDefeat", "socialSync"]
-DEFAULT_AUTHORS = ["string", "itachi", "metroboomin", "21savage",]
+DEFAULT_AUTHORS = ["string", "itachi", "metroboomin", "21savage", ]
 DEFAULT_AUTHORS_PASSWORD = "string"
 BASEHOST = os.environ.get("BASE_URL")
